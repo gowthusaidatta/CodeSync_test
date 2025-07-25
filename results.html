@@ -5,79 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Coding Profile Stats - Results</title>
     
-    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
-
-    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@6"></script>
-    
     <style>
-        :root {
-            --color-primary: #6366f1;
-            --color-secondary: #8b5cf6;
-            --color-error: #ef4444;
-            --bg-dark-blue: #0f172a;
-            --bg-medium-blue: #1e293b;
-            --text-light: #e2e8f0;
-            --text-muted: #94a3b8;
-        }
-        
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark-blue), var(--bg-medium-blue));
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             min-height: 100vh;
-            margin: 0;
-            color: var(--text-light);
+            color: #e2e8f0;
             line-height: 1.6;
             padding: 2rem 0;
-            position: relative;
         }
 
-        /* Animated background particles */
-        body::before, body::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.2;
-            filter: blur(50px);
-            z-index: -1;
-        }
-
-        body::before {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(45deg, #6366f1, #a855f7);
-            top: -10%;
-            left: -10%;
-            animation: moveGradient1 15s infinite alternate;
-        }
-
-        body::after {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, #ec4899, #f97316);
-            bottom: -10%;
-            right: -10%;
-            animation: moveGradient2 20s infinite alternate-reverse;
-        }
-
-        @keyframes moveGradient1 {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(20%, 30%); }
-            100% { transform: translate(0, 0); }
-        }
-
-        @keyframes moveGradient2 {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(-20%, -30%); }
-            100% { transform: translate(0, 0); }
-        }
-        
         .glass-container {
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(20px);
@@ -88,62 +31,16 @@
             max-width: 900px;
             margin: 2rem auto;
             padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            transform: scale(1);
-            animation: fadeInScale 0.8s ease-out forwards;
-        }
-
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
         }
         
         .result-card {
             background: rgba(30, 41, 59, 0.6);
             border-radius: 1rem;
             padding: 1.8rem;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             height: 100%;
             display: flex;
             flex-direction: column;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
-            transform: translateX(-100%);
-            transition: transform 0.5s ease-out;
-            z-index: 0;
-        }
-
-        .result-card:hover::before {
-            transform: translateX(100%);
-        }
-
-        .result-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .result-card > * {
-            position: relative;
-            z-index: 1;
         }
         
         .gfg-card {
@@ -174,22 +71,22 @@
         }
         
         .stat-label {
-            color: var(--text-muted);
+            color: #94a3b8;
             font-weight: 500;
         }
         
         .stat-value {
             font-weight: 700;
-            color: var(--text-light);
+            color: #e2e8f0;
         }
         
         .spinner {
             width: 3.5rem;
             height: 3.5rem;
             border: 5px solid rgba(255, 255, 255, 0.15);
-            border-top-color: var(--color-primary);
+            border-top-color: #6366f1;
             border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            animation: spin 1s linear infinite;
             margin: 0 auto;
         }
         
@@ -202,7 +99,6 @@
             height: 2.8rem;
             object-fit: contain;
             margin-right: 1.2rem;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
         }
         
         .back-button {
@@ -216,14 +112,10 @@
             align-items: center;
             gap: 0.6rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
         }
         
         .back-button:hover {
             background: rgba(51, 65, 85, 0.9);
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         
         .error-card {
@@ -232,10 +124,8 @@
             grid-column: 1 / -1;
             border-radius: 1rem;
             padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .glass-container {
                 padding: 1.5rem;
@@ -246,60 +136,23 @@
             .result-card {
                 padding: 1.25rem;
             }
-
-            body {
-                padding: 1rem 0;
-            }
-        }
-        /* User Menu Styles */
-        .user-menu-button {
-            background-color: rgba(255,255,255,0.1);
-            transition: background-color 0.2s;
-        }
-        .user-menu-button:hover {
-            background-color: rgba(255,255,255,0.2);
-        }
-        .user-menu-dropdown {
-            background: rgba(30, 41, 59, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
         }
     </style>
 </head>
-<body id="protected-page" class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+<body>
     <div class="glass-container">
-        <!-- User Icon and Logout Button -->
-        <div class="absolute top-4 right-4 text-white">
-            <div class="relative inline-block text-left">
-                <!-- User Icon Button -->
-                <button id="userMenuButton" class="user-menu-button flex items-center justify-center w-10 h-10 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div id="userMenu" class="user-menu-dropdown origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg hidden">
-                    <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="userMenuButton">
-                        <div class="block px-4 py-2 text-sm text-gray-200">Hello, <span id="displayUsername">Guest</span>!</div>
-                        <button onclick="handleLogout()" class="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300" role="menuitem">
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Header with gradient text -->
+        <!-- Header -->
         <header class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
+            <h1 class="text-4xl font-extrabold mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                 Coding Profile Stats
             </h1>
             <p class="text-slate-400 text-lg">Your competitive programming performance at a glance</p>
         </header>
         
+        <!-- Results grid -->
         <div id="results" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
         
+        <!-- Footer with back button -->
         <footer class="mt-10 text-center">
             <button onclick="window.history.back()" class="back-button">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
@@ -310,6 +163,141 @@
         </footer>
     </div>
 
-    <script type="module" src="js/main.js"></script>
+    <script>
+        // Configuration for platform data
+        const platformConfig = {
+            leetcode: {
+                name: "LeetCode",
+                color: "leetcode-card",
+                logo: "https://leetcode.com/static/images/LeetCode_logo_rvs.png",
+                placeholder: "https://placehold.co/40x40/FBBF24/000000?text=LC",
+                stats: [
+                    { label: "Problems Solved", key: "total_problems_solved", default: "N/A" },
+                    { label: "Contest Rating", key: "ranking", default: "N/A" },
+                    { label: "Easy Solved", key: "easy", default: 0 },
+                    { label: "Medium Solved", key: "medium", default: 0 },
+                    { label: "Hard Solved", key: "hard", default: 0 }
+                ]
+            },
+            gfg: {
+                name: "GeeksforGeeks",
+                color: "gfg-card",
+                logo: "https://media.geeksforgeeks.org/wp-content/uploads/20210915115837/gfg3-300x300.png",
+                placeholder: "https://placehold.co/40x40/48BB78/FFFFFF?text=GFG",
+                stats: [
+                    { label: "Coding Score", key: "codingScore", default: "N/A" },
+                    { label: "Institute Rank", key: "instituteRank", default: "N/A" },
+                    { label: "Problems Solved", key: "totalProblemsSolved", default: "N/A" },
+                    { label: "Current Streak", key: "currentStreak", default: "N/A", suffix: " days" }
+                ]
+            },
+            codechef: {
+                name: "CodeChef",
+                color: "codechef-card",
+                logo: "https://cdn.codechef.com/sites/all/themes/abessive/cc-logo.png",
+                placeholder: "https://placehold.co/40x40/ED8936/FFFFFF?text=CC",
+                stats: [
+                    { label: "Contest Rating", key: "contest_rating", default: "N/A" },
+                    { label: "Stars", key: "stars", default: "N/A" },
+                    { label: "Problems Solved", key: "problems_solved", default: "N/A" }
+                ]
+            },
+            hackerrank: {
+                name: "HackerRank",
+                color: "hackerrank-card",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png",
+                placeholder: "https://placehold.co/40x40/818CF8/FFFFFF?text=HR",
+                stats: [
+                    { label: "Badges", key: "badges", default: 0 },
+                    { label: "Stars", key: "stars", default: "N/A" }
+                ]
+            }
+        };
+        
+        // Main function to display stats
+        async function displayStats() {
+            const resultsDiv = document.getElementById("results");
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Show loading state
+            resultsDiv.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-16">
+                    <div class="spinner"></div>
+                    <p class="mt-6 text-slate-400 text-lg">Fetching your coding stats...</p>
+                </div>
+            `;
+            
+            // Get all platform usernames from URL
+            const usernames = {
+                leetcode: urlParams.get('leetcode'),
+                gfg: urlParams.get('gfg'),
+                codechef: urlParams.get('codechef'),
+                hackerrank: urlParams.get('hackerrank')
+            };
+            
+            // Simulate API calls with mock data (replace with real API calls)
+            setTimeout(() => {
+                resultsDiv.innerHTML = '';
+                
+                let cardCount = 0;
+                // Create cards for each platform with mock data
+                Object.entries(usernames).forEach(([platform, username]) => {
+                    if (!username) return;
+                    
+                    const config = platformConfig[platform];
+                    const card = document.createElement('div');
+                    card.className = `result-card ${config.color}`;
+                    
+                    let statsHTML = '';
+                    config.stats.forEach(stat => {
+                        // Generate random data for demo
+                        const value = stat.default === "N/A" 
+                            ? Math.floor(Math.random() * 1000) 
+                            : stat.default;
+                            
+                        statsHTML += `
+                            <div class="stat-item">
+                                <span class="stat-label">${stat.label}</span>
+                                <span class="stat-value">${value}${stat.suffix || ''}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    card.innerHTML = `
+                        <div class="flex items-center mb-5">
+                            <img src="${config.logo}" 
+                                 onerror="this.onerror=null;this.src='${config.placeholder}'"
+                                 class="platform-icon" 
+                                 alt="${config.name} Logo">
+                            <h2 class="text-2xl font-bold">${config.name}</h2>
+                            <span class="ml-auto bg-slate-800/50 px-3 py-1 rounded-full text-sm font-mono text-slate-300">@${username}</span>
+                        </div>
+                        <div class="stats-container flex-grow">
+                            ${statsHTML}
+                        </div>
+                    `;
+                    
+                    resultsDiv.appendChild(card);
+                    cardCount++;
+                });
+                
+                // Show message if no cards were added
+                if (resultsDiv.children.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="col-span-full text-center py-16 text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="mt-4 text-xl">No usernames provided.</p>
+                            <p class="mt-2 text-base">Please go back and enter at least one username to see your stats.</p>
+                        </div>
+                    `;
+                }
+            }, 1500); // Simulate network delay
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', displayStats);
+    </script>
 </body>
 </html>
