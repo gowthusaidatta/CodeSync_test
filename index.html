@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- AWS Amplify UMD version (defines window.aws_amplify) -->
+
+  <!-- UMD AWS Amplify (defines window.aws_amplify globally) -->
   <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
@@ -17,16 +18,14 @@
     <a href="signup.html" class="text-blue-300 text-sm">Don't have an account? Sign Up</a>
   </div>
 
-  <!-- Your JS logic using ES module -->
-  <script type="module">
-    import { amplifyConfig } from "./js/amplify_config.js";
-
-    // Wait for DOM to load and amplify to be available
+  <!-- Standard Script (NOT type=module) -->
+  <script src="./js/amplify_config.js"></script>
+  <script>
+    // Wait for AWS Amplify to be ready
     window.addEventListener("DOMContentLoaded", () => {
       const { Auth } = window.aws_amplify;
-      Auth.configure(amplifyConfig);
+      Auth.configure(window.amplifyConfig); // from amplify_config.js
 
-      // Define globally accessible login function
       window.handleLogin = async function () {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
