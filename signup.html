@@ -5,40 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Sign Up</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
+  <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
   <script src="./js/amplify_config.js"></script>
-  <script>
-    const { Auth } = window.aws_amplify;
-    Auth.configure(window.amplifyConfig);
-
-    window.handleSignUp = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      await Auth.signUp({ username: email, password });
-      document.getElementById("confirmation").classList.remove("hidden");
-    };
-
-    window.handleConfirm = async () => {
-      const email = document.getElementById("email").value;
-      const code = document.getElementById("code").value;
-      await Auth.confirmSignUp(email, code);
-      alert("Account confirmed! Redirecting...");
-      window.location.href = "index.html";
-    };
-  </script>
 </head>
 <body class="flex items-center justify-center h-screen bg-gray-900 text-white">
   <div class="p-6 bg-white/10 backdrop-blur-lg rounded-xl w-96 space-y-4 text-center">
     <h2 class="text-xl font-bold mb-2">Sign Up</h2>
     <input id="email" placeholder="Email" class="w-full p-2 rounded text-black" />
     <input id="password" placeholder="Password" type="password" class="w-full p-2 rounded text-black" />
-    <button onclick="handleSignUp()" class="bg-purple-600 w-full py-2 rounded font-bold">Sign Up</button>
+    <button id="signup-btn" class="bg-purple-600 w-full py-2 rounded font-bold">Sign Up</button>
 
     <div id="confirmation" class="hidden mt-4">
       <input id="code" placeholder="Verification Code" class="w-full p-2 rounded text-black" />
-      <button onclick="handleConfirm()" class="bg-green-600 w-full py-2 rounded font-bold mt-2">Confirm</button>
+      <button id="confirm-btn" class="bg-green-600 w-full py-2 rounded font-bold mt-2">Confirm</button>
     </div>
+
     <a href="index.html" class="text-sm text-blue-400">Back to Login</a>
   </div>
+
+  <script>
+    window.addEventListener("load", () => {
+      const amplify = window.aws_amplify;
+      if (!amplify || !amplify.Auth) {
+        alert("❌ AWS Amplify failed to load.");
+        return;
+      }
+
+      const { Auth } = amplify;
+      Auth.configure(window.amplifyConfig);
+
+      document.getElementById("signup-btn").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        await Auth.signUp({ username: email, password });
+        document.getElementById("confirmation").classList.remove("hidden");
+      });
+
+      document.getElementById("confirm-btn").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const code = document.getElementById("code").value;
+        await Auth.confirmSignUp(email, code);
+        alert("✅ Confirmed! Redirecting...");
+        window.location.href = "index.html";
+      });
+    });
+  </script>
 </body>
 </html>
