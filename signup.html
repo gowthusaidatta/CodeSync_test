@@ -19,7 +19,6 @@
       <input id="code" placeholder="Verification Code" class="w-full p-2 rounded text-black" />
       <button id="confirm-btn" class="bg-green-600 w-full py-2 rounded font-bold mt-2">Confirm</button>
     </div>
-
     <a href="index.html" class="text-sm text-blue-400">Back to Login</a>
   </div>
 
@@ -30,23 +29,32 @@
         alert("❌ AWS Amplify failed to load.");
         return;
       }
-
       const { Auth } = amplify;
       Auth.configure(window.amplifyConfig);
 
       document.getElementById("signup-btn").addEventListener("click", async () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        await Auth.signUp({ username: email, password });
-        document.getElementById("confirmation").classList.remove("hidden");
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        try {
+          await Auth.signUp({ username: email, password });
+          document.getElementById("confirmation").classList.remove("hidden");
+        } catch (err) {
+          alert("Sign Up Failed: " + err.message);
+        }
       });
 
       document.getElementById("confirm-btn").addEventListener("click", async () => {
-        const email = document.getElementById("email").value;
-        const code = document.getElementById("code").value;
-        await Auth.confirmSignUp(email, code);
-        alert("✅ Confirmed! Redirecting...");
-        window.location.href = "index.html";
+        const email = document.getElementById("email").value.trim();
+        const code = document.getElementById("code").value.trim();
+
+        try {
+          await Auth.confirmSignUp(email, code);
+          alert("Account confirmed! Redirecting...");
+          window.location.href = "index.html";
+        } catch (err) {
+          alert("Confirmation Failed: " + err.message);
+        }
       });
     });
   </script>
