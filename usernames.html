@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter for a modern typeface -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- AWS Amplify CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@6"></script>
     <style>
         /* Base body styling with a dark gradient background and Inter font */
         body {
@@ -18,6 +20,7 @@
             justify-content: center;
             min-height: 100vh;
             padding: 1rem; /* Responsive padding */
+            color: #e2e8f0; /* Default text color */
         }
 
         /* Main container styling for a frosted glass effect */
@@ -28,6 +31,9 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Stronger shadow for depth */
             border-radius: 20px; /* More rounded corners */
             padding: 2.5rem; /* Increased padding for better spacing */
+            width: 100%;
+            max-width: 500px;
+            position: relative; /* For logout button positioning */
         }
 
         /* Input field styling for a sleek, dark theme look */
@@ -102,6 +108,7 @@
             position: relative;
             overflow: hidden; /* For the shine effect */
             z-index: 1;
+            cursor: pointer;
         }
         .gradient-button:hover {
             transform: translateY(-2px); /* Lift effect on hover */
@@ -126,10 +133,46 @@
         .gradient-button:hover:before {
             left: 100%;
         }
+
+        /* User Menu Styles */
+        .user-menu-button {
+            background-color: rgba(255,255,255,0.1);
+            transition: background-color 0.2s;
+        }
+        .user-menu-button:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        .user-menu-dropdown {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
     </style>
 </head>
-<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+<body id="protected-page" class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md glass-container">
+        <!-- User Icon and Logout Button -->
+        <div class="absolute top-4 right-4 text-white">
+            <div class="relative inline-block text-left">
+                <!-- User Icon Button -->
+                <button id="userMenuButton" class="user-menu-button flex items-center justify-center w-10 h-10 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="userMenu" class="user-menu-dropdown origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg hidden">
+                    <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="userMenuButton">
+                        <div class="block px-4 py-2 text-sm text-gray-200">Hello, <span id="displayUsername">Guest</span>!</div>
+                        <button onclick="handleLogout()" class="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300" role="menuitem">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Title with gradient text -->
         <h1 class="text-3xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
             <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
@@ -143,7 +186,7 @@
             <div class="flex items-center group">
                 <div id="leetcodeCheck" class="checkmark-container"></div>
                 <input id="leetcode" type="text" placeholder="LeetCode Username"
-                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg text-white placeholder-gray-400 bg-transparent"
+                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg placeholder-gray-400 bg-transparent"
                        oninput="toggleCheckmark(this)">
             </div>
 
@@ -151,7 +194,7 @@
             <div class="flex items-center group">
                 <div id="codechefCheck" class="checkmark-container"></div>
                 <input id="codechef" type="text" placeholder="CodeChef Username"
-                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg text-white placeholder-gray-400 bg-transparent"
+                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg placeholder-gray-400 bg-transparent"
                        oninput="toggleCheckmark(this)">
             </div>
 
@@ -159,7 +202,7 @@
             <div class="flex items-center group">
                 <div id="hackerrankCheck" class="checkmark-container"></div>
                 <input id="hackerrank" type="text" placeholder="HackerRank Username"
-                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg text-white placeholder-gray-400 bg-transparent"
+                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg placeholder-gray-400 bg-transparent"
                        oninput="toggleCheckmark(this)">
             </div>
 
@@ -167,7 +210,7 @@
             <div class="flex items-center group">
                 <div id="gfgCheck" class="checkmark-container"></div>
                 <input id="gfg" type="text" placeholder="GeeksforGeeks Username"
-                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg text-white placeholder-gray-400 bg-transparent"
+                       class="flex-1 p-3 border-b-2 focus:outline-none focus:border-blue-500 rounded-lg placeholder-gray-400 bg-transparent"
                        oninput="toggleCheckmark(this)">
             </div>
         </div>
@@ -179,41 +222,6 @@
         </button>
     </div>
 
-    <script>
-        // Function to toggle checkmark based on input value
-        function toggleCheckmark(inputElement) {
-            const checkId = inputElement.id + 'Check';
-            const check = document.getElementById(checkId);
-            if (inputElement.value.trim()) {
-                check.classList.add('checked');
-            } else {
-                check.classList.remove('checked');
-            }
-        }
-
-        // Initialize checkmarks on page load for pre-filled inputs
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('input').forEach(input => {
-                toggleCheckmark(input);
-            });
-        });
-
-        // Function to navigate to the results page with query parameters
-        function navigateToResults() {
-            const leetcode = document.getElementById("leetcode").value.trim();
-            const codechef = document.getElementById("codechef").value.trim();
-            const hackerrank = document.getElementById("hackerrank").value.trim();
-            const gfg = document.getElementById("gfg").value.trim();
-
-            const params = new URLSearchParams();
-            if (leetcode) params.append('leetcode', leetcode);
-            if (codechef) params.append('codechef', codechef);
-            if (hackerrank) params.append('hackerrank', hackerrank);
-            if (gfg) params.append('gfg', gfg);
-
-            window.location.href = `results.html?${params.toString()}`;
-        }
-    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
-
