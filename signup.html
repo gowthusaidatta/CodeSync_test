@@ -121,7 +121,7 @@
                 Sign Up
             </button>
             <p class="text-center text-gray-400">
-                Already have an account? <a href="login.html" class="text-blue-400 hover:underline">Login</a>
+                Already have an account? <a href="index.html" class="text-blue-400 hover:underline">Login</a>
             </p>
             <div id="messageBox" class="message-box hidden"></div>
         </div>
@@ -145,94 +145,6 @@
         </div>
     </div>
 
-    <script type="module">
-        import { Auth } from 'aws-amplify';
-        import './amplify_config.js'; // Ensure this path is correct
-
-        const signupForm = document.getElementById('signupForm');
-        const confirmForm = document.getElementById('confirmForm');
-        const messageBox = document.getElementById('messageBox');
-        const confirmMessageBox = document.getElementById('confirmMessageBox');
-
-        function showMessage(element, message, isSuccess = true) {
-            element.textContent = message;
-            element.classList.remove('hidden', 'success-message', 'error-message');
-            element.classList.add(isSuccess ? 'success-message' : 'error-message');
-        }
-
-        async function handleSignUp() {
-            const username = document.getElementById("username").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            messageBox.classList.add('hidden');
-
-            if (!username || !email || !password) {
-                showMessage(messageBox, "Please fill in all fields.", false);
-                return;
-            }
-
-            try {
-                const { user } = await Auth.signUp({
-                    username,
-                    password,
-                    attributes: { email }
-                });
-                console.log('User signed up successfully:', user);
-                document.getElementById('confirmUsername').value = username; // Pre-fill for convenience
-                signupForm.classList.add('hidden');
-                confirmForm.classList.remove('hidden');
-                showMessage(confirmMessageBox, "Verification code sent to your email!", true);
-            } catch (error) {
-                console.error('Error signing up:', error);
-                showMessage(messageBox, error.message || "An unexpected error occurred during sign-up.", false);
-            }
-        }
-
-        async function handleConfirmSignUp() {
-            const username = document.getElementById("confirmUsername").value.trim();
-            const code = document.getElementById("confirmationCode").value.trim();
-            confirmMessageBox.classList.add('hidden');
-
-            if (!username || !code) {
-                showMessage(confirmMessageBox, "Please enter username and confirmation code.", false);
-                return;
-            }
-
-            try {
-                await Auth.confirmSignUp({ username, confirmationCode: code });
-                console.log('User confirmed successfully.');
-                showMessage(confirmMessageBox, "Account confirmed! Redirecting to login...", true);
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000); // Redirect after 2 seconds
-            } catch (error) {
-                console.error('Error confirming sign up:', error);
-                showMessage(confirmMessageBox, error.message || "Error confirming account. Please check the code.", false);
-            }
-        }
-
-        async function handleResendCode() {
-            const username = document.getElementById("confirmUsername").value.trim();
-            confirmMessageBox.classList.add('hidden');
-
-            if (!username) {
-                showMessage(confirmMessageBox, "Please enter your username to resend the code.", false);
-                return;
-            }
-
-            try {
-                await Auth.resendSignUpCode({ username });
-                showMessage(confirmMessageBox, "New code sent!", true);
-            } catch (error) {
-                console.error('Error resending code:', error);
-                showMessage(confirmMessageBox, error.message || "Error resending code.", false);
-            }
-        }
-
-        // Make functions accessible globally for onclick
-        window.handleSignUp = handleSignUp;
-        window.handleConfirmSignUp = handleConfirmSignUp;
-        window.handleResendCode = handleResendCode;
-    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
