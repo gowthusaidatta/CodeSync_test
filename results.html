@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Coding Profile Stats</title>
+    <title>Coding Profile Stats - Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
         }
         h1 {
             text-align: center;
@@ -62,9 +63,6 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .back-button:hover {
-            background-color: #2980b9;
-        }
     </style>
 </head>
 <body>
@@ -72,57 +70,142 @@
     <div class="subtitle">Your competitive programming performance at a glance</div>
     
     <div id="results">
-        <!-- LeetCode -->
-        <div class="platform">
-            <h2>LeafCode <span class="username">Redisheets</span></h2>
-            <div class="stats">
-                <div class="stat"><span class="stat-name">Problems Solved</span><br>804</div>
-                <div class="stat"><span class="stat-name">Context Rating</span><br>562</div>
-                <div class="stat"><span class="stat-name">Easy Solved</span><br>0</div>
-                <div class="stat"><span class="stat-name">Medium Solved</span><br>0</div>
-                <div class="stat"><span class="stat-name">Hard Solved</span><br>0</div>
-            </div>
-        </div>
-        
-        <!-- GeeksforGeeks -->
-        <div class="platform">
-            <h2>GeekstorGeeks <span class="username">Redisheetworks</span></h2>
-            <div class="stats">
-                <div class="stat"><span class="stat-name">Coding Score</span><br>770</div>
-                <div class="stat"><span class="stat-name">Institute Rank</span><br>212</div>
-                <div class="stat"><span class="stat-name">Problems Solved</span><br>790</div>
-                <div class="stat"><span class="stat-name">Current Strack</span><br>443 days</div>
-            </div>
-        </div>
-        
-        <!-- CodeChef -->
-        <div class="platform">
-            <h2>CodeChef <span class="username">Redisheetworks</span></h2>
-            <div class="stats">
-                <div class="stat"><span class="stat-name">Context Rating</span><br>928</div>
-                <div class="stat"><span class="stat-name">Stars</span><br>192</div>
-                <div class="stat"><span class="stat-name">Problems Solved</span><br>51</div>
-            </div>
-        </div>
-        
-        <!-- HackerRank -->
-        <div class="platform">
-            <h2>HackerRank <span class="username">RowHouseStats</span></h2>
-            <div class="stats">
-                <div class="stat"><span class="stat-name">Badogs</span><br>0</div>
-                <div class="stat"><span class="stat-name">Stars</span><br>704</div>
-            </div>
-        </div>
+        <!-- Results will be loaded here -->
     </div>
     
-    <a href="usernames.html" class="back-button">Back to input</a>
+    <a href="usernames.html" class="back-button">Back to Input</a>
 
     <script>
-        // This would be replaced with actual data fetching logic
-        document.addEventListener('DOMContentLoaded', function() {
-            // In a real implementation, you would fetch data here
-            // and dynamically populate the #results div
-        });
+        // Mock data structure that matches your image
+        const mockData = {
+            leetcode: {
+                username: "Redisheets",
+                stats: {
+                    total_problems_solved: 804,
+                    ranking: 562,
+                    easy: 0,
+                    medium: 0,
+                    hard: 0
+                }
+            },
+            gfg: {
+                username: "Redisheetworks",
+                stats: {
+                    codingScore: 770,
+                    instituteRank: 212,
+                    totalProblemsSolved: 790,
+                    currentStreak: "443 days"
+                }
+            },
+            codechef: {
+                username: "Redisheetworks",
+                stats: {
+                    contest_rating: 928,
+                    stars: 192,
+                    problems_solved: 51
+                }
+            },
+            hackerrank: {
+                username: "RowHouseStats",
+                stats: {
+                    badges: 0,
+                    stars: 704
+                }
+            }
+        };
+
+        // Platform configuration
+        const platformConfig = {
+            leetcode: {
+                name: "LeafCode",
+                stats: [
+                    { label: "Problems Solved", key: "total_problems_solved" },
+                    { label: "Context Rating", key: "ranking" },
+                    { label: "Easy Solved", key: "easy" },
+                    { label: "Medium Solved", key: "medium" },
+                    { label: "Hard Solved", key: "hard" }
+                ]
+            },
+            gfg: {
+                name: "GeekstorGeeks",
+                stats: [
+                    { label: "Coding Score", key: "codingScore" },
+                    { label: "Institute Rank", key: "instituteRank" },
+                    { label: "Problems Solved", key: "totalProblemsSolved" },
+                    { label: "Current Strack", key: "currentStreak" }
+                ]
+            },
+            codechef: {
+                name: "CodeChef",
+                stats: [
+                    { label: "Context Rating", key: "contest_rating" },
+                    { label: "Stars", key: "stars" },
+                    { label: "Problems Solved", key: "problems_solved" }
+                ]
+            },
+            hackerrank: {
+                name: "HackerRank",
+                stats: [
+                    { label: "Badogs", key: "badges" },
+                    { label: "Stars", key: "stars" }
+                ]
+            }
+        };
+
+        function displayResults() {
+            const params = new URLSearchParams(window.location.search);
+            const resultsDiv = document.getElementById('results');
+            
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+            
+            // Check if any usernames were provided
+            let hasUsernames = false;
+            
+            // Create platform sections for each provided username
+            Object.keys(platformConfig).forEach(platform => {
+                const username = params.get(platform);
+                if (username) {
+                    hasUsernames = true;
+                    const config = platformConfig[platform];
+                    const data = mockData[platform]; // In real app, this would be API data
+                    
+                    const platformDiv = document.createElement('div');
+                    platformDiv.className = 'platform';
+                    
+                    let statsHTML = '';
+                    config.stats.forEach(stat => {
+                        statsHTML += `
+                            <div class="stat">
+                                <span class="stat-name">${stat.label}</span><br>
+                                ${data.stats[stat.key]}
+                            </div>
+                        `;
+                    });
+                    
+                    platformDiv.innerHTML = `
+                        <h2>${config.name} <span class="username">${data.username}</span></h2>
+                        <div class="stats">
+                            ${statsHTML}
+                        </div>
+                    `;
+                    
+                    resultsDiv.appendChild(platformDiv);
+                }
+            });
+            
+            // Show message if no usernames were provided
+            if (!hasUsernames) {
+                resultsDiv.innerHTML = `
+                    <div class="platform">
+                        <p>No usernames provided. Please go back and enter at least one username.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', displayResults);
     </script>
 </body>
 </html>
