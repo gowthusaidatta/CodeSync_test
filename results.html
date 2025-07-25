@@ -8,12 +8,12 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-start py-10 space-y-6">
   <h1 class="text-3xl font-bold text-purple-400">Your Coding Stats</h1>
-  
+
   <div id="loading" class="text-center text-blue-300 text-lg">Fetching data...</div>
   <div id="error" class="text-red-400 hidden">❌ Failed to fetch data.</div>
-  
+
   <div id="results" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full px-6">
-    <!-- Platform cards inserted here -->
+    <!-- Cards will be inserted here -->
   </div>
 
   <button onclick="window.location.href='usernames.html'" class="mt-4 text-blue-300 hover:underline">⬅ Back</button>
@@ -25,87 +25,88 @@
     const hackerrank = query.get("hackerrank");
     const gfg = query.get("gfg");
 
-    console.log("LeetCode:", leetcode);
-    console.log("CodeChef:", codechef);
-    console.log("HackerRank:", hackerrank);
-    console.log("GFG:", gfg);
+    const lambdaURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
+    const gfgURL = gfg ? `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}` : null;
 
-    async function fetchStats() {
-      const resultsDiv = document.getElementById("results");
-      const errorDiv = document.getElementById("error");
-      const loadingDiv = document.getElementById("loading");
+    const resultsDiv = document.getElementById("results");
+    const loadingDiv = document.getElementById("loading");
+    const errorDiv = document.getElementById("error");
 
+    async function fetchResults() {
       try {
-        const apiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}&gfg=${gfg}`;
-        const res = await fetch(apiURL);
-        const data = await res.json();
+        const [lambdaRes, gfgRes] = await Promise.all([
+          fetch(lambdaURL),
+          gfgURL ? fetch(gfgURL) : Promise.resolve(null)
+        ]);
 
-        loadingDiv.classList.add("hidden");
-
-        if (!data) throw new Error("No data returned from API");
+        const lambdaData = await lambdaRes.json();
+        const gfgData = gfgRes && gfgRes.ok ? await gfgRes.json() : null;
 
         resultsDiv.innerHTML = "";
 
         // LeetCode
-        if (data.leetcode) {
+        if (lambdaData.leetcode) {
           resultsDiv.innerHTML += renderCard("LeetCode", `
-            <p>Username: <strong>${data.leetcode.username}</strong></p>
-            <p>Total Solved: ${data.leetcode.total_problems_solved}</p>
-            <p>Ranking: ${data.leetcode.ranking}</p>
-            <p>Easy: ${data.leetcode.easy}, Medium: ${data.leetcode.medium}, Hard: ${data.leetcode.hard}</p>
+            <p><strong>${lambdaData.leetcode.username}</strong></p>
+            <p>Total Solved: ${lambdaData.leetcode.total_problems_solved}</p>
+            <p>Ranking: ${lambdaData.leetcode.ranking}</p>
+            <p>Easy: ${lambdaData.leetcode.easy}, Medium: ${lambdaData.leetcode.medium}, Hard: ${lambdaData.leetcode.hard}</p>
           `);
         }
 
         // CodeChef
-        if (data.codechef) {
+        if (lambdaData.codechef) {
           resultsDiv.innerHTML += renderCard("CodeChef", `
-            <p>Username: <strong>${data.codechef.username}</strong></p>
-            <p>Problems Solved: ${data.codechef.problems_solved}</p>
-            <p>Contest Rating: ${data.codechef.contest_rating}</p>
-            <p>Contests: ${data.codechef.contests_participated}</p>
-            <p>Stars: ${data.codechef.stars}</p>
+            <p><strong>${lambdaData.codechef.username}</strong></p>
+            <p>Solved: ${lambdaData.codechef.problems_solved}</p>
+            <p>Rating: ${lambdaData.codechef.contest_rating}</p>
+            <p>Contests: ${lambdaData.codechef.contests_participated}</p>
+            <p>Stars: ${lambdaData.codechef.stars}</p>
           `);
         }
 
         // HackerRank
-        if (data.hackerrank) {
+        if (lambdaData.hackerrank) {
           resultsDiv.innerHTML += renderCard("HackerRank", `
-            <p>Username: <strong>${data.hackerrank.username}</strong></p>
-            <p>Badges: ${data.hackerrank.badges}</p>
+            <p><strong>${lambdaData.hackerrank.username}</strong></p>
+            <p>Badges: ${lambdaData.hackerrank.badges}</p>
           `);
         }
 
-        // GeeksforGeeks (optional)
-        if (data.gfg && data.gfg.username) {
+        // GeeksforGeeks
+        if (gfgData && gfgData.username) {
           resultsDiv.innerHTML += renderCard("GeeksforGeeks", `
-            <p>Username: <strong>${data.gfg.username}</strong></p>
-            <p>Institute: ${data.gfg.institute}</p>
-            <p>Total Solved: ${data.gfg.totalProblemsSolved}</p>
-            <p>Streak: ${data.gfg.currentStreak} 🔥</p>
-            <p>Score: ${data.gfg.codingScore} | Rank: ${data.gfg.instituteRank}</p>
-            <img src="${data.gfg.profileImage}" alt="GFG Profile" class="w-20 h-20 mx-auto mt-2 rounded-full border">
+            <p><strong>${gfgData.fullName}</strong></p>
+            <img src="${gfgData.profileImage}" alt="Profile" class="w-20 h-20 rounded-full mx-auto mb-2" />
+            <p>Institute: ${gfgData.institute}</p>
+            <p>Total Solved: ${gfgData.totalProblemsSolved}</p>
+            <p>Streak 🔥: ${gfgData.currentStreak}</p>
+            <p>Coding Score: ${gfgData.codingScore}</p>
+            <p>Institute Rank: ${gfgData.instituteRank}</p>
+            <p>Easy: ${gfgData.easyProblems}, Medium: ${gfgData.mediumProblems}, Hard: ${gfgData.hardProblems}</p>
           `);
         }
 
         resultsDiv.classList.remove("hidden");
+        loadingDiv.classList.add("hidden");
 
       } catch (err) {
-        console.error(err);
-        loadingDiv.classList.add("hidden");
+        console.error("Fetch error:", err);
         errorDiv.classList.remove("hidden");
+        loadingDiv.classList.add("hidden");
       }
     }
 
-    function renderCard(title, bodyHTML) {
+    function renderCard(title, html) {
       return `
-        <div class="bg-white/10 rounded-lg p-5 shadow-md">
+        <div class="bg-white/10 rounded-xl p-5 shadow-md">
           <h3 class="text-xl font-bold text-purple-400 mb-2">${title}</h3>
-          <div class="text-sm space-y-1">${bodyHTML}</div>
+          <div class="text-sm space-y-1">${html}</div>
         </div>
       `;
     }
 
-    fetchStats();
+    fetchResults();
   </script>
 </body>
 </html>
