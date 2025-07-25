@@ -86,6 +86,17 @@
             margin-top: 1rem;
             text-align: center;
         }
+        .message-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .success-message {
+            background-color: rgba(72, 187, 120, 0.2);
+            border: 1px solid rgba(72, 187, 120, 0.4);
+            color: #48bb78;
+        }
     </style>
 </head>
 <body>
@@ -97,30 +108,60 @@
         </h1>
         <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
 
-        <div class="space-y-4 mb-6">
-            <input id="username" type="text" placeholder="Username or Email"
-                   class="w-full p-3 rounded-lg text-white placeholder-gray-400">
-            <input id="password" type="password" placeholder="Password"
-                   class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+        <div id="loginForm">
+            <div class="space-y-4 mb-6">
+                <input id="username" type="text" placeholder="Username or Email"
+                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+                <input id="password" type="password" placeholder="Password"
+                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+            </div>
+
+            <button onclick="handleLogin()" class="w-full gradient-button mb-4">
+                Login
+            </button>
+            <p class="text-center text-gray-400">
+                Don't have an account? <a href="signup.html" class="text-blue-400 hover:underline">Sign Up</a>
+            </p>
+            <div id="errorMessage" class="error-message hidden"></div>
         </div>
 
-        <button onclick="handleLogin()" class="w-full gradient-button mb-4">
-            Login
-        </button>
-        <p class="text-center text-gray-400">
-            Don't have an account? <a href="signup.html" class="text-blue-400 hover:underline">Sign Up</a>
-        </p>
-        <div id="errorMessage" class="error-message hidden"></div>
+        <div id="confirmForm" class="hidden">
+            <h2 class="text-xl font-semibold mb-4 text-center">Confirm Your Account</h2>
+            <p class="text-center text-gray-400 mb-4">A verification code has been sent to your email.</p>
+            <div class="space-y-4 mb-6">
+                <input id="confirmUsername" type="text" placeholder="Username"
+                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+                <input id="confirmationCode" type="text" placeholder="Confirmation Code"
+                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+            </div>
+            <button onclick="handleConfirmSignUp()" class="w-full gradient-button mb-4">
+                Confirm Sign Up
+            </button>
+            <button onclick="handleResendCode()" class="w-full gradient-button bg-gray-600 hover:bg-gray-700 mb-4">
+                Resend Code
+            </button>
+            <div id="confirmMessageBox" class="message-box hidden"></div>
+        </div>
     </div>
 
     <script type="module">
         import { Auth } from 'aws-amplify';
-        import './amplify_config.js'; // Ensure this path is correct
+        import './js/amplify_config.js'; // Ensure this path is correct
+
+        const loginForm = document.getElementById('loginForm');
+        const confirmForm = document.getElementById('confirmForm');
+        const errorMessageDiv = document.getElementById("errorMessage");
+        const confirmMessageBox = document.getElementById('confirmMessageBox');
+
+        function showMessage(element, message, isSuccess = true) {
+            element.textContent = message;
+            element.classList.remove('hidden', 'success-message', 'error-message');
+            element.classList.add(isSuccess ? 'success-message' : 'error-message');
+        }
 
         async function handleLogin() {
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
-            const errorMessageDiv = document.getElementById("errorMessage");
             errorMessageDiv.classList.add('hidden'); // Clear previous errors
 
             if (!username || !password) {
@@ -135,13 +176,65 @@
                 window.location.href = 'index.html'; // Redirect to the main input page
             } catch (error) {
                 console.error('Error logging in:', error);
-                errorMessageDiv.textContent = error.message || "An unexpected error occurred during login.";
-                errorMessageDiv.classList.remove('hidden');
+                // Check for UserNotConfirmedException
+                if (error.code === 'UserNotConfirmedException') {
+                    document.getElementById('confirmUsername').value = username; // Pre-fill username
+                    loginForm.classList.add('hidden');
+                    confirmForm.classList.remove('hidden');
+                    showMessage(confirmMessageBox, "Your account is not confirmed. Please enter the verification code sent to your email.", false);
+                } else {
+                    errorMessageDiv.textContent = error.message || "An unexpected error occurred during login.";
+                    errorMessageDiv.classList.remove('hidden');
+                }
             }
         }
 
-        // Make handleLogin accessible globally for onclick
+        async function handleConfirmSignUp() {
+            const username = document.getElementById("confirmUsername").value.trim();
+            const code = document.getElementById("confirmationCode").value.trim();
+            confirmMessageBox.classList.add('hidden');
+
+            if (!username || !code) {
+                showMessage(confirmMessageBox, "Please enter username and confirmation code.", false);
+                return;
+            }
+
+            try {
+                await Auth.confirmSignUp({ username, confirmationCode: code });
+                console.log('User confirmed successfully.');
+                showMessage(confirmMessageBox, "Account confirmed! You can now log in.", true);
+                // Optionally redirect back to login page after confirmation
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } catch (error) {
+                console.error('Error confirming sign up:', error);
+                showMessage(confirmMessageBox, error.message || "Error confirming account. Please check the code.", false);
+            }
+        }
+
+        async function handleResendCode() {
+            const username = document.getElementById("confirmUsername").value.trim();
+            confirmMessageBox.classList.add('hidden');
+
+            if (!username) {
+                showMessage(confirmMessageBox, "Please enter your username to resend the code.", false);
+                return;
+            }
+
+            try {
+                await Auth.resendSignUpCode({ username });
+                showMessage(confirmMessageBox, "New verification code sent!", true);
+            } catch (error) {
+                console.error('Error resending code:', error);
+                showMessage(confirmMessageBox, error.message || "Error resending code.", false);
+            }
+        }
+
+        // Make functions accessible globally for onclick
         window.handleLogin = handleLogin;
+        window.handleConfirmSignUp = handleConfirmSignUp;
+        window.handleResendCode = handleResendCode;
     </script>
 </body>
 </html>
