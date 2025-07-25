@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Coding Profile Stats - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@6"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            color: #e2e8f0;
+        }
+        .glass-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px; /* Adjusted for login form */
+        }
+        input[type="text"], input[type="password"] {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e2e8f0;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]::placeholder, input[type="password"]::placeholder {
+            color: #a0aec0;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #63b3ed;
+            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .gradient-button {
+            background-image: linear-gradient(to right, #6366f1, #a855f7);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(100, 100, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .gradient-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(100, 100, 255, 0.6);
+        }
+        .gradient-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(100, 100, 255, 0.3);
+        }
+        .gradient-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+        .gradient-button:hover:before {
+            left: 100%;
+        }
+        .error-message {
+            color: #ef4444;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <h1 class="text-3xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                Coding Profile Stats
+            </span>
+        </h1>
+        <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+
+        <div class="space-y-4 mb-6">
+            <input id="username" type="text" placeholder="Username or Email"
+                   class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+            <input id="password" type="password" placeholder="Password"
+                   class="w-full p-3 rounded-lg text-white placeholder-gray-400">
+        </div>
+
+        <button onclick="handleLogin()" class="w-full gradient-button mb-4">
+            Login
+        </button>
+        <p class="text-center text-gray-400">
+            Don't have an account? <a href="signup.html" class="text-blue-400 hover:underline">Sign Up</a>
+        </p>
+        <div id="errorMessage" class="error-message hidden"></div>
+    </div>
+
+    <script type="module">
+        import { Auth } from 'aws-amplify';
+        import './amplify_config.js'; // Ensure this path is correct
+
+        async function handleLogin() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const errorMessageDiv = document.getElementById("errorMessage");
+            errorMessageDiv.classList.add('hidden'); // Clear previous errors
+
+            if (!username || !password) {
+                errorMessageDiv.textContent = "Please enter both username/email and password.";
+                errorMessageDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                await Auth.signIn({ username, password });
+                console.log('User logged in successfully.');
+                window.location.href = 'index.html'; // Redirect to the main input page
+            } catch (error) {
+                console.error('Error logging in:', error);
+                errorMessageDiv.textContent = error.message || "An unexpected error occurred during login.";
+                errorMessageDiv.classList.remove('hidden');
+            }
+        }
+
+        // Make handleLogin accessible globally for onclick
+        window.handleLogin = handleLogin;
+    </script>
+</body>
+</html>
