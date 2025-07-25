@@ -1,40 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>CodeSync Handles</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
-    <script src="./js/amplify_config.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CodeSync Usernames</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
+  <script src="./js/amplify_config.js"></script>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-    <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-5 text-center">
-        <h2 class="text-2xl font-bold">Enter Your Usernames</h2>
-        <input id="leetcode" placeholder="LeetCode" class="w-full p-2 rounded text-black" />
-        <input id="codechef" placeholder="CodeChef" class="w-full p-2 rounded text-black" />
-        <input id="hackerrank" placeholder="HackerRank" class="w-full p-2 rounded text-black" />
-        <input id="gfg" placeholder="GeeksforGeeks" class="w-full p-2 rounded text-black" />
-        <button onclick="goToResults()" class="bg-purple-600 w-full py-2 rounded font-semibold">Get Stats</button>
-        <button onclick="window.location.href='index.html'" class="text-sm text-gray-400 mt-2">Logout</button>
-    </div>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-6 text-center shadow-lg">
+    <h1 class="text-2xl font-bold text-purple-400">🔗 Enter Platform Usernames</h1>
 
-    <script>
-        window.addEventListener("load", () => {
-            const amplify = window.aws_amplify;
-            const { Auth } = amplify;
-            Auth.configure(window.amplifyConfig);
-            Auth.currentAuthenticatedUser().catch(() => window.location.href = "index.html");
+    <input id="leetcode" placeholder="LeetCode Username" class="w-full p-2 rounded text-black" />
+    <input id="codechef" placeholder="CodeChef Username" class="w-full p-2 rounded text-black" />
+    <input id="hackerrank" placeholder="HackerRank Username" class="w-full p-2 rounded text-black" />
+    <input id="gfg" placeholder="GFG Username (Optional)" class="w-full p-2 rounded text-black" />
 
-            window.goToResults = function() {
-                const params = new URLSearchParams();
-                ["leetcode", "codechef", "hackerrank", "gfg"].forEach(id => {
-                    const val = document.getElementById(id).value.trim();
-                    if (val) params.append(id, val);
-                });
-                window.location.href = `results.html?${params.toString()}`;
-            }
-        });
-    </script>
+    <button onclick="goToResults()" class="bg-purple-600 hover:bg-purple-700 w-full py-2 rounded font-semibold text-white">
+      ➡️ View My Stats
+    </button>
+
+    <button onclick="logout()" class="text-sm text-gray-300 hover:underline mt-2">🚪 Logout</button>
+  </div>
+
+  <script>
+    window.addEventListener("load", () => {
+      const amplify = window.aws_amplify;
+      const { Auth } = amplify;
+      Auth.configure(window.amplifyConfig);
+
+      // Redirect to login if not authenticated
+      Auth.currentAuthenticatedUser().catch(() => {
+        window.location.href = "index.html";
+      });
+    });
+
+    function goToResults() {
+      const params = new URLSearchParams();
+      ["leetcode", "codechef", "hackerrank", "gfg"].forEach(id => {
+        const val = document.getElementById(id).value.trim();
+        if (val) params.append(id, val);
+      });
+      window.location.href = `results.html?${params.toString()}`;
+    }
+
+    async function logout() {
+      try {
+        const { Auth } = window.aws_amplify;
+        await Auth.signOut();
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Logout failed: " + err.message);
+      }
+    }
+  </script>
 </body>
 </html>
