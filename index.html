@@ -1,14 +1,11 @@
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
-<!--   <script src="https://unpkg.com/aws-amplify@3.0.23/dist/aws-amplify.min.js"></script> -->
-<!--   <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
   <script src="./js/amplify_config.js"></script>
-
   <script>
     const { Auth } = window.aws_amplify;
     Auth.configure(window.amplifyConfig);
@@ -25,3 +22,13 @@
     };
   </script>
 </head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center">
+    <h2 class="text-xl font-bold">CodeSync Login</h2>
+    <input id="username" placeholder="Email" class="w-full p-2 rounded text-black" />
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 rounded text-black" />
+    <button onclick="handleLogin()" class="bg-blue-600 w-full py-2 rounded font-semibold">Login</button>
+    <a href="signup.html" class="text-blue-300 text-sm">Don't have an account? Sign Up</a>
+  </div>
+</body>
+</html>
