@@ -1,3 +1,4 @@
+// js/amplify_config.js
 window.amplifyConfig = {
   Auth: {
     region: "us-east-1",
