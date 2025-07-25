@@ -1,211 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Coding Profile Stats - Results</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f8f9fa;
-            color: #333;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-        }
-        .platform {
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ecf0f1;
-            padding-bottom: 20px;
-        }
-        .platform:last-child {
-            border-bottom: none;
-        }
-        h2 {
-            color: #3498db;
-            margin-bottom: 10px;
-        }
-        .username {
-            font-weight: bold;
-            margin-left: 20px;
-            color: #e74c3c;
-        }
-        .stats {
-            margin-left: 40px;
-        }
-        .stat {
-            margin-bottom: 5px;
-        }
-        .stat-name {
-            font-weight: bold;
-        }
-        .back-button {
-            display: block;
-            text-align: center;
-            margin-top: 30px;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            width: 150px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CodeSync Stats</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Coding Profile Stats</h1>
-    <div class="subtitle">Your competitive programming performance at a glance</div>
-    
-    <div id="results">
-        <!-- Results will be loaded here -->
-    </div>
-    
-    <a href="usernames.html" class="back-button">Back to Input</a>
+<body class="bg-gray-950 text-white min-h-screen flex flex-col items-center py-12 px-4">
+  <h1 class="text-3xl font-bold mb-8">📊 Your Coding Profile Stats</h1>
 
-    <script>
-        // Mock data structure that matches your image
-        const mockData = {
-            leetcode: {
-                username: "Redisheets",
-                stats: {
-                    total_problems_solved: 804,
-                    ranking: 562,
-                    easy: 0,
-                    medium: 0,
-                    hard: 0
-                }
-            },
-            gfg: {
-                username: "Redisheetworks",
-                stats: {
-                    codingScore: 770,
-                    instituteRank: 212,
-                    totalProblemsSolved: 790,
-                    currentStreak: "443 days"
-                }
-            },
-            codechef: {
-                username: "Redisheetworks",
-                stats: {
-                    contest_rating: 928,
-                    stars: 192,
-                    problems_solved: 51
-                }
-            },
-            hackerrank: {
-                username: "RowHouseStats",
-                stats: {
-                    badges: 0,
-                    stars: 704
-                }
-            }
-        };
+  <div id="cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-4xl">
+    <!-- Cards injected here -->
+  </div>
 
-        // Platform configuration
-        const platformConfig = {
-            leetcode: {
-                name: "LeafCode",
-                stats: [
-                    { label: "Problems Solved", key: "total_problems_solved" },
-                    { label: "Context Rating", key: "ranking" },
-                    { label: "Easy Solved", key: "easy" },
-                    { label: "Medium Solved", key: "medium" },
-                    { label: "Hard Solved", key: "hard" }
-                ]
-            },
-            gfg: {
-                name: "GeekstorGeeks",
-                stats: [
-                    { label: "Coding Score", key: "codingScore" },
-                    { label: "Institute Rank", key: "instituteRank" },
-                    { label: "Problems Solved", key: "totalProblemsSolved" },
-                    { label: "Current Strack", key: "currentStreak" }
-                ]
-            },
-            codechef: {
-                name: "CodeChef",
-                stats: [
-                    { label: "Context Rating", key: "contest_rating" },
-                    { label: "Stars", key: "stars" },
-                    { label: "Problems Solved", key: "problems_solved" }
-                ]
-            },
-            hackerrank: {
-                name: "HackerRank",
-                stats: [
-                    { label: "Badogs", key: "badges" },
-                    { label: "Stars", key: "stars" }
-                ]
-            }
-        };
+  <button onclick="window.location.href='usernames.html'" class="mt-10 text-blue-400 hover:underline">🔁 Back to Change Usernames</button>
 
-        function displayResults() {
-            const params = new URLSearchParams(window.location.search);
-            const resultsDiv = document.getElementById('results');
-            
-            // Clear previous results
-            resultsDiv.innerHTML = '';
-            
-            // Check if any usernames were provided
-            let hasUsernames = false;
-            
-            // Create platform sections for each provided username
-            Object.keys(platformConfig).forEach(platform => {
-                const username = params.get(platform);
-                if (username) {
-                    hasUsernames = true;
-                    const config = platformConfig[platform];
-                    const data = mockData[platform]; // In real app, this would be API data
-                    
-                    const platformDiv = document.createElement('div');
-                    platformDiv.className = 'platform';
-                    
-                    let statsHTML = '';
-                    config.stats.forEach(stat => {
-                        statsHTML += `
-                            <div class="stat">
-                                <span class="stat-name">${stat.label}</span><br>
-                                ${data.stats[stat.key]}
-                            </div>
-                        `;
-                    });
-                    
-                    platformDiv.innerHTML = `
-                        <h2>${config.name} <span class="username">${data.username}</span></h2>
-                        <div class="stats">
-                            ${statsHTML}
-                        </div>
-                    `;
-                    
-                    resultsDiv.appendChild(platformDiv);
-                }
-            });
-            
-            // Show message if no usernames were provided
-            if (!hasUsernames) {
-                resultsDiv.innerHTML = `
-                    <div class="platform">
-                        <p>No usernames provided. Please go back and enter at least one username.</p>
-                    </div>
-                `;
-            }
+  <script>
+    const apiUrl = "https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score";
+    const query = new URLSearchParams(window.location.search);
+    const platforms = ["leetcode", "codechef", "hackerrank", "gfg"];
+    const platformDisplay = {
+      leetcode: "LeetCode",
+      codechef: "CodeChef",
+      hackerrank: "HackerRank",
+      gfg: "GeeksforGeeks"
+    };
+    const colors = {
+      leetcode: "bg-yellow-500",
+      codechef: "bg-orange-600",
+      hackerrank: "bg-green-600",
+      gfg: "bg-green-800"
+    };
+
+    async function fetchScores() {
+      const usernames = {};
+      platforms.forEach(p => {
+        const val = query.get(p);
+        if (val) usernames[p] = val;
+      });
+
+      try {
+        const queryStr = new URLSearchParams(usernames).toString();
+        const res = await fetch(`${apiUrl}?${queryStr}`);
+        const data = await res.json();
+        renderCards(data);
+      } catch (err) {
+        document.getElementById("cards").innerHTML = `<p class="text-red-400 col-span-2 text-center">❌ Failed to fetch scores.</p>`;
+      }
+    }
+
+    function renderCards(data) {
+      const cardsDiv = document.getElementById("cards");
+      cardsDiv.innerHTML = "";
+
+      for (const platform of platforms) {
+        const stats = data[platform];
+        const username = query.get(platform);
+        const name = platformDisplay[platform];
+        const bg = colors[platform];
+
+        let html = "";
+
+        if (!stats || Object.keys(stats).length === 0) {
+          html = `
+            <div class="p-4 rounded-xl bg-gray-800 text-white shadow-lg text-center">
+              <h2 class="text-xl font-bold">${name}</h2>
+              <p class="text-sm mt-2 text-red-300">No data found for @${username}</p>
+            </div>`;
+        } else if (platform === "gfg") {
+          html = `
+            <div class="p-4 rounded-xl ${bg} text-white shadow-lg">
+              <h2 class="text-xl font-bold">GeeksforGeeks</h2>
+              <img src="${stats.profileImage}" alt="GFG Profile" class="w-16 h-16 mx-auto rounded-full my-2 bg-white p-1" />
+              <p class="text-sm">@${stats.username}</p>
+              <ul class="text-sm mt-2 space-y-1 text-left">
+                <li><b>Name:</b> ${stats.fullName}</li>
+                <li><b>Institute:</b> ${stats.institute}</li>
+                <li><b>Institute Rank:</b> ${stats.instituteRank}</li>
+                <li><b>Coding Score:</b> ${stats.codingScore}</li>
+                <li><b>Total Solved:</b> ${stats.totalProblemsSolved}</li>
+                <li><b>Streak:</b> ${stats.currentStreak} 🔥</li>
+                <li><b>Easy:</b> ${stats.easyProblems}, Medium: ${stats.mediumProblems}, Hard: ${stats.hardProblems}</li>
+              </ul>
+            </div>`;
+        } else if (platform === "leetcode") {
+          html = `
+            <div class="p-4 rounded-xl ${bg} text-white shadow-lg">
+              <h2 class="text-xl font-bold">LeetCode</h2>
+              <p class="text-sm mb-2 opacity-90">@${username}</p>
+              <ul class="text-sm space-y-1 text-left">
+                <li><b>Total Solved:</b> ${stats.total_problems_solved}</li>
+                <li><b>Ranking:</b> ${stats.ranking}</li>
+                <li><b>Easy:</b> ${stats.easy}, Medium: ${stats.medium}, Hard: ${stats.hard}</li>
+              </ul>
+            </div>`;
+        } else if (platform === "codechef") {
+          html = `
+            <div class="p-4 rounded-xl ${bg} text-white shadow-lg">
+              <h2 class="text-xl font-bold">CodeChef</h2>
+              <p class="text-sm mb-2 opacity-90">@${username}</p>
+              <ul class="text-sm space-y-1 text-left">
+                <li><b>Rating:</b> ${stats.contest_rating}</li>
+                <li><b>Stars:</b> ${stats.stars}</li>
+                <li><b>Contests:</b> ${stats.contests_participated}</li>
+                <li><b>Problems Solved:</b> ${stats.problems_solved}</li>
+              </ul>
+            </div>`;
+        } else if (platform === "hackerrank") {
+          html = `
+            <div class="p-4 rounded-xl ${bg} text-white shadow-lg">
+              <h2 class="text-xl font-bold">HackerRank</h2>
+              <p class="text-sm mb-2 opacity-90">@${username}</p>
+              <ul class="text-sm space-y-1 text-left">
+                <li><b>Badges:</b> ${stats.badges}</li>
+              </ul>
+            </div>`;
         }
 
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', displayResults);
-    </script>
+        cardsDiv.innerHTML += html;
+      }
+    }
+
+    fetchScores();
+  </script>
 </body>
 </html>
