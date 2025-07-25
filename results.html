@@ -1,531 +1,366 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Coding Profile Stats - Results</title>
-    
+
     <!-- Preload critical resources -->
     <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
-    
+
     <style>
+        /* Custom CSS for the results page */
         :root {
-            --color-primary: #6366f1;
-            --color-secondary: #8b5cf6;
-            --color-error: #ef4444;
-            --bg-dark-blue: #0f172a;
-            --bg-medium-blue: #1e293b;
-            --text-light: #e2e8f0;
-            --text-muted: #94a3b8;
+            --color-primary: #6366f1; /* Indigo */
+            --color-secondary: #8b5cf6; /* Violet */
+            --color-text: #e2e8f0; /* Light Slate */
+            --color-background-start: #1a202c; /* Dark Blue Gray */
+            --color-background-end: #2d3748; /* Medium Blue Gray */
+            --color-card-bg: rgba(255, 255, 255, 0.08);
+            --color-card-border: rgba(255, 255, 255, 0.1);
         }
-        
+
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark-blue), var(--bg-medium-blue));
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--color-background-start), var(--color-background-end));
+            display: flex;
+            flex-direction: column; /* Arrange items vertically */
+            align-items: center;
+            justify-content: flex-start; /* Align to the top */
             min-height: 100vh;
-            margin: 0;
-            color: var(--text-light);
-            line-height: 1.6;
-            /* Removed display: flex, justify-content, align-items to allow natural scrolling */
-            padding: 2rem 0; /* Add padding for smaller screens */
-            position: relative;
-            /* Removed overflow: hidden to allow scrolling */
+            padding: 2rem 1rem; /* Responsive padding */
+            color: var(--color-text);
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
 
-        /* Animated background particles */
-        body::before, body::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.2;
-            filter: blur(50px);
-            z-index: -1;
+        .container {
+            width: 100%;
+            max-width: 1200px; /* Max width for content */
+            margin: 0 auto; /* Center the container */
+            padding: 1rem;
+            box-sizing: border-box;
         }
 
-        body::before {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(45deg, #6366f1, #a855f7);
-            top: -10%;
-            left: -10%;
-            animation: moveGradient1 15s infinite alternate;
-        }
-
-        body::after {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, #ec4899, #f97316);
-            bottom: -10%;
-            right: -10%;
-            animation: moveGradient2 20s infinite alternate-reverse;
-        }
-
-        @keyframes moveGradient1 {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(20%, 30%); }
-            100% { transform: translate(0, 0); }
-        }
-
-        @keyframes moveGradient2 {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(-20%, -30%); }
-            100% { transform: translate(0, 0); }
-        }
-        
-        .glass-container {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px); /* Increased blur */
-            border: 1px solid rgba(255, 255, 255, 0.15); /* Stronger border */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* More pronounced shadow */
-            border-radius: 1.5rem; /* More rounded */
-            width: 95%;
-            max-width: 900px;
-            margin: 2rem auto; /* Ensures horizontal centering and vertical spacing */
-            padding: 2.5rem; /* Increased padding */
-            position: relative;
-            overflow: hidden; /* Keep overflow hidden for internal card effects */
-            transform: scale(1); /* Base scale for animation */
-            animation: fadeInScale 0.8s ease-out forwards; /* Entry animation */
-        }
-
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        
-        .result-card {
-            background: rgba(30, 41, 59, 0.6);
-            border-radius: 1rem; /* More rounded */
-            padding: 1.8rem; /* Increased padding */
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
-            height: 100%;
+        .glass-card {
+            background: var(--color-card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--color-card-border);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            margin-bottom: 1.5rem; /* Space between cards */
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
-            transform: translateX(-100%);
-            transition: transform 0.5s ease-out;
-            z-index: 0;
+            align-items: center;
+            text-align: center;
         }
 
-        .result-card:hover::before {
-            transform: translateX(100%);
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+            gap: 1.5rem; /* Gap between grid items */
+            width: 100%;
+        }
+
+        .result-card {
+            background: var(--color-card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--color-card-border);
+            border-left: 5px solid var(--color-primary); /* Left border for accent */
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px; /* Ensure cards have a minimum height */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
         .result-card:hover {
-            transform: translateY(-8px) scale(1.02); /* More pronounced hover */
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 255, 255, 0.2); /* Highlight border on hover */
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
         }
 
-        .result-card > * {
-            position: relative; /* Ensure content is above pseudo-element */
-            z-index: 1;
+        .platform-icon {
+            width: 48px;
+            height: 48px;
+            margin-right: 1rem;
+            border-radius: 0.5rem;
+            object-fit: contain; /* Ensure the image fits within its bounds */
         }
-        
-        .gfg-card {
-            border-left: 5px solid #48bb78; /* Thicker border */
-        }
-        
-        .codechef-card {
-            border-left: 5px solid #ed8936;
-        }
-        
-        .leetcode-card {
-            border-left: 5px solid #fbbf24;
-        }
-        
-        .hackerrank-card {
-            border-left: 5px solid #818cf8;
-        }
-        
+
         .stat-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.6rem 0; /* Increased padding */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07); /* Slightly stronger separator */
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
         }
-        
+
         .stat-item:last-child {
             border-bottom: none;
         }
-        
+
         .stat-label {
-            color: var(--text-muted);
             font-weight: 500;
+            color: #cbd5e1; /* Slate 300 */
         }
-        
+
         .stat-value {
-            font-weight: 700; /* Bolder value */
-            color: var(--text-light);
+            font-weight: 600;
+            color: var(--color-primary);
         }
-        
-        .spinner {
-            width: 3.5rem; /* Larger spinner */
-            height: 3.5rem;
-            border: 5px solid rgba(255, 255, 255, 0.15); /* Thicker spinner border */
-            border-top-color: var(--color-primary);
-            border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite; /* Smoother spin */
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .platform-icon {
-            width: 2.8rem; /* Slightly larger icon */
-            height: 2.8rem;
-            object-fit: contain;
-            margin-right: 1.2rem; /* More spacing */
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)); /* More prominent shadow */
-        }
-        
+
+        /* Platform specific colors for left border */
+        .leetcode-card { border-left-color: #ffa116; } /* LeetCode orange */
+        .codechef-card { border-left-color: #5b4636; } /* CodeChef brown */
+        .hackerrank-card { border-left-color: #2cc97e; } /* HackerRank green */
+        .gfg-card { border-left-color: #388e3c; } /* GFG dark green */
+
+        /* Back button styling */
         .back-button {
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 0.8rem 1.8rem; /* Larger button */
-            border-radius: 0.75rem; /* More rounded */
-            font-weight: 600; /* Bolder text */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
             transition: all 0.3s ease;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem; /* More spacing */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            justify-content: center;
+            margin-top: 2rem; /* Space above the button */
         }
-        
+
         .back-button:hover {
-            background: rgba(51, 65, 85, 0.9);
-            transform: translateY(-3px) scale(1.02); /* More pronounced hover */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .error-card {
-            background: rgba(239, 68, 68, 0.15); /* Slightly darker error background */
-            border: 1px solid rgba(239, 68, 68, 0.4); /* Stronger error border */
-            grid-column: 1 / -1;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
-        /* Responsive adjustments */
+        /* Responsive adjustments for smaller screens */
         @media (max-width: 768px) {
-            .glass-container {
+            .glass-card, .result-card {
                 padding: 1.5rem;
-                border-radius: 1rem;
-                margin: 1rem auto;
             }
-            
-            .result-card {
-                padding: 1.25rem;
+            .platform-icon {
+                width: 40px;
+                height: 40px;
             }
-
-            body {
-                padding: 1rem 0;
+            h1 {
+                font-size: 2.5rem; /* Smaller heading on mobile */
+            }
+            h2 {
+                font-size: 1.75rem; /* Smaller subheadings */
             }
         }
     </style>
 </head>
 <body>
-    <div class="glass-container">
-        <!-- Header with gradient text -->
-        <header class="text-center mb-10"> <!-- Increased margin-bottom -->
-            <h1 class="text-4xl font-extrabold mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
-                Coding Profile Stats
-            </h1>
-            <p class="text-slate-400 text-lg">Your competitive programming performance at a glance</p>
-        </header>
-        
-        <!-- Results grid -->
-        <div id="results" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div> <!-- Increased gap -->
-        
-        <!-- Footer with back button -->
-        <footer class="mt-10 text-center"> <!-- Increased margin-top -->
-            <button onclick="window.history.back()" class="back-button">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-                </svg>
-                Back to Input
-            </button>
-        </footer>
+    <div class="container">
+        <h1 class="text-white text-4xl md:text-5xl font-extrabold text-center mb-8">
+            Your Coding Profile Stats
+        </h1>
+
+        <div id="results-grid" class="result-grid">
+            <!-- Results will be dynamically loaded here -->
+        </div>
+
+        <div id="no-profiles-message" class="glass-card hidden">
+            <p class="text-lg text-gray-400">
+                No coding profiles were provided. Please go back and enter your usernames.
+            </p>
+        </div>
+
+        <!-- Back button links to usernames.html -->
+        <a href="usernames.html" class="back-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Go Back
+        </a>
     </div>
 
     <script>
-        // Configuration for platform data
-        const platformConfig = {
+        // Configuration for each platform, including logos and placeholder images
+        const platformConfigs = {
             leetcode: {
-                name: "LeetCode",
-                color: "leetcode-card",
-                logo: "https://leetcode.com/static/images/LeetCode_logo_rvs.png",
-                placeholder: "https://placehold.co/40x40/FBBF24/000000?text=LC",
-                stats: [
-                    { label: "Problems Solved", key: "total_problems_solved", default: "N/A" },
-                    { label: "Contest Rating", key: "ranking", default: "N/A" },
-                    { label: "Easy Solved", key: "easy", default: 0 },
-                    { label: "Medium Solved", key: "medium", default: 0 },
-                    { label: "Hard Solved", key: "hard", default: 0 }
-                ]
-            },
-            gfg: {
-                name: "GeeksforGeeks",
-                color: "gfg-card",
-                logo: "https://media.geeksforgeeks.org/wp-content/uploads/20210915115837/gfg3-300x300.png",
-                placeholder: "https://placehold.co/40x40/48BB78/FFFFFF?text=GFG",
-                stats: [
-                    { label: "Coding Score", key: "codingScore", default: "N/A" },
-                    { label: "Institute Rank", key: "instituteRank", default: "N/A" },
-                    { label: "Problems Solved", key: "totalProblemsSolved", default: "N/A" },
-                    { label: "Current Streak", key: "currentStreak", default: "N/A", suffix: " days" },
-                    { label: "Easy Problems", key: "easyProblems", default: 0 },
-                    { label: "Medium Problems", key: "mediumProblems", default: 0 },
-                    { label: "Hard Problems", key: "hardProblems", default: 0 }
-                ]
+                name: 'LeetCode',
+                logo: 'https://assets.leetcode.com/static_assets/public/images/LeetCode_Sharing.png',
+                placeholder: 'https://placehold.co/48x48/6366f1/ffffff?text=LC',
+                color: 'leetcode-card'
             },
             codechef: {
-                name: "CodeChef",
-                color: "codechef-card",
-                logo: "https://cdn.codechef.com/sites/all/themes/abessive/cc-logo.png",
-                placeholder: "https://placehold.co/40x40/ED8936/FFFFFF?text=CC",
-                stats: [
-                    { label: "Contest Rating", key: "contest_rating", default: "N/A" },
-                    { label: "Stars", key: "stars", default: "N/A" },
-                    { label: "Problems Solved", key: "problems_solved", default: "N/A" },
-                    { label: "contests_participated", key: "contests_participated", default: "N/A" }
-                ]
+                name: 'CodeChef',
+                logo: 'https://www.codechef.com/sites/all/themes/abacus/logo.png',
+                placeholder: 'https://placehold.co/48x48/5b4636/ffffff?text=CC',
+                color: 'codechef-card'
             },
             hackerrank: {
-                name: "HackerRank",
-                color: "hackerrank-card",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png",
-                placeholder: "https://placehold.co/40x40/818CF8/FFFFFF?text=HR",
-                stats: [
-                    { label: "Badges", key: "badges", default: 0 },
-                    { label: "Stars", key: "stars", default: "N/A" }
-                ]
+                name: 'HackerRank',
+                logo: 'https://www.hackerrank.com/wp-content/uploads/2023/07/hackerrank_logo.png',
+                placeholder: 'https://placehold.co/48x48/2cc97e/ffffff?text=HR',
+                color: 'hackerrank-card'
+            },
+            gfg: {
+                name: 'GeeksforGeeks',
+                logo: 'https://media.geeksforgeeks.org/wp-content/cdn-uploads/gfg_favicon.png',
+                placeholder: 'https://placehold.co/48x48/388e3c/ffffff?text=GFG',
+                color: 'gfg-card'
             }
         };
-        
-        // Cache DOM elements
-        const resultsDiv = document.getElementById("results");
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Main function to display stats
-        async function displayStats() {
-            showLoadingState();
-            
-            try {
-                const [platformsData, gfgData] = await Promise.all([
-                    fetchPlatformsData(),
-                    fetchGFGData()
-                ]);
-                
-                renderResults(platformsData, gfgData);
-            } catch (error) {
-                showErrorState(error);
-            }
-        }
-        
-        // Fetch data from platforms API
-        async function fetchPlatformsData() {
-            const leetcode = urlParams.get('leetcode');
-            const codechef = urlParams.get('codechef');
-            const hackerrank = urlParams.get('hackerrank');
-            
-            if (!leetcode && !codechef && !hackerrank) return {};
-            
-            try {
-                const response = await fetch(
-                    `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?` +
-                    `leetcode=${leetcode || ''}&codechef=${codechef || ''}&hackerrank=${hackerrank || ''}`
-                );
-                
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-                return await response.json();
-            } catch (error) {
-                console.error("Error fetching platforms data:", error);
-                return {};
-            }
-        }
-        
-        // Fetch GFG data
-        async function fetchGFGData() {
-            const gfg = urlParams.get('gfg');
-            if (!gfg) return {};
-            
-            try {
-                const response = await fetch(
-                    `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`
-                );
-                
-                if (!response.ok) throw new Error(`GFG API request failed with status ${response.status}`);
-                
-                const data = await response.json();
-                return typeof data.body === 'string' ? JSON.parse(data.body) : data;
-            } catch (error) {
-                console.error("Error fetching GFG data:", error);
-                return {};
-            }
-        }
-        
-        // Show loading state
-        function showLoadingState() {
-            resultsDiv.innerHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-16">
-                    <div class="spinner"></div>
-                    <p class="mt-6 text-slate-400 text-lg animate-pulse">Fetching your coding stats...</p>
-                </div>
-            `;
-        }
-        
-        // Show error state
-        function showErrorState(error) {
-            resultsDiv.innerHTML = `
-                <div class="error-card p-8 text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <h3 class="text-2xl font-bold mt-4 text-red-300">Failed to Load Data</h3>
-                    <p class="mt-3 text-slate-300 text-base">${error.message || "Please check your usernames and try again."}</p>
-                    <button onclick="displayStats()" class="mt-6 back-button bg-red-500/10 hover:bg-red-500/20 text-red-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.172a3 3 0 00.879 2.121l3.121 3.121a1 1 0 010 1.414l-3.121 3.121A3 3 0 005 16.828V19a1 1 0 11-2 0v-2.172a3 3 0 00-.879-2.121L.939 11.293a1 1 0 010-1.414l3.121-3.121A3 3 0 005 3.172V1a1 1 0 011-1zm6 0a1 1 0 011 1v2.172a3 3 0 00.879 2.121l3.121 3.121a1 1 0 010 1.414l-3.121 3.121A3 3 0 0015 16.828V19a1 1 0 11-2 0v-2.172a3 3 0 00-.879-2.121L10.939 11.293a1 1 0 010-1.414l3.121-3.121A3 3 0 0015 3.172V1a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
-                        Retry
-                    </button>
-                </div>
-            `;
-        }
-        
-        // Render results cards
-        function renderResults(platformsData, gfgData) {
-            resultsDiv.innerHTML = '';
-            
-            // Get all platform usernames from URL
-            const usernames = {
-                leetcode: urlParams.get('leetcode'),
-                gfg: urlParams.get('gfg'),
-                codechef: urlParams.get('codechef'),
-                hackerrank: urlParams.get('hackerrank')
-            };
-            
-            let cardCount = 0;
-            // Create cards for each platform with data
-            Object.entries(usernames).forEach(([platform, username]) => {
-                if (!username) return;
-                
-                const config = platformConfig[platform];
-                const data = platform === 'gfg' ? gfgData : platformsData[platform];
-                
-                if (!data || Object.keys(data).length === 0) { // Check if data is empty object
-                    renderErrorCard(platform, username, config);
-                    return;
-                }
-                
-                const card = document.createElement('div');
-                card.className = `result-card ${config.color}`;
-                card.style.animationDelay = `${cardCount * 0.1}s`; // Staggered entry animation
-                
-                let statsHTML = '';
-                config.stats.forEach(stat => {
-                    const value = data[stat.key] !== undefined ? data[stat.key] : stat.default;
-                    statsHTML += `
-                        <div class="stat-item">
-                            <span class="stat-label">${stat.label}</span>
-                            <span class="stat-value">${value}${stat.suffix || ''}</span>
-                        </div>
-                    `;
-                });
-                
-                card.innerHTML = `
-                    <div class="flex items-center mb-5">
-                        <img src="${config.logo}" 
-                             onerror="this.onerror=null;this.src='${config.placeholder}'"
-                             class="platform-icon" 
-                             alt="${config.name} Logo">
-                        <h2 class="text-2xl font-bold">${config.name}</h2>
-                        <span class="ml-auto bg-slate-800/50 px-3 py-1 rounded-full text-sm font-mono text-slate-300">@${username}</span>
-                    </div>
-                    <div class="stats-container flex-grow">
-                        ${statsHTML}
-                    </div>
-                `;
-                
-                resultsDiv.appendChild(card);
-                cardCount++;
-            });
-            
-            // Show message if no cards were added
-            if (resultsDiv.children.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div class="col-span-full text-center py-16 text-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="mt-4 text-xl">No usernames provided.</p>
-                        <p class="mt-2 text-base">Please go back and enter at least one username to see your stats.</p>
+
+        // Function to render a success card for a platform
+        function renderSuccessCard(platform, username, data, config) {
+            const card = document.createElement('div');
+            card.className = `result-card ${config.color}`;
+
+            let statsHtml = '';
+            // Dynamically add stats based on the data received
+            for (const key in data) {
+                // Capitalize the first letter of the key for display
+                const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1').trim();
+                statsHtml += `
+                    <div class="stat-item">
+                        <span class="stat-label">${label}:</span>
+                        <span class="stat-value">${data[key]}</span>
                     </div>
                 `;
             }
+
+            card.innerHTML = `
+                <div class="flex items-center mb-5">
+                    <img src="${config.logo}"
+                         onerror="this.onerror=null;this.src='${config.placeholder}'"
+                         class="platform-icon"
+                         alt="${config.name} Logo">
+                    <h2 class="text-2xl font-bold">${config.name}</h2>
+                    <span class="ml-auto bg-slate-800/50 px-3 py-1 rounded-full text-sm font-mono text-slate-300">@${username}</span>
+                </div>
+                <div class="flex-grow">
+                    ${statsHtml}
+                </div>
+            `;
+            document.getElementById('results-grid').appendChild(card);
         }
-        
-        // Render error card for a platform
+
+        // Function to render an error card for a platform
         function renderErrorCard(platform, username, config) {
             const card = document.createElement('div');
             card.className = `result-card ${config.color} border-l-red-500`;
-            
+
             card.innerHTML = `
                 <div class="flex items-center mb-5">
-                    <img src="${config.logo}" 
+                    <img src="${config.logo}"
                          onerror="this.onerror=null;this.src='${config.placeholder}'"
-                         class="platform-icon" 
+                         class="platform-icon"
                          alt="${config.name} Logo">
                     <h2 class="text-2xl font-bold">${config.name}</h2>
                     <span class="ml-auto bg-slate-800/50 px-3 py-1 rounded-full text-sm font-mono text-slate-300">@${username}</span>
                 </div>
                 <div class="text-red-400 flex items-center text-lg font-medium">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    Could not retrieve data for this username.
+                    Failed to fetch data or user not found.
                 </div>
+                <p class="text-sm text-gray-500 mt-2">Please check the username and your internet connection.</p>
             `;
-            
-            resultsDiv.appendChild(card);
+            document.getElementById('results-grid').appendChild(card);
         }
-        
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', displayStats);
+
+        // Function to simulate fetching data from an API
+        async function fetchProfileData(platform, username) {
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500));
+
+            // Simulate success or failure
+            const isSuccess = Math.random() > 0.2; // 80% success rate for demonstration
+
+            if (isSuccess) {
+                // Return mock data for demonstration
+                switch (platform) {
+                    case 'leetcode':
+                        return {
+                            problemsSolved: Math.floor(Math.random() * 1000) + 100,
+                            rank: Math.floor(Math.random() * 50000) + 1000,
+                            easy: Math.floor(Math.random() * 200) + 10,
+                            medium: Math.floor(Math.random() * 300) + 20,
+                            hard: Math.floor(Math.random() * 100) + 5
+                        };
+                    case 'codechef':
+                        return {
+                            rating: Math.floor(Math.random() * 2000) + 1000,
+                            globalRank: Math.floor(Math.random() * 100000) + 5000,
+                            contests: Math.floor(Math.random() * 50) + 5
+                        };
+                    case 'hackerrank':
+                        return {
+                            badges: Math.floor(Math.random() * 30) + 5,
+                            points: Math.floor(Math.random() * 5000) + 1000,
+                            challengesSolved: Math.floor(Math.random() * 200) + 20
+                        };
+                    case 'gfg':
+                        return {
+                            problemsSolved: Math.floor(Math.random() * 800) + 50,
+                            articlesWritten: Math.floor(Math.random() * 10) + 1,
+                            contributions: Math.floor(Math.random() * 500) + 50
+                        };
+                    default:
+                        return {};
+                }
+            } else {
+                throw new Error('Failed to fetch data');
+            }
+        }
+
+        // Main function to process query parameters and display results
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const profilesToFetch = [];
+
+            // Identify which platforms have usernames provided
+            for (const [platform, config] of Object.entries(platformConfigs)) {
+                const username = urlParams.get(platform);
+                if (username) {
+                    profilesToFetch.push({ platform, username, config });
+                }
+            }
+
+            const resultsGrid = document.getElementById('results-grid');
+            const noProfilesMessage = document.getElementById('no-profiles-message');
+
+            if (profilesToFetch.length === 0) {
+                noProfilesMessage.classList.remove('hidden');
+                resultsGrid.classList.add('hidden');
+            } else {
+                noProfilesMessage.classList.add('hidden');
+                resultsGrid.classList.remove('hidden');
+
+                // Fetch and render data for each profile concurrently
+                for (const { platform, username, config } of profilesToFetch) {
+                    try {
+                        const data = await fetchProfileData(platform, username);
+                        renderSuccessCard(platform, username, data, config);
+                    } catch (error) {
+                        console.error(`Error fetching ${platform} data for ${username}:`, error);
+                        renderErrorCard(platform, username, config);
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
