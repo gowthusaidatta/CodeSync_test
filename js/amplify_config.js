@@ -1,4 +1,4 @@
-// This must define config globally on window
+// Define config as a global variable on window
 window.amplifyConfig = {
   Auth: {
     region: "us-east-1",
