@@ -1,4 +1,5 @@
-export const amplifyConfig = {
+// This must define config globally on window
+window.amplifyConfig = {
   Auth: {
     region: "us-east-1",
     userPoolId: "us-east-1_RMhlKuGHS",
