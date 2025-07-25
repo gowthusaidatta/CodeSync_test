@@ -5,35 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Login</title>
 
-  <!-- Tailwind CDN (for development only) -->
+  <!-- Tailwind (development only) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- AWS Amplify (from jsDelivr because unpkg link is broken) -->
+  <!-- AWS Amplify: Load latest from reliable CDN -->
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
 
-  <!-- Amplify Config (sets window.amplifyConfig) -->
+  <!-- Amplify Config (defines window.amplifyConfig) -->
   <script src="./js/amplify_config.js"></script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center shadow-lg">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center">
     <h2 class="text-xl font-bold">CodeSync Login</h2>
     <input id="username" placeholder="Email" class="w-full p-2 rounded text-black" />
     <input id="password" type="password" placeholder="Password" class="w-full p-2 rounded text-black" />
-    <button onclick="handleLogin()" class="bg-blue-600 hover:bg-blue-700 transition w-full py-2 rounded font-semibold">
+    <button id="login-btn" class="bg-blue-600 w-full py-2 rounded font-semibold hover:bg-blue-700">
       Login
     </button>
-    <a href="signup.html" class="text-blue-300 text-sm block mt-2 hover:underline">Don't have an account? Sign Up</a>
+    <a href="signup.html" class="text-blue-300 text-sm block hover:underline">Don't have an account? Sign Up</a>
   </div>
 
-  <!-- JS Logic (defined after DOM and after Amplify is loaded) -->
   <script>
-    window.onload = function () {
-      // Wait for Amplify to load
-      const { Auth } = window.aws_amplify;
+    window.addEventListener("load", () => {
+      const amplify = window.aws_amplify;
+      if (!amplify) {
+        alert("AWS Amplify failed to load. Check your internet or CDN link.");
+        return;
+      }
+
+      const { Auth } = amplify;
       Auth.configure(window.amplifyConfig);
 
-      // Login logic
-      window.handleLogin = async function () {
+      document.getElementById("login-btn").addEventListener("click", async () => {
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
 
@@ -43,8 +46,8 @@
         } catch (err) {
           alert("Login Failed: " + err.message);
         }
-      };
-    };
+      });
+    });
   </script>
 </body>
 </html>
