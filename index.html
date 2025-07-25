@@ -5,23 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- AWS Amplify UMD version (defines window.aws_amplify) -->
   <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
-  <script type="module">
-    import { amplifyConfig } from "./js/amplify_config.js";
-    const { Auth } = window.aws_amplify;
-    Auth.configure(amplifyConfig);
-
-    window.handleLogin = async function () {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      try {
-        await Auth.signIn(username, password);
-        window.location.href = "usernames.html";
-      } catch (err) {
-        alert("Login Failed: " + err.message);
-      }
-    };
-  </script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
   <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center">
@@ -31,5 +16,28 @@
     <button onclick="handleLogin()" class="bg-blue-600 w-full py-2 rounded font-semibold">Login</button>
     <a href="signup.html" class="text-blue-300 text-sm">Don't have an account? Sign Up</a>
   </div>
+
+  <!-- Your JS logic using ES module -->
+  <script type="module">
+    import { amplifyConfig } from "./js/amplify_config.js";
+
+    // Wait for DOM to load and amplify to be available
+    window.addEventListener("DOMContentLoaded", () => {
+      const { Auth } = window.aws_amplify;
+      Auth.configure(amplifyConfig);
+
+      // Define globally accessible login function
+      window.handleLogin = async function () {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        try {
+          await Auth.signIn(username, password);
+          window.location.href = "usernames.html";
+        } catch (err) {
+          alert("Login Failed: " + err.message);
+        }
+      };
+    });
+  </script>
 </body>
 </html>
