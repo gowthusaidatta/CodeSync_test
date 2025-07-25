@@ -1,4 +1,5 @@
 // CodeSync_test/js/amplify_config.js
+// updated one 
 import { Amplify } from 'aws-amplify';
 
 Amplify.configure({
