@@ -5,38 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Login</title>
 
-  <!-- ✅ Tailwind CSS for design -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- ✅ AWS Amplify from working CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
+  <!-- ✅ Amplify CDN -->
+  <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
 
-  <!-- ✅ Amplify config (must define window.amplifyConfig) -->
+  <!-- ✅ Amplify config -->
   <script src="./js/amplify_config.js"></script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center shadow-lg">
-    <h2 class="text-2xl font-bold mb-2">CodeSync Login</h2>
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center">
+    <h2 class="text-xl font-bold">CodeSync Login</h2>
     <input id="username" placeholder="Email" class="w-full p-2 rounded text-black" />
     <input id="password" type="password" placeholder="Password" class="w-full p-2 rounded text-black" />
-    <button id="login-btn" class="bg-blue-600 hover:bg-blue-700 w-full py-2 rounded font-semibold mt-2">
+    <button id="login-btn" class="bg-blue-600 w-full py-2 rounded font-semibold hover:bg-blue-700">
       Login
     </button>
-    <a href="signup.html" class="text-sm text-blue-400 hover:underline block mt-2">Don't have an account? Sign Up</a>
+    <a href="signup.html" class="text-blue-300 text-sm block hover:underline">Don't have an account? Sign Up</a>
   </div>
 
   <script>
     window.addEventListener("load", () => {
       const amplify = window.aws_amplify;
-      const amplifyConfig = window.amplifyConfig;
-
       if (!amplify || !amplify.Auth) {
         alert("❌ AWS Amplify failed to load. Check your internet or CDN link.");
         return;
       }
 
       const { Auth } = amplify;
-      Auth.configure(amplifyConfig);
+      Auth.configure(window.amplifyConfig);
 
       document.getElementById("login-btn").addEventListener("click", async () => {
         const username = document.getElementById("username").value.trim();
@@ -46,7 +44,7 @@
           await Auth.signIn(username, password);
           window.location.href = "usernames.html";
         } catch (err) {
-          alert("⚠️ Login Failed: " + err.message);
+          alert("Login Failed: " + err.message);
         }
       });
     });
