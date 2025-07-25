@@ -1,152 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Coding Profile Stats - Login</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- AWS Amplify CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@6"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a202c, #2d3748);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1rem;
-            color: #e2e8f0;
-        }
-        .glass-container {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            border-radius: 20px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 400px; /* Adjusted for login form */
-        }
-        input[type="text"], input[type="password"] {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #e2e8f0;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        input[type="text"]::placeholder, input[type="password"]::placeholder {
-            color: #a0aec0;
-        }
-        input[type="text"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: #63b3ed;
-            box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.5);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .gradient-button {
-            background-image: linear-gradient(to right, #6366f1, #a855f7);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1.125rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(100, 100, 255, 0.4);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            cursor: pointer;
-        }
-        .gradient-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(100, 100, 255, 0.6);
-        }
-        .gradient-button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(100, 100, 255, 0.3);
-        }
-        .gradient-button:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-            z-index: -1;
-        }
-        .gradient-button:hover:before {
-            left: 100%;
-        }
-        .error-message {
-            color: #ef4444;
-            margin-top: 1rem;
-            text-align: center;
-        }
-        .message-box {
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .success-message {
-            background-color: rgba(72, 187, 120, 0.2);
-            border: 1px solid rgba(72, 187, 120, 0.4);
-            color: #48bb78;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CodeSync Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
+  <script type="module">
+    import { amplifyConfig } from "./js/amplify_config.js";
+    const { Auth } = window.aws_amplify;
+    Auth.configure(amplifyConfig);
+
+    window.handleLogin = async function () {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      try {
+        await Auth.signIn(username, password);
+        window.location.href = "usernames.html";
+      } catch (err) {
+        alert("Login Failed: " + err.message);
+      }
+    };
+  </script>
 </head>
-<body>
-    <div class="glass-container">
-        <h1 class="text-3xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                Coding Profile Stats
-            </span>
-        </h1>
-        <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
-
-        <div id="loginForm">
-            <div class="space-y-4 mb-6">
-                <input id="username" type="text" placeholder="Username or Email"
-                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
-                <input id="password" type="password" placeholder="Password"
-                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
-            </div>
-
-            <button onclick="handleLogin()" class="w-full gradient-button mb-4">
-                Login
-            </button>
-            <p class="text-center text-gray-400">
-                Don't have an account? <a href="signup.html" class="text-blue-400 hover:underline">Sign Up</a>
-            </p>
-            <div id="errorMessage" class="error-message hidden"></div>
-        </div>
-
-        <div id="confirmForm" class="hidden">
-            <h2 class="text-xl font-semibold mb-4 text-center">Confirm Your Account</h2>
-            <p class="text-center text-gray-400 mb-4">A verification code has been sent to your email.</p>
-            <div class="space-y-4 mb-6">
-                <input id="confirmUsername" type="text" placeholder="Username"
-                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
-                <input id="confirmationCode" type="text" placeholder="Confirmation Code"
-                       class="w-full p-3 rounded-lg text-white placeholder-gray-400">
-            </div>
-            <button onclick="handleConfirmSignUp()" class="w-full gradient-button mb-4">
-                Confirm Sign Up
-            </button>
-            <button onclick="handleResendCode()" class="w-full gradient-button bg-gray-600 hover:bg-gray-700 mb-4">
-                Resend Code
-            </button>
-            <div id="confirmMessageBox" class="message-box hidden"></div>
-        </div>
-    </div>
-
-    <script type="module" src="js/main.js"></script>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center">
+    <h2 class="text-xl font-bold">CodeSync Login</h2>
+    <input id="username" placeholder="Email" class="w-full p-2 rounded text-black" />
+    <input id="password" placeholder="Password" type="password" class="w-full p-2 rounded text-black" />
+    <button onclick="handleLogin()" class="bg-blue-600 hover:bg-blue-700 w-full py-2 rounded font-semibold">Login</button>
+    <a href="signup.html" class="text-blue-300 text-sm">Don't have an account? Sign Up</a>
+  </div>
 </body>
 </html>
