@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Coding Profile Stats - Input Usernames</title>
+    <!-- Tailwind CSS for utility classes -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for a modern typeface -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- AWS Amplify CDN -->
     <script src="https://cdn.jsdelivr.net/npm/aws-amplify@6"></script>
     <style>
         /* Base body styling with a dark gradient background and Inter font */
@@ -146,16 +149,19 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
+<body id="protected-page" class="bg-gray-900 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md glass-container">
+        <!-- User Icon and Logout Button -->
         <div class="absolute top-4 right-4 text-white">
             <div class="relative inline-block text-left">
+                <!-- User Icon Button -->
                 <button id="userMenuButton" class="user-menu-button flex items-center justify-center w-10 h-10 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500">
                     <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                 </button>
 
+                <!-- Dropdown Menu -->
                 <div id="userMenu" class="user-menu-dropdown origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg hidden">
                     <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="userMenuButton">
                         <div class="block px-4 py-2 text-sm text-gray-200">Hello, <span id="displayUsername">Guest</span>!</div>
@@ -167,13 +173,16 @@
             </div>
         </div>
 
+        <!-- Title with gradient text -->
         <h1 class="text-3xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
             <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                 Coding Profile Stats
             </span>
         </h1>
 
+        <!-- Input fields section -->
         <div class="space-y-6 mb-8">
+            <!-- LeetCode Input Group -->
             <div class="flex items-center group">
                 <div id="leetcodeCheck" class="checkmark-container"></div>
                 <input id="leetcode" type="text" placeholder="LeetCode Username"
@@ -181,6 +190,7 @@
                        oninput="toggleCheckmark(this)">
             </div>
 
+            <!-- CodeChef Input Group -->
             <div class="flex items-center group">
                 <div id="codechefCheck" class="checkmark-container"></div>
                 <input id="codechef" type="text" placeholder="CodeChef Username"
@@ -188,6 +198,7 @@
                        oninput="toggleCheckmark(this)">
             </div>
 
+            <!-- HackerRank Input Group -->
             <div class="flex items-center group">
                 <div id="hackerrankCheck" class="checkmark-container"></div>
                 <input id="hackerrank" type="text" placeholder="HackerRank Username"
@@ -195,6 +206,7 @@
                        oninput="toggleCheckmark(this)">
             </div>
 
+            <!-- GeeksforGeeks Input Group -->
             <div class="flex items-center group">
                 <div id="gfgCheck" class="checkmark-container"></div>
                 <input id="gfg" type="text" placeholder="GeeksforGeeks Username"
@@ -203,6 +215,7 @@
             </div>
         </div>
 
+        <!-- Get Stats Button -->
         <button onclick="navigateToResults()"
                 class="w-full gradient-button">
             Get Stats
