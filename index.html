@@ -4,8 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Login</title>
+
+  <!-- Tailwind for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
+
+  <!-- ✅ Working Amplify version -->
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
+
+  <!-- Your config -->
   <script src="./js/amplify_config.js"></script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center h-screen">
@@ -22,7 +28,7 @@
   <script>
     window.addEventListener("load", () => {
       const amplify = window.aws_amplify;
-      if (!amplify || !amplify.Auth) {
+      if (!amplify) {
         alert("❌ AWS Amplify failed to load. Check your internet connection or CDN link.");
         return;
       }
