@@ -3,301 +3,126 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Coding Profile Stats - Results</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts - Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>Coding Profile Stats</title>
     <style>
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            min-height: 100vh;
-            color: #e2e8f0;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
             line-height: 1.6;
-            padding: 2rem 0;
+            color: #333;
         }
-
-        .glass-container {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-            border-radius: 1.5rem;
-            width: 95%;
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2.5rem;
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
         }
-        
-        .result-card {
-            background: rgba(30, 41, 59, 0.6);
-            border-radius: 1rem;
-            padding: 1.8rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
         }
-        
-        .gfg-card {
-            border-left: 5px solid #48bb78;
+        .platform {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 20px;
         }
-        
-        .codechef-card {
-            border-left: 5px solid #ed8936;
-        }
-        
-        .leetcode-card {
-            border-left: 5px solid #fbbf24;
-        }
-        
-        .hackerrank-card {
-            border-left: 5px solid #818cf8;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.6rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-        }
-        
-        .stat-item:last-child {
+        .platform:last-child {
             border-bottom: none;
         }
-        
-        .stat-label {
-            color: #94a3b8;
-            font-weight: 500;
+        h2 {
+            color: #3498db;
+            margin-bottom: 10px;
         }
-        
-        .stat-value {
-            font-weight: 700;
-            color: #e2e8f0;
+        .username {
+            font-weight: bold;
+            margin-left: 20px;
+            color: #e74c3c;
         }
-        
-        .spinner {
-            width: 3.5rem;
-            height: 3.5rem;
-            border: 5px solid rgba(255, 255, 255, 0.15);
-            border-top-color: #6366f1;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+        .stats {
+            margin-left: 40px;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .stat {
+            margin-bottom: 5px;
         }
-        
-        .platform-icon {
-            width: 2.8rem;
-            height: 2.8rem;
-            object-fit: contain;
-            margin-right: 1.2rem;
+        .stat-name {
+            font-weight: bold;
         }
-        
         .back-button {
-            background: rgba(30, 41, 59, 0.8);
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #3498db;
             color: white;
-            padding: 0.8rem 1.8rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+            border-radius: 5px;
+            width: 150px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        
         .back-button:hover {
-            background: rgba(51, 65, 85, 0.9);
-        }
-        
-        .error-card {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            grid-column: 1 / -1;
-            border-radius: 1rem;
-            padding: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .glass-container {
-                padding: 1.5rem;
-                border-radius: 1rem;
-                margin: 1rem auto;
-            }
-            
-            .result-card {
-                padding: 1.25rem;
-            }
+            background-color: #2980b9;
         }
     </style>
 </head>
 <body>
-    <div class="glass-container">
-        <!-- Header -->
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                Coding Profile Stats
-            </h1>
-            <p class="text-slate-400 text-lg">Your competitive programming performance at a glance</p>
-        </header>
+    <h1>Coding Profile Stats</h1>
+    <div class="subtitle">Your competitive programming performance at a glance</div>
+    
+    <div id="results">
+        <!-- LeetCode -->
+        <div class="platform">
+            <h2>LeafCode <span class="username">Redisheets</span></h2>
+            <div class="stats">
+                <div class="stat"><span class="stat-name">Problems Solved</span><br>804</div>
+                <div class="stat"><span class="stat-name">Context Rating</span><br>562</div>
+                <div class="stat"><span class="stat-name">Easy Solved</span><br>0</div>
+                <div class="stat"><span class="stat-name">Medium Solved</span><br>0</div>
+                <div class="stat"><span class="stat-name">Hard Solved</span><br>0</div>
+            </div>
+        </div>
         
-        <!-- Results grid -->
-        <div id="results" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+        <!-- GeeksforGeeks -->
+        <div class="platform">
+            <h2>GeekstorGeeks <span class="username">Redisheetworks</span></h2>
+            <div class="stats">
+                <div class="stat"><span class="stat-name">Coding Score</span><br>770</div>
+                <div class="stat"><span class="stat-name">Institute Rank</span><br>212</div>
+                <div class="stat"><span class="stat-name">Problems Solved</span><br>790</div>
+                <div class="stat"><span class="stat-name">Current Strack</span><br>443 days</div>
+            </div>
+        </div>
         
-        <!-- Footer with back button -->
-        <footer class="mt-10 text-center">
-            <button onclick="window.history.back()" class="back-button">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-                </svg>
-                Back to Input
-            </button>
-        </footer>
+        <!-- CodeChef -->
+        <div class="platform">
+            <h2>CodeChef <span class="username">Redisheetworks</span></h2>
+            <div class="stats">
+                <div class="stat"><span class="stat-name">Context Rating</span><br>928</div>
+                <div class="stat"><span class="stat-name">Stars</span><br>192</div>
+                <div class="stat"><span class="stat-name">Problems Solved</span><br>51</div>
+            </div>
+        </div>
+        
+        <!-- HackerRank -->
+        <div class="platform">
+            <h2>HackerRank <span class="username">RowHouseStats</span></h2>
+            <div class="stats">
+                <div class="stat"><span class="stat-name">Badogs</span><br>0</div>
+                <div class="stat"><span class="stat-name">Stars</span><br>704</div>
+            </div>
+        </div>
     </div>
+    
+    <a href="usernames.html" class="back-button">Back to input</a>
 
     <script>
-        // Configuration for platform data
-        const platformConfig = {
-            leetcode: {
-                name: "LeetCode",
-                color: "leetcode-card",
-                logo: "https://leetcode.com/static/images/LeetCode_logo_rvs.png",
-                placeholder: "https://placehold.co/40x40/FBBF24/000000?text=LC",
-                stats: [
-                    { label: "Problems Solved", key: "total_problems_solved", default: "N/A" },
-                    { label: "Contest Rating", key: "ranking", default: "N/A" },
-                    { label: "Easy Solved", key: "easy", default: 0 },
-                    { label: "Medium Solved", key: "medium", default: 0 },
-                    { label: "Hard Solved", key: "hard", default: 0 }
-                ]
-            },
-            gfg: {
-                name: "GeeksforGeeks",
-                color: "gfg-card",
-                logo: "https://media.geeksforgeeks.org/wp-content/uploads/20210915115837/gfg3-300x300.png",
-                placeholder: "https://placehold.co/40x40/48BB78/FFFFFF?text=GFG",
-                stats: [
-                    { label: "Coding Score", key: "codingScore", default: "N/A" },
-                    { label: "Institute Rank", key: "instituteRank", default: "N/A" },
-                    { label: "Problems Solved", key: "totalProblemsSolved", default: "N/A" },
-                    { label: "Current Streak", key: "currentStreak", default: "N/A", suffix: " days" }
-                ]
-            },
-            codechef: {
-                name: "CodeChef",
-                color: "codechef-card",
-                logo: "https://cdn.codechef.com/sites/all/themes/abessive/cc-logo.png",
-                placeholder: "https://placehold.co/40x40/ED8936/FFFFFF?text=CC",
-                stats: [
-                    { label: "Contest Rating", key: "contest_rating", default: "N/A" },
-                    { label: "Stars", key: "stars", default: "N/A" },
-                    { label: "Problems Solved", key: "problems_solved", default: "N/A" }
-                ]
-            },
-            hackerrank: {
-                name: "HackerRank",
-                color: "hackerrank-card",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/6/65/HackerRank_logo.png",
-                placeholder: "https://placehold.co/40x40/818CF8/FFFFFF?text=HR",
-                stats: [
-                    { label: "Badges", key: "badges", default: 0 },
-                    { label: "Stars", key: "stars", default: "N/A" }
-                ]
-            }
-        };
-        
-        // Main function to display stats
-        async function displayStats() {
-            const resultsDiv = document.getElementById("results");
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Show loading state
-            resultsDiv.innerHTML = `
-                <div class="col-span-full flex flex-col items-center justify-center py-16">
-                    <div class="spinner"></div>
-                    <p class="mt-6 text-slate-400 text-lg">Fetching your coding stats...</p>
-                </div>
-            `;
-            
-            // Get all platform usernames from URL
-            const usernames = {
-                leetcode: urlParams.get('leetcode'),
-                gfg: urlParams.get('gfg'),
-                codechef: urlParams.get('codechef'),
-                hackerrank: urlParams.get('hackerrank')
-            };
-            
-            // Simulate API calls with mock data (replace with real API calls)
-            setTimeout(() => {
-                resultsDiv.innerHTML = '';
-                
-                let cardCount = 0;
-                // Create cards for each platform with mock data
-                Object.entries(usernames).forEach(([platform, username]) => {
-                    if (!username) return;
-                    
-                    const config = platformConfig[platform];
-                    const card = document.createElement('div');
-                    card.className = `result-card ${config.color}`;
-                    
-                    let statsHTML = '';
-                    config.stats.forEach(stat => {
-                        // Generate random data for demo
-                        const value = stat.default === "N/A" 
-                            ? Math.floor(Math.random() * 1000) 
-                            : stat.default;
-                            
-                        statsHTML += `
-                            <div class="stat-item">
-                                <span class="stat-label">${stat.label}</span>
-                                <span class="stat-value">${value}${stat.suffix || ''}</span>
-                            </div>
-                        `;
-                    });
-                    
-                    card.innerHTML = `
-                        <div class="flex items-center mb-5">
-                            <img src="${config.logo}" 
-                                 onerror="this.onerror=null;this.src='${config.placeholder}'"
-                                 class="platform-icon" 
-                                 alt="${config.name} Logo">
-                            <h2 class="text-2xl font-bold">${config.name}</h2>
-                            <span class="ml-auto bg-slate-800/50 px-3 py-1 rounded-full text-sm font-mono text-slate-300">@${username}</span>
-                        </div>
-                        <div class="stats-container flex-grow">
-                            ${statsHTML}
-                        </div>
-                    `;
-                    
-                    resultsDiv.appendChild(card);
-                    cardCount++;
-                });
-                
-                // Show message if no cards were added
-                if (resultsDiv.children.length === 0) {
-                    resultsDiv.innerHTML = `
-                        <div class="col-span-full text-center py-16 text-slate-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p class="mt-4 text-xl">No usernames provided.</p>
-                            <p class="mt-2 text-base">Please go back and enter at least one username to see your stats.</p>
-                        </div>
-                    `;
-                }
-            }, 1500); // Simulate network delay
-        }
-        
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', displayStats);
+        // This would be replaced with actual data fetching logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // In a real implementation, you would fetch data here
+            // and dynamically populate the #results div
+        });
     </script>
 </body>
 </html>
