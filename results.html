@@ -3,91 +3,190 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CodeSync Results</title>
+  <title>Coding Profile Stats - Results</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+    .glass-container {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      border-radius: 1.5rem;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2.5rem;
+    }
+    .result-card {
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: 1rem;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      border-left: 5px solid;
+    }
+    .gfg-card { border-left-color: #48bb78; }
+    .leetcode-card { border-left-color: #fbbf24; }
+    .codechef-card { border-left-color: #ed8936; }
+    .hackerrank-card { border-left-color: #818cf8; }
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 0.5rem 0;
+    }
+    .stat-item:last-child { border-bottom: none; }
+    .error-card {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center font-sans">
+<body>
+  <div class="glass-container">
+    <h1 class="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+      Coding Profile Stats
+    </h1>
 
-  <div class="text-center mb-6">
-    <h1 class="text-4xl font-bold text-green-400">📊 Coding Profile Stats</h1>
-    <p class="text-sm text-gray-400 mt-1">Live score summary from LeetCode, CodeChef, and HackerRank</p>
+    <div id="results"></div>
+
+    <div class="text-center mt-8">
+      <button onclick="window.history.back()" class="px-4 py-2 bg-slate-800 text-white rounded-lg">Back</button>
+    </div>
   </div>
-
-  <div id="results" class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl p-4">
-    <!-- Dynamic content gets injected here -->
-  </div>
-
-  <button onclick="signOut()" class="mt-8 px-6 py-2 bg-red-500 hover:bg-red-600 rounded-full text-white font-semibold">Sign Out</button>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const leetcode = urlParams.get("leetcode");
-    const codechef = urlParams.get("codechef");
-    const hackerrank = urlParams.get("hackerrank");
+    const leetcode = urlParams.get('leetcode');
+    const codechef = urlParams.get('codechef');
+    const hackerrank = urlParams.get('hackerrank');
+    const gfg = urlParams.get('gfg');
 
-    const resultsContainer = document.getElementById("results");
+    const resultsDiv = document.getElementById("results");
 
-    async function fetchScores() {
-      if (!leetcode || !codechef || !hackerrank) {
-        resultsContainer.innerHTML = `<p class="text-red-400 col-span-full text-center">❌ Missing usernames in URL query. Please go back and enter all three.</p>`;
-        return;
+    const platformConfig = {
+      leetcode: {
+        name: "LeetCode", color: "leetcode-card",
+        stats: [
+          { label: "Problems Solved", key: "total_problems_solved", default: "N/A" },
+          { label: "Contest Rating", key: "ranking", default: "N/A" },
+          { label: "Easy", key: "easy", default: 0 },
+          { label: "Medium", key: "medium", default: 0 },
+          { label: "Hard", key: "hard", default: 0 }
+        ]
+      },
+      codechef: {
+        name: "CodeChef", color: "codechef-card",
+        stats: [
+          { label: "Contest Rating", key: "contest_rating", default: "N/A" },
+          { label: "Stars", key: "stars", default: "N/A" },
+          { label: "Problems Solved", key: "problems_solved", default: "N/A" },
+          { label: "Contests Participated", key: "contests_participated", default: "N/A" }
+        ]
+      },
+      hackerrank: {
+        name: "HackerRank", color: "hackerrank-card",
+        stats: [
+          { label: "Badges", key: "badges", default: 0 },
+          { label: "Stars", key: "stars", default: "N/A" }
+        ]
+      },
+      gfg: {
+        name: "GeeksforGeeks", color: "gfg-card",
+        stats: [
+          { label: "Coding Score", key: "codingScore", default: "N/A" },
+          { label: "Institute Rank", key: "instituteRank", default: "N/A" },
+          { label: "Problems Solved", key: "totalProblemsSolved", default: "N/A" },
+          { label: "Current Streak", key: "currentStreak", default: "N/A" },
+          { label: "Easy", key: "easyProblems", default: 0 },
+          { label: "Medium", key: "mediumProblems", default: 0 },
+          { label: "Hard", key: "hardProblems", default: 0 }
+        ]
       }
+    };
+
+    async function displayStats() {
+      resultsDiv.innerHTML = `<p>Loading...</p>`;
 
       try {
-        const apiUrl = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+        const [platforms, gfgData] = await Promise.all([fetchPlatforms(), fetchGFG()]);
+        render(platforms, gfgData);
+      } catch (err) {
+        console.error(err);
+        resultsDiv.innerHTML = `<div class="error-card">Error loading data. Try again.</div>`;
+      }
+    }
 
-        if (data.error) {
-          resultsContainer.innerHTML = `<p class="text-red-400 col-span-full text-center">❌ ${data.error}</p>`;
+    async function fetchPlatforms() {
+      if (!leetcode && !codechef && !hackerrank) return {};
+      const url = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode || ''}&codechef=${codechef || ''}&hackerrank=${hackerrank || ''}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return typeof data.body === "string" ? JSON.parse(data.body) : data;
+    }
+
+    async function fetchGFG() {
+      if (!gfg) return {};
+      const url = `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return typeof data.body === "string" ? JSON.parse(data.body) : data;
+    }
+
+    function render(platforms, gfgData) {
+      resultsDiv.innerHTML = '';
+      let count = 0;
+
+      [
+        { name: 'leetcode', data: platforms.leetcode, username: leetcode },
+        { name: 'codechef', data: platforms.codechef, username: codechef },
+        { name: 'hackerrank', data: platforms.hackerrank, username: hackerrank },
+        { name: 'gfg', data: gfgData, username: gfg }
+      ].forEach(({ name, data, username }) => {
+        if (!username) return;
+
+        if (!data || data.error) {
+          resultsDiv.innerHTML += `<div class="error-card">${name.toUpperCase()} - ${data?.error || 'No data found.'}</div>`;
           return;
         }
 
-        const platforms = [
-          { name: "LeetCode", data: data.leetcode, color: "bg-yellow-500", icon: "https://leetcode.com/favicon.ico" },
-          { name: "CodeChef", data: data.codechef, color: "bg-orange-600", icon: "https://cdn.codechef.com/sites/all/themes/abessive/cc-logo.png" },
-          { name: "HackerRank", data: data.hackerrank, color: "bg-green-600", icon: "https://hrcdn.net/community-frontend/assets/favicon-32.png" },
-        ];
-
-        resultsContainer.innerHTML = "";
-
-        platforms.forEach(({ name, data, color, icon }) => {
-          if (!data || Object.keys(data).length === 0) {
-            resultsContainer.innerHTML += `
-              <div class="p-6 rounded-xl bg-gray-800 text-center">
-                <img src="${icon}" class="mx-auto w-10 h-10 mb-2" />
-                <h2 class="text-xl font-bold">${name}</h2>
-                <p class="text-red-400 mt-2">No data available</p>
-              </div>`;
-            return;
-          }
-
-          resultsContainer.innerHTML += `
-            <div class="p-6 rounded-xl ${color} bg-opacity-90 shadow-lg text-white">
-              <img src="${icon}" class="mx-auto w-10 h-10 mb-2" />
-              <h2 class="text-xl font-bold text-center">${name}</h2>
-              <ul class="mt-4 text-sm space-y-1">
-                ${Object.entries(data).map(([key, value]) => `
-                  <li class="flex justify-between border-b border-white/20 pb-1">
-                    <span class="capitalize">${key.replace(/_/g, ' ')}</span>
-                    <span class="font-semibold">${value}</span>
-                  </li>`).join("")}
-              </ul>
-            </div>`;
+        const conf = platformConfig[name];
+        const card = document.createElement('div');
+        card.className = `result-card ${conf.color}`;
+        let statsHTML = '';
+        conf.stats.forEach(stat => {
+          const val = data[stat.key] !== undefined ? data[stat.key] : stat.default;
+          statsHTML += `<div class="stat-item"><span>${stat.label}</span><span>${val}</span></div>`;
         });
 
-      } catch (error) {
-        resultsContainer.innerHTML = `<p class="text-red-400 col-span-full text-center">❌ Error fetching scores. Please try again.</p>`;
-        console.error(error);
+        card.innerHTML = `
+          <h2 class="text-2xl font-bold mb-2">${conf.name}</h2>
+          <p class="mb-4 text-slate-400">@${username}</p>
+          ${statsHTML}
+        `;
+        resultsDiv.appendChild(card);
+        count++;
+      });
+
+      if (count === 0) {
+        resultsDiv.innerHTML = `<div class="text-center text-slate-400">No usernames provided.</div>`;
       }
     }
 
-    function signOut() {
-      window.location.href = "index.html"; // Replace with actual Cognito sign-out URL if configured
-    }
-
-    fetchScores();
+    displayStats();
   </script>
-
 </body>
 </html>
