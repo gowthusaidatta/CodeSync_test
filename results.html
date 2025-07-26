@@ -24,6 +24,9 @@
       color: #ff4500;
       text-shadow: 0 0 4px rgba(255, 69, 0, 0.5);
     }
+    .institute-badge {
+      background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4">
@@ -119,8 +122,20 @@
           <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-8 h-8">
           <h2 class="text-xl font-semibold">GeeksForGeeks</h2>
         </div>
-        <p class="text-gray-300 mb-1">@<span id="gfg-username" class="text-white">Loading...</span></p>
-        <div class="mt-4 space-y-2">
+        <div class="flex items-center gap-3 mb-3">
+          <img id="gfg-profile-image" src="" alt="Profile" class="w-10 h-10 rounded-full">
+          <div>
+            <p class="text-gray-300">@<span id="gfg-username" class="text-white">Loading...</span></p>
+            <p id="gfg-fullname" class="text-sm text-gray-400 truncate max-w-xs"></p>
+          </div>
+        </div>
+        
+        <div class="institute-badge text-xs px-2 py-1 rounded-full mb-3 inline-flex items-center">
+          <span id="gfg-institute" class="truncate max-w-xs"></span>
+          <span id="gfg-institute-rank" class="ml-1 bg-purple-800 px-1 rounded"></span>
+        </div>
+        
+        <div class="mt-2 space-y-2">
           <div class="flex justify-between">
             <span>Problems Solved:</span>
             <span id="gfg-problems" class="font-bold">0</span>
@@ -141,9 +156,17 @@
             <span>Coding Score:</span>
             <span id="gfg-score" class="font-bold">0</span>
           </div>
+          <div class="flex justify-between">
+            <span>Monthly Score:</span>
+            <span id="gfg-monthly" class="font-bold">0</span>
+          </div>
           <div class="flex justify-between streak-fire">
             <span>Current Streak:</span>
             <span id="gfg-streak" class="font-bold">0 days</span>
+          </div>
+          <div class="flex justify-between text-gray-400">
+            <span>Max Streak:</span>
+            <span id="gfg-max-streak" class="font-bold">0 days</span>
           </div>
         </div>
       </div>
@@ -181,19 +204,19 @@
         // Show loading skeleton
         document.getElementById('loading-skeleton').classList.remove('hidden');
 
-        // Fetch data from API
-        let apiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
+        // Fetch data from main API
+        const mainApiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
+        const mainApiPromise = fetch(mainApiURL).then(res => res.ok ? res.json() : Promise.reject(res));
+        
+        // Fetch GFG data from separate API if username provided
+        let gfgApiPromise = Promise.resolve(null);
         if (gfg) {
-          apiURL += `&gfg=${gfg}`;
+          const gfgApiURL = `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`;
+          gfgApiPromise = fetch(gfgApiURL).then(res => res.ok ? res.json() : Promise.reject(res));
         }
 
-        const res = await fetch(apiURL);
-        
-        if (!res.ok) {
-          throw new Error(`API request failed with status ${res.status}`);
-        }
-        
-        const data = await res.json();
+        // Wait for all API calls to complete
+        const [mainData, gfgData] = await Promise.all([mainApiPromise, gfgApiPromise]);
         
         // Hide loading skeleton
         document.getElementById('loading-skeleton').classList.add('hidden');
@@ -203,43 +226,60 @@
         outputDiv.innerHTML = '';
         
         // Create and append cards based on available data
-        if (data.leetcode) {
+        if (mainData?.leetcode) {
           const leetcodeCard = document.getElementById('leetcode-template').content.cloneNode(true);
           leetcodeCard.getElementById('leetcode-username').textContent = leetcode;
-          leetcodeCard.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
-          leetcodeCard.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
-          leetcodeCard.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
-          leetcodeCard.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
+          leetcodeCard.getElementById('leetcode-problems').textContent = mainData.leetcode.problems_solved || '0';
+          leetcodeCard.getElementById('leetcode-easy').textContent = mainData.leetcode.Easy || '0';
+          leetcodeCard.getElementById('leetcode-medium').textContent = mainData.leetcode.Medium || '0';
+          leetcodeCard.getElementById('leetcode-hard').textContent = mainData.leetcode.Hard || '0';
           outputDiv.appendChild(leetcodeCard);
         }
         
-        if (data.codechef) {
+        if (mainData?.codechef) {
           const codechefCard = document.getElementById('codechef-template').content.cloneNode(true);
           codechefCard.getElementById('codechef-username').textContent = codechef;
-          codechefCard.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
-          codechefCard.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
-          codechefCard.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
-          codechefCard.getElementById('codechef-stars').textContent = data.codechef.stars || '0';
+          codechefCard.getElementById('codechef-problems').textContent = mainData.codechef.problems_solved || '0';
+          codechefCard.getElementById('codechef-rating').textContent = mainData.codechef.contest_rating || '0';
+          codechefCard.getElementById('codechef-contests').textContent = mainData.codechef.contests_participated || '0';
+          codechefCard.getElementById('codechef-stars').textContent = mainData.codechef.stars || '0';
           outputDiv.appendChild(codechefCard);
         }
         
-        if (data.hackerrank) {
+        if (mainData?.hackerrank) {
           const hackerrankCard = document.getElementById('hackerrank-template').content.cloneNode(true);
           hackerrankCard.getElementById('hackerrank-username').textContent = hackerrank;
-          hackerrankCard.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
+          hackerrankCard.getElementById('hackerrank-badges').textContent = mainData.hackerrank.badges || '0';
           outputDiv.appendChild(hackerrankCard);
         }
         
-        // Handle GFG data specifically
-        if (gfg && data.gfg) {
+        // Handle GFG data from separate API
+        if (gfg && gfgData) {
           const gfgCard = document.getElementById('gfg-template').content.cloneNode(true);
-          gfgCard.getElementById('gfg-username').textContent = gfg;
-          gfgCard.getElementById('gfg-problems').textContent = data.gfg.totalProblemsSolved || '0';
-          gfgCard.getElementById('gfg-easy').textContent = data.gfg.easyProblems || '0';
-          gfgCard.getElementById('gfg-medium').textContent = data.gfg.mediumProblems || '0';
-          gfgCard.getElementById('gfg-hard').textContent = data.gfg.hardProblems || '0';
-          gfgCard.getElementById('gfg-score').textContent = data.gfg.codingScore || '0';
-          gfgCard.getElementById('gfg-streak').textContent = data.gfg.currentStreak ? `${data.gfg.currentStreak} days` : '0 days';
+          
+          // Profile info
+          gfgCard.getElementById('gfg-username').textContent = gfgData.username || gfg;
+          gfgCard.getElementById('gfg-fullname').textContent = gfgData.fullName || '';
+          gfgCard.getElementById('gfg-profile-image').src = gfgData.profileImage || 'https://media.geeksforgeeks.org/img-practice/user_web-1598433228.svg';
+          
+          // Institute info
+          gfgCard.getElementById('gfg-institute').textContent = gfgData.institute || 'Not specified';
+          if (gfgData.instituteRank) {
+            gfgCard.getElementById('gfg-institute-rank').textContent = `#${gfgData.instituteRank}`;
+          } else {
+            gfgCard.getElementById('gfg-institute-rank').style.display = 'none';
+          }
+          
+          // Stats
+          gfgCard.getElementById('gfg-problems').textContent = gfgData.totalProblemsSolved || '0';
+          gfgCard.getElementById('gfg-easy').textContent = gfgData.easyProblems || '0';
+          gfgCard.getElementById('gfg-medium').textContent = gfgData.mediumProblems || '0';
+          gfgCard.getElementById('gfg-hard').textContent = gfgData.hardProblems || '0';
+          gfgCard.getElementById('gfg-score').textContent = gfgData.codingScore || '0';
+          gfgCard.getElementById('gfg-monthly').textContent = gfgData.monthlyScore || '0';
+          gfgCard.getElementById('gfg-streak').textContent = gfgData.currentStreak ? `${gfgData.currentStreak} days` : '0 days';
+          gfgCard.getElementById('gfg-max-streak').textContent = gfgData.maxStreak ? `${gfgData.maxStreak} days` : '0 days';
+          
           outputDiv.appendChild(gfgCard);
         } else if (gfg) {
           console.warn("GFG username was provided but no GFG data was returned from API");
@@ -248,7 +288,7 @@
       } catch (err) {
         console.error("Error fetching data:", err);
         document.getElementById('loading-skeleton').classList.add('hidden');
-        alert("❌ Failed to fetch coding scores. Please try again later.");
+        alert("❌ Failed to fetch some coding scores. Some data may be incomplete.");
       }
     }
 
