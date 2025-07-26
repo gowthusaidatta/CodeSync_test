@@ -10,83 +10,254 @@
     body {
       font-family: 'Inter', sans-serif;
     }
+    .platform-card {
+      transition: transform 0.2s;
+    }
+    .platform-card:hover {
+      transform: translateY(-5px);
+    }
+    .star-rating {
+      color: gold;
+      text-shadow: 0 0 2px rgba(255, 215, 0, 0.8);
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-4">
-  <h1 class="text-3xl font-bold mb-4">📊 Coding Profile Stats</h1>
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-purple-400">📊 Coding Profile Stats</h1>
 
-  <div id="output" class="grid gap-6 md:grid-cols-3 sm:grid-cols-1">
-
-    <!-- LeetCode -->
-    <div class="bg-gray-800 p-4 rounded-2xl shadow-md">
-      <h2 class="text-xl font-semibold">LeetCode</h2>
-      <p>@<span id="leetcode-username">Loading...</span></p>
-      <p>Problems Solved: <span id="leetcode-problems">0</span></p>
-      <p>Easy: <span id="leetcode-easy">0</span></p>
-      <p>Medium: <span id="leetcode-medium">0</span></p>
-      <p>Hard: <span id="leetcode-hard">0</span></p>
+    <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 sm:grid-cols-1">
+      <!-- Loading skeleton -->
+      <div id="loading-skeleton" class="space-y-4">
+        <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
+        <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
+        <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
+        <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
+      </div>
     </div>
 
-    <!-- CodeChef -->
-    <div class="bg-gray-800 p-4 rounded-2xl shadow-md">
-      <h2 class="text-xl font-semibold">CodeChef</h2>
-      <p>@<span id="codechef-username">Loading...</span></p>
-      <p>Problems Solved: <span id="codechef-problems">0</span></p>
-      <p>Rating: <span id="codechef-rating">0</span></p>
-      <p>Stars: <span id="codechef-stars">0</span></p>
-    </div>
+    <!-- Template for LeetCode Card -->
+    <template id="leetcode-template">
+      <div class="platform-card bg-gradient-to-br from-orange-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">LeetCode</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="leetcode-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Total Solved:</span>
+            <span id="leetcode-problems" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-green-400">
+            <span>Easy:</span>
+            <span id="leetcode-easy" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-yellow-400">
+            <span>Medium:</span>
+            <span id="leetcode-medium" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-red-400">
+            <span>Hard:</span>
+            <span id="leetcode-hard" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
 
-    <!-- HackerRank -->
-    <div class="bg-gray-800 p-4 rounded-2xl shadow-md">
-      <h2 class="text-xl font-semibold">HackerRank</h2>
-      <p>@<span id="hackerrank-username">Loading...</span></p>
-      <p>Badges: <span id="hackerrank-badges">0</span></p>
-    </div>
+    <!-- Template for CodeChef Card -->
+    <template id="codechef-template">
+      <div class="platform-card bg-gradient-to-br from-yellow-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">CodeChef</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="codechef-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Problems Solved:</span>
+            <span id="codechef-problems" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-blue-300">
+            <span>Rating:</span>
+            <span id="codechef-rating" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Contests:</span>
+            <span id="codechef-contests" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between star-rating">
+            <span>Stars:</span>
+            <span id="codechef-stars" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
 
+    <!-- Template for HackerRank Card -->
+    <template id="hackerrank-template">
+      <div class="platform-card bg-gradient-to-br from-green-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">HackerRank</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="hackerrank-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Badges:</span>
+            <span id="hackerrank-badges" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Template for GFG Card -->
+    <template id="gfg-template">
+      <div class="platform-card bg-gradient-to-br from-green-800/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">GeeksForGeeks</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="gfg-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Problems Solved:</span>
+            <span id="gfg-problems" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-green-400">
+            <span>Easy:</span>
+            <span id="gfg-easy" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-yellow-400">
+            <span>Medium:</span>
+            <span id="gfg-medium" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-red-400">
+            <span>Hard:</span>
+            <span id="gfg-hard" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Current Streak:</span>
+            <span id="gfg-streak" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div class="mt-8 flex justify-center">
+      <button onclick="window.location.href='usernames.html'" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded font-semibold text-white">
+        🔄 Update Usernames
+      </button>
+      <button onclick="logout()" class="ml-4 text-sm text-gray-300 hover:underline mt-2">🚪 Logout</button>
+    </div>
   </div>
 
   <script>
     async function fetchScores() {
-      const leetcode = localStorage.getItem("leetcode");
-      const codechef = localStorage.getItem("codechef");
-      const hackerrank = localStorage.getItem("hackerrank");
+      const params = new URLSearchParams(window.location.search);
+      const leetcode = params.get('leetcode') || localStorage.getItem('codesync_username_leetcode');
+      const codechef = params.get('codechef') || localStorage.getItem('codesync_username_codechef');
+      const hackerrank = params.get('hackerrank') || localStorage.getItem('codesync_username_hackerrank');
+      const gfg = params.get('gfg') || localStorage.getItem('codesync_username_gfg');
 
       if (!leetcode || !codechef || !hackerrank) {
-        alert("Missing usernames. Please go back and enter all usernames.");
-        window.location.href = "index.html";
+        alert("Missing required usernames. Please go back and enter all usernames.");
+        window.location.href = "usernames.html";
         return;
       }
 
-      const apiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
+      // Save to localStorage for future use
+      if (leetcode) localStorage.setItem('codesync_username_leetcode', leetcode);
+      if (codechef) localStorage.setItem('codesync_username_codechef', codechef);
+      if (hackerrank) localStorage.setItem('codesync_username_hackerrank', hackerrank);
+      if (gfg) localStorage.setItem('codesync_username_gfg', gfg);
 
       try {
+        // Show loading skeleton
+        document.getElementById('loading-skeleton').classList.remove('hidden');
+
+        // Fetch data from API
+        const apiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}${gfg ? `&gfg=${gfg}` : ''}`;
         const res = await fetch(apiURL);
+        
+        if (!res.ok) {
+          throw new Error(`API request failed with status ${res.status}`);
+        }
+        
         const data = await res.json();
-
-        // LeetCode
-        document.getElementById("leetcode-username").textContent = leetcode;
-        document.getElementById("leetcode-problems").textContent = data.leetcode?.problems_solved ?? "0";
-        document.getElementById("leetcode-easy").textContent = data.leetcode?.Easy ?? "0";
-        document.getElementById("leetcode-medium").textContent = data.leetcode?.Medium ?? "0";
-        document.getElementById("leetcode-hard").textContent = data.leetcode?.Hard ?? "0";
-
-        // CodeChef
-        document.getElementById("codechef-username").textContent = codechef;
-        document.getElementById("codechef-problems").textContent = data.codechef?.problems_solved ?? "0";
-        document.getElementById("codechef-rating").textContent = data.codechef?.contest_rating ?? "0";
-        document.getElementById("codechef-stars").textContent = data.codechef?.stars ?? "0";
-
-        // HackerRank
-        document.getElementById("hackerrank-username").textContent = hackerrank;
-        document.getElementById("hackerrank-badges").textContent = data.hackerrank?.badges ?? "0";
-
+        
+        // Hide loading skeleton
+        document.getElementById('loading-skeleton').classList.add('hidden');
+        
+        // Clear the output div
+        const outputDiv = document.getElementById('output');
+        outputDiv.innerHTML = '';
+        
+        // Create and append cards based on available data
+        if (data.leetcode) {
+          const leetcodeCard = document.getElementById('leetcode-template').content.cloneNode(true);
+          leetcodeCard.getElementById('leetcode-username').textContent = leetcode;
+          leetcodeCard.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
+          leetcodeCard.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
+          leetcodeCard.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
+          leetcodeCard.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
+          outputDiv.appendChild(leetcodeCard);
+        }
+        
+        if (data.codechef) {
+          const codechefCard = document.getElementById('codechef-template').content.cloneNode(true);
+          codechefCard.getElementById('codechef-username').textContent = codechef;
+          codechefCard.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
+          codechefCard.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
+          codechefCard.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
+          codechefCard.getElementById('codechef-stars').textContent = data.codechef.stars || '0';
+          outputDiv.appendChild(codechefCard);
+        }
+        
+        if (data.hackerrank) {
+          const hackerrankCard = document.getElementById('hackerrank-template').content.cloneNode(true);
+          hackerrankCard.getElementById('hackerrank-username').textContent = hackerrank;
+          hackerrankCard.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
+          outputDiv.appendChild(hackerrankCard);
+        }
+        
+        if (data.gfg) {
+          const gfgCard = document.getElementById('gfg-template').content.cloneNode(true);
+          gfgCard.getElementById('gfg-username').textContent = gfg;
+          gfgCard.getElementById('gfg-problems').textContent = data.gfg.totalProblemsSolved || '0';
+          gfgCard.getElementById('gfg-easy').textContent = data.gfg.easyProblems || '0';
+          gfgCard.getElementById('gfg-medium').textContent = data.gfg.mediumProblems || '0';
+          gfgCard.getElementById('gfg-hard').textContent = data.gfg.hardProblems || '0';
+          gfgCard.getElementById('gfg-streak').textContent = data.gfg.currentStreak || '0';
+          outputDiv.appendChild(gfgCard);
+        }
+        
       } catch (err) {
         console.error("Error fetching data:", err);
-        alert("❌ Failed to fetch coding scores.");
+        document.getElementById('loading-skeleton').classList.add('hidden');
+        alert("❌ Failed to fetch coding scores. Please try again later.");
       }
     }
 
-    fetchScores();
+    async function logout() {
+      try {
+        const { Auth } = window.aws_amplify;
+        await Auth.signOut();
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Logout failed: " + err.message);
+      }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if Amplify is available (for logout functionality)
+      if (!window.aws_amplify) {
+        console.warn("Amplify not loaded - logout may not work");
+      }
+      
+      fetchScores();
+    });
   </script>
 </body>
 </html>
