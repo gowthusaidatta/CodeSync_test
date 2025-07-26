@@ -3,87 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CodeSync - Coding Scores</title>
+  <title>Coding Profile Stats</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans min-h-screen flex items-center justify-center p-6">
-  <div class="max-w-4xl w-full bg-gray-800 rounded-2xl shadow-lg p-8">
-    <h1 class="text-3xl font-bold mb-6 text-center text-teal-400">📊 Coding Profile Stats</h1>
-    <div id="error" class="hidden text-red-400 text-center mb-4">❌ Failed to fetch scores.</div>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-4xl p-4">
+    <h1 class="text-3xl font-bold mb-8 text-center">📊 Coding Profile Stats</h1>
+    
+    <!-- LeetCode -->
+    <div id="leetcodeCard" class="bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2">LeetCode</h2>
+      <p>@<span id="leetcodeUsername">Loading...</span></p>
+      <p>Problems Solved: <span id="leetcodeProblems">0</span></p>
+      <p>Contest Rating: <span id="leetcodeRating">N/A</span></p>
+      <p>Easy: <span id="leetcodeEasy">0</span></p>
+      <p>Medium: <span id="leetcodeMedium">0</span></p>
+      <p>Hard: <span id="leetcodeHard">0</span></p>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- LeetCode -->
-      <div class="bg-gray-700 p-4 rounded-xl shadow-md">
-        <h2 class="text-xl font-semibold text-yellow-400">LeetCode</h2>
-        <p>@<span id="leetcode-username">Loading...</span></p>
-        <p>Problems Solved: <span id="leetcode-problems">0</span></p>
-        <p>Contest Rating: <span id="leetcode-rating">N/A</span></p>
-        <div class="mt-2">
-          <p>Easy: <span id="leetcode-easy">0</span></p>
-          <p>Medium: <span id="leetcode-medium">0</span></p>
-          <p>Hard: <span id="leetcode-hard">0</span></p>
-        </div>
-      </div>
+    <!-- CodeChef -->
+    <div id="codechefCard" class="bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2">CodeChef</h2>
+      <p>@<span id="codechefUsername">Loading...</span></p>
+      <p>Rating: <span id="codechefRating">0</span></p>
+      <p>Stars: <span id="codechefStars">0</span></p>
+      <p>Problems Solved: <span id="codechefSolved">0</span></p>
+    </div>
 
-      <!-- CodeChef -->
-      <div class="bg-gray-700 p-4 rounded-xl shadow-md">
-        <h2 class="text-xl font-semibold text-orange-500">CodeChef</h2>
-        <p>@<span id="codechef-username">Loading...</span></p>
-        <p>Rating: <span id="codechef-rating">0</span></p>
-        <p>Stars: <span id="codechef-stars">0</span></p>
-        <p>Problems Solved: <span id="codechef-problems">0</span></p>
-      </div>
-
-      <!-- HackerRank -->
-      <div class="bg-gray-700 p-4 rounded-xl shadow-md">
-        <h2 class="text-xl font-semibold text-green-400">HackerRank</h2>
-        <p>@<span id="hackerrank-username">Loading...</span></p>
-        <p>Score: <span id="hackerrank-score">0</span></p>
-        <p>Badges: <span id="hackerrank-badges">0</span></p>
-        <p>Certifications: <span id="hackerrank-certifications">0</span></p>
-      </div>
+    <!-- HackerRank -->
+    <div id="hackerrankCard" class="bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2">HackerRank</h2>
+      <p>@<span id="hackerrankUsername">Loading...</span></p>
+      <p>Score: <span id="hackerrankScore">0</span></p>
+      <p>Badges: <span id="hackerrankBadges">0</span></p>
+      <p>Certifications: <span id="hackerrankCerts">0</span></p>
     </div>
   </div>
 
   <script>
-    async function fetchScores() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const leetcode = urlParams.get("leetcode");
-      const codechef = urlParams.get("codechef");
-      const hackerrank = urlParams.get("hackerrank");
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username') || '';
 
-      const apiUrl = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
+    if (!username) {
+      alert("No username found in query params.");
+    } else {
+      fetch(`https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${username}`)
+        .then(res => res.json())
+        .then(data => {
+          // LeetCode
+          const lc = data.leetcode || {};
+          document.getElementById('leetcodeUsername').textContent = username;
+          document.getElementById('leetcodeProblems').textContent = lc.totalSolved || 0;
+          document.getElementById('leetcodeRating').textContent = lc.contestRating || "N/A";
+          document.getElementById('leetcodeEasy').textContent = lc.easySolved || 0;
+          document.getElementById('leetcodeMedium').textContent = lc.mediumSolved || 0;
+          document.getElementById('leetcodeHard').textContent = lc.hardSolved || 0;
 
-      try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
+          // CodeChef
+          const cc = data.codechef || {};
+          document.getElementById('codechefUsername').textContent = username;
+          document.getElementById('codechefRating').textContent = cc.rating || 0;
+          document.getElementById('codechefStars').textContent = cc.stars || 0;
+          document.getElementById('codechefSolved').textContent = cc.solvedCount || 0;
 
-        // LeetCode
-        document.getElementById("leetcode-username").textContent = data.leetcode.username || "N/A";
-        document.getElementById("leetcode-problems").textContent = data.leetcode.problemsSolved || 0;
-        document.getElementById("leetcode-rating").textContent = data.leetcode.contestRating || "N/A";
-        document.getElementById("leetcode-easy").textContent = data.leetcode.easySolved || 0;
-        document.getElementById("leetcode-medium").textContent = data.leetcode.mediumSolved || 0;
-        document.getElementById("leetcode-hard").textContent = data.leetcode.hardSolved || 0;
-
-        // CodeChef
-        document.getElementById("codechef-username").textContent = data.codechef.username || "N/A";
-        document.getElementById("codechef-rating").textContent = data.codechef.rating || 0;
-        document.getElementById("codechef-stars").textContent = data.codechef.stars || 0;
-        document.getElementById("codechef-problems").textContent = data.codechef.problemsSolved || 0;
-
-        // HackerRank
-        document.getElementById("hackerrank-username").textContent = data.hackerrank.username || "N/A";
-        document.getElementById("hackerrank-score").textContent = data.hackerrank.totalScore || 0;
-        document.getElementById("hackerrank-badges").textContent = data.hackerrank.badgeCount || 0;
-        document.getElementById("hackerrank-certifications").textContent = data.hackerrank.certificationCount || 0;
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        document.getElementById("error").classList.remove("hidden");
-      }
+          // HackerRank
+          const hr = data.hackerrank || {};
+          document.getElementById('hackerrankUsername').textContent = username;
+          document.getElementById('hackerrankScore').textContent = hr.score || 0;
+          document.getElementById('hackerrankBadges').textContent = hr.badges || 0;
+          document.getElementById('hackerrankCerts').textContent = hr.certifications || 0;
+        })
+        .catch(err => {
+          console.error("Error fetching score:", err);
+          alert("Failed to fetch scores.");
+        });
     }
-
-    fetchScores();
   </script>
 </body>
 </html>
