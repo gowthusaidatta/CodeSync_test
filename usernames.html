@@ -25,6 +25,8 @@
   </div>
 
   <script>
+    const ids = ["leetcode", "codechef", "hackerrank", "gfg"];
+
     window.addEventListener("load", () => {
       const amplify = window.aws_amplify;
       const { Auth } = amplify;
@@ -34,13 +36,22 @@
       Auth.currentAuthenticatedUser().catch(() => {
         window.location.href = "index.html";
       });
+
+      // Auto-fill usernames from localStorage if available
+      ids.forEach(id => {
+        const saved = localStorage.getItem(`codesync_username_${id}`);
+        if (saved) document.getElementById(id).value = saved;
+      });
     });
 
     function goToResults() {
       const params = new URLSearchParams();
-      ["leetcode", "codechef", "hackerrank", "gfg"].forEach(id => {
+      ids.forEach(id => {
         const val = document.getElementById(id).value.trim();
-        if (val) params.append(id, val);
+        if (val) {
+          params.append(id, val);
+          localStorage.setItem(`codesync_username_${id}`, val); // Save for future use
+        }
       });
       window.location.href = `results.html?${params.toString()}`;
     }
