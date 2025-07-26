@@ -3,190 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Coding Profile Stats - Results</title>
-
-  <!-- Tailwind -->
+  <title>CodeSync - Results</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: #e2e8f0;
-      min-height: 100vh;
-      padding: 2rem 0;
-    }
-    .glass-container {
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-      border-radius: 1.5rem;
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 2.5rem;
-    }
-    .result-card {
-      background: rgba(30, 41, 59, 0.6);
-      border-radius: 1rem;
-      padding: 1.8rem;
-      margin-bottom: 2rem;
-      border-left: 5px solid;
-    }
-    .gfg-card { border-left-color: #48bb78; }
-    .leetcode-card { border-left-color: #fbbf24; }
-    .codechef-card { border-left-color: #ed8936; }
-    .hackerrank-card { border-left-color: #818cf8; }
-    .stat-item {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      padding: 0.5rem 0;
-    }
-    .stat-item:last-child { border-bottom: none; }
-    .error-card {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 1rem;
-      padding: 2rem;
-      text-align: center;
-      margin: 2rem 0;
-    }
-  </style>
 </head>
-<body>
-  <div class="glass-container">
-    <h1 class="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-      Coding Profile Stats
-    </h1>
+<body class="bg-gray-900 text-white font-sans">
 
-    <div id="results"></div>
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-6">📊 Coding Profile Stats</h1>
 
-    <div class="text-center mt-8">
-      <button onclick="window.history.back()" class="px-4 py-2 bg-slate-800 text-white rounded-lg">Back</button>
+    <div id="loading" class="text-center text-yellow-400">Fetching your scores...</div>
+    <div id="error" class="hidden text-center text-red-500">❌ Failed to fetch scores.</div>
+
+    <div id="results" class="grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
+      <!-- CodeChef -->
+      <div class="bg-gray-800 p-4 rounded-xl shadow">
+        <h2 class="text-xl font-bold mb-2">🥘 CodeChef</h2>
+        <p>Rating: <span id="codechef_rating"></span></p>
+        <p>Stars: <span id="codechef_stars"></span></p>
+        <p>Problems Solved: <span id="codechef_solved"></span></p>
+      </div>
+
+      <!-- LeetCode -->
+      <div class="bg-gray-800 p-4 rounded-xl shadow">
+        <h2 class="text-xl font-bold mb-2">🧩 LeetCode</h2>
+        <p>Problems Solved: <span id="leetcode_solved"></span></p>
+        <p>Easy: <span id="leetcode_easy"></span></p>
+        <p>Medium: <span id="leetcode_medium"></span></p>
+        <p>Hard: <span id="leetcode_hard"></span></p>
+      </div>
+
+      <!-- HackerRank -->
+      <div class="bg-gray-800 p-4 rounded-xl shadow">
+        <h2 class="text-xl font-bold mb-2">💻 HackerRank</h2>
+        <p>Badges: <span id="hackerrank_badges"></span></p>
+        <p>Certifications: <span id="hackerrank_certifications"></span></p>
+      </div>
     </div>
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const leetcode = urlParams.get('leetcode');
-    const codechef = urlParams.get('codechef');
-    const hackerrank = urlParams.get('hackerrank');
-    const gfg = urlParams.get('gfg');
+    const leetcode = urlParams.get("leetcode");
+    const codechef = urlParams.get("codechef");
+    const hackerrank = urlParams.get("hackerrank");
 
-    const resultsDiv = document.getElementById("results");
+    const apiUrl = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
 
-    const platformConfig = {
-      leetcode: {
-        name: "LeetCode", color: "leetcode-card",
-        stats: [
-          { label: "Problems Solved", key: "total_problems_solved", default: "N/A" },
-          { label: "Contest Rating", key: "ranking", default: "N/A" },
-          { label: "Easy", key: "easy", default: 0 },
-          { label: "Medium", key: "medium", default: 0 },
-          { label: "Hard", key: "hard", default: 0 }
-        ]
-      },
-      codechef: {
-        name: "CodeChef", color: "codechef-card",
-        stats: [
-          { label: "Contest Rating", key: "contest_rating", default: "N/A" },
-          { label: "Stars", key: "stars", default: "N/A" },
-          { label: "Problems Solved", key: "problems_solved", default: "N/A" },
-          { label: "Contests Participated", key: "contests_participated", default: "N/A" }
-        ]
-      },
-      hackerrank: {
-        name: "HackerRank", color: "hackerrank-card",
-        stats: [
-          { label: "Badges", key: "badges", default: 0 },
-          { label: "Stars", key: "stars", default: "N/A" }
-        ]
-      },
-      gfg: {
-        name: "GeeksforGeeks", color: "gfg-card",
-        stats: [
-          { label: "Coding Score", key: "codingScore", default: "N/A" },
-          { label: "Institute Rank", key: "instituteRank", default: "N/A" },
-          { label: "Problems Solved", key: "totalProblemsSolved", default: "N/A" },
-          { label: "Current Streak", key: "currentStreak", default: "N/A" },
-          { label: "Easy", key: "easyProblems", default: 0 },
-          { label: "Medium", key: "mediumProblems", default: 0 },
-          { label: "Hard", key: "hardProblems", default: 0 }
-        ]
-      }
-    };
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("results").classList.remove("hidden");
 
-    async function displayStats() {
-      resultsDiv.innerHTML = `<p>Loading...</p>`;
-
-      try {
-        const [platforms, gfgData] = await Promise.all([fetchPlatforms(), fetchGFG()]);
-        render(platforms, gfgData);
-      } catch (err) {
-        console.error(err);
-        resultsDiv.innerHTML = `<div class="error-card">Error loading data. Try again.</div>`;
-      }
-    }
-
-    async function fetchPlatforms() {
-      if (!leetcode && !codechef && !hackerrank) return {};
-      const url = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode || ''}&codechef=${codechef || ''}&hackerrank=${hackerrank || ''}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      return typeof data.body === "string" ? JSON.parse(data.body) : data;
-    }
-
-    async function fetchGFG() {
-      if (!gfg) return {};
-      const url = `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      return typeof data.body === "string" ? JSON.parse(data.body) : data;
-    }
-
-    function render(platforms, gfgData) {
-      resultsDiv.innerHTML = '';
-      let count = 0;
-
-      [
-        { name: 'leetcode', data: platforms.leetcode, username: leetcode },
-        { name: 'codechef', data: platforms.codechef, username: codechef },
-        { name: 'hackerrank', data: platforms.hackerrank, username: hackerrank },
-        { name: 'gfg', data: gfgData, username: gfg }
-      ].forEach(({ name, data, username }) => {
-        if (!username) return;
-
-        if (!data || data.error) {
-          resultsDiv.innerHTML += `<div class="error-card">${name.toUpperCase()} - ${data?.error || 'No data found.'}</div>`;
-          return;
+        // CodeChef
+        if (data.codechef) {
+          document.getElementById("codechef_rating").textContent = data.codechef.rating || "N/A";
+          document.getElementById("codechef_stars").textContent = data.codechef.stars || "N/A";
+          document.getElementById("codechef_solved").textContent = data.codechef.problems_solved || "N/A";
         }
 
-        const conf = platformConfig[name];
-        const card = document.createElement('div');
-        card.className = `result-card ${conf.color}`;
-        let statsHTML = '';
-        conf.stats.forEach(stat => {
-          const val = data[stat.key] !== undefined ? data[stat.key] : stat.default;
-          statsHTML += `<div class="stat-item"><span>${stat.label}</span><span>${val}</span></div>`;
-        });
+        // LeetCode
+        if (data.leetcode) {
+          document.getElementById("leetcode_solved").textContent = data.leetcode.problems_solved || "N/A";
+          document.getElementById("leetcode_easy").textContent = data.leetcode.Easy || 0;
+          document.getElementById("leetcode_medium").textContent = data.leetcode.Medium || 0;
+          document.getElementById("leetcode_hard").textContent = data.leetcode.Hard || 0;
+        }
 
-        card.innerHTML = `
-          <h2 class="text-2xl font-bold mb-2">${conf.name}</h2>
-          <p class="mb-4 text-slate-400">@${username}</p>
-          ${statsHTML}
-        `;
-        resultsDiv.appendChild(card);
-        count++;
+        // HackerRank
+        if (data.hackerrank) {
+          document.getElementById("hackerrank_badges").textContent = data.hackerrank.badges || "N/A";
+          document.getElementById("hackerrank_certifications").textContent = data.hackerrank.certifications || "N/A";
+        }
+      })
+      .catch(err => {
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("error").classList.remove("hidden");
+        console.error("Fetch error:", err);
       });
-
-      if (count === 0) {
-        resultsDiv.innerHTML = `<div class="text-center text-slate-400">No usernames provided.</div>`;
-      }
-    }
-
-    displayStats();
   </script>
+
 </body>
 </html>
