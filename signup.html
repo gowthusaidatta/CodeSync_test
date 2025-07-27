@@ -5,55 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodeSync Sign Up</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/aws-amplify@5.0.4/dist/aws-amplify.min.js"></script>
+  <!-- Use the same Amplify version as in login page -->
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
   <script src="./js/amplify_config.js"></script>
 </head>
 <body class="flex items-center justify-center h-screen bg-gray-900 text-white">
-  <div class="p-6 bg-white/10 backdrop-blur-lg rounded-xl w-96 space-y-4 text-center">
-    <h2 class="text-xl font-bold mb-2">Sign Up</h2>
-    <input id="email" placeholder="Email" class="w-full p-2 rounded text-black" />
-    <input id="password" placeholder="Password" type="password" class="w-full p-2 rounded text-black" />
-    <button id="signup-btn" class="bg-purple-600 w-full py-2 rounded font-bold">Sign Up</button>
-
-    <div id="confirmation" class="hidden mt-4">
-      <input id="code" placeholder="Verification Code" class="w-full p-2 rounded text-black" />
-      <button id="confirm-btn" class="bg-green-600 w-full py-2 rounded font-bold mt-2">Confirm</button>
+  <div class="p-6 bg-white/10 backdrop-blur-lg rounded-xl w-96 space-y-4">
+    <h2 class="text-xl font-bold mb-2 text-center">Sign Up</h2>
+    
+    <div id="signup-form" class="space-y-4">
+      <input id="username" placeholder="Username" class="w-full p-2 rounded text-black" />
+      <input id="name" placeholder="Full Name" class="w-full p-2 rounded text-black" />
+      <input id="preferred_username" placeholder="Preferred Username" class="w-full p-2 rounded text-black" />
+      <input id="email" placeholder="Email" type="email" class="w-full p-2 rounded text-black" />
+      <input id="password" placeholder="Password" type="password" class="w-full p-2 rounded text-black" />
+      <button id="signup-btn" class="bg-purple-600 w-full py-2 rounded font-bold hover:bg-purple-700">
+        Sign Up
+      </button>
     </div>
-    <a href="index.html" class="text-sm text-blue-400">Back to Login</a>
+
+    <div id="confirmation" class="hidden mt-4 space-y-4">
+      <p class="text-center">We sent a verification code to your email</p>
+      <input id="code" placeholder="Verification Code" class="w-full p-2 rounded text-black" />
+      <button id="confirm-btn" class="bg-green-600 w-full py-2 rounded font-bold hover:bg-green-700">
+        Confirm
+      </button>
+    </div>
+    
+    <a href="index.html" class="text-sm text-blue-400 block text-center hover:underline">Back to Login</a>
   </div>
 
   <script>
     window.addEventListener("load", () => {
       const amplify = window.aws_amplify;
-      if (!amplify || !amplify.Auth) {
-        alert("❌ AWS Amplify failed to load.");
+      if (!amplify) {
+        alert("❌ AWS Amplify failed to load. Check your internet connection or CDN link.");
         return;
       }
+
       const { Auth } = amplify;
       Auth.configure(window.amplifyConfig);
 
       document.getElementById("signup-btn").addEventListener("click", async () => {
+        const username = document.getElementById("username").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const preferred_username = document.getElementById("preferred_username").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
 
+        if (!username || !name || !preferred_username || !email || !password) {
+          alert("Please fill in all fields");
+          return;
+        }
+
         try {
-          await Auth.signUp({ username: email, password });
+          const userAttributes = {
+            email,
+            name,
+            preferred_username,
+            // Add any other custom attributes your Cognito user pool requires
+          };
+
+          const signUpResponse = await Auth.signUp({
+            username,
+            password,
+            attributes: userAttributes
+          });
+
+          document.getElementById("signup-form").classList.add("hidden");
           document.getElementById("confirmation").classList.remove("hidden");
         } catch (err) {
           alert("Sign Up Failed: " + err.message);
+          console.error(err);
         }
       });
 
       document.getElementById("confirm-btn").addEventListener("click", async () => {
-        const email = document.getElementById("email").value.trim();
+        const username = document.getElementById("username").value.trim();
         const code = document.getElementById("code").value.trim();
 
         try {
-          await Auth.confirmSignUp(email, code);
-          alert("Account confirmed! Redirecting...");
+          await Auth.confirmSignUp(username, code);
+          alert("Account confirmed successfully! Redirecting to login...");
           window.location.href = "index.html";
         } catch (err) {
           alert("Confirmation Failed: " + err.message);
+          console.error(err);
         }
       });
     });
