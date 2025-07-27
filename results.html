@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CodeSync | Results</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .platform-card {
+      transition: transform 0.2s;
+    }
+    .platform-card:hover {
+      transform: translateY(-5px);
+    }
+    .star-rating {
+      color: gold;
+      text-shadow: 0 0 2px rgba(255, 215, 0, 0.8);
+    }
+    .streak-fire {
+      color: #ff4500;
+      text-shadow: 0 0 4px rgba(255, 69, 0, 0.5);
+    }
+    .institute-badge {
+      background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-purple-400">📊 Coding Profile Stats</h1>
+
+    <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 sm:grid-cols-1">
+      <!-- Loading skeleton -->
+      <div id="loading-skeleton" class="space-y-4 col-span-full">
+        <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
+      </div>
+    </div>
+
+    <!-- Template for LeetCode Card -->
+    <template id="leetcode-template">
+      <div class="platform-card bg-gradient-to-br from-orange-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">LeetCode</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="leetcode-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Total Solved:</span>
+            <span id="leetcode-problems" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-green-400">
+            <span>Easy:</span>
+            <span id="leetcode-easy" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-yellow-400">
+            <span>Medium:</span>
+            <span id="leetcode-medium" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-red-400">
+            <span>Hard:</span>
+            <span id="leetcode-hard" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Template for CodeChef Card -->
+    <template id="codechef-template">
+      <div class="platform-card bg-gradient-to-br from-yellow-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">CodeChef</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="codechef-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Problems Solved:</span>
+            <span id="codechef-problems" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-blue-300">
+            <span>Rating:</span>
+            <span id="codechef-rating" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Contests:</span>
+            <span id="codechef-contests" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between star-rating">
+            <span>Stars:</span>
+            <span id="codechef-stars" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Template for HackerRank Card -->
+    <template id="hackerrank-template">
+      <div class="platform-card bg-gradient-to-br from-green-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">HackerRank</h2>
+        </div>
+        <p class="text-gray-300 mb-1">@<span id="hackerrank-username" class="text-white">Loading...</span></p>
+        <div class="mt-4 space-y-2">
+          <div class="flex justify-between">
+            <span>Badges:</span>
+            <span id="hackerrank-badges" class="font-bold">0</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Template for GFG Card -->
+    <template id="gfg-template">
+      <div class="platform-card bg-gradient-to-br from-green-800/50 to-gray-800 p-6 rounded-2xl shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-8 h-8">
+          <h2 class="text-xl font-semibold">GeeksForGeeks</h2>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <img id="gfg-profile-image" src="" alt="Profile" class="w-10 h-10 rounded-full">
+          <div>
+            <p class="text-gray-300">@<span id="gfg-username" class="text-white">Loading...</span></p>
+            <p id="gfg-fullname" class="text-sm text-gray-400 truncate max-w-xs"></p>
+          </div>
+        </div>
+        
+        <div class="institute-badge text-xs px-2 py-1 rounded-full mb-3 inline-flex items-center">
+          <span id="gfg-institute" class="truncate max-w-xs"></span>
+          <span id="gfg-institute-rank" class="ml-1 bg-purple-800 px-1 rounded"></span>
+        </div>
+        
+        <div class="mt-2 space-y-2">
+          <div class="flex justify-between">
+            <span>Problems Solved:</span>
+            <span id="gfg-problems" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-green-400">
+            <span>Easy:</span>
+            <span id="gfg-easy" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-yellow-400">
+            <span>Medium:</span>
+            <span id="gfg-medium" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between text-red-400">
+            <span>Hard:</span>
+            <span id="gfg-hard" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Coding Score:</span>
+            <span id="gfg-score" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Monthly Score:</span>
+            <span id="gfg-monthly" class="font-bold">0</span>
+          </div>
+          <div class="flex justify-between streak-fire">
+            <span>Current Streak:</span>
+            <span id="gfg-streak" class="font-bold">0 days</span>
+          </div>
+          <div class="flex justify-between text-gray-400">
+            <span>Max Streak:</span>
+            <span id="gfg-max-streak" class="font-bold">0 days</span>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div class="mt-8 flex justify-center">
+      <button onclick="window.location.href='usernames.html'" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded font-semibold text-white">
+        🔄 Update Usernames
+      </button>
+      <button onclick="logout()" class="ml-4 text-sm text-gray-300 hover:underline mt-2">🚪 Logout</button>
+    </div>
+  </div>
+
+  <script>
+    async function fetchScores() {
+      const params = new URLSearchParams(window.location.search);
+      const leetcode = params.get('leetcode') || localStorage.getItem('codesync_username_leetcode');
+      const codechef = params.get('codechef') || localStorage.getItem('codesync_username_codechef');
+      const hackerrank = params.get('hackerrank') || localStorage.getItem('codesync_username_hackerrank');
+      const gfg = params.get('gfg') || localStorage.getItem('codesync_username_gfg');
+
+      if (!leetcode || !codechef || !hackerrank) {
+        alert("Missing required usernames. Please go back and enter all usernames.");
+        window.location.href = "usernames.html";
+        return;
+      }
+
+      // Save to localStorage for future use
+      if (leetcode) localStorage.setItem('codesync_username_leetcode', leetcode);
+      if (codechef) localStorage.setItem('codesync_username_codechef', codechef);
+      if (hackerrank) localStorage.setItem('codesync_username_hackerrank', hackerrank);
+      if (gfg) localStorage.setItem('codesync_username_gfg', gfg);
+
+      try {
+        // Show loading skeleton
+        document.getElementById('loading-skeleton').classList.remove('hidden');
+
+        // Fetch data from main API
+        const mainApiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}&codechef=${codechef}&hackerrank=${hackerrank}`;
+        const mainApiPromise = fetch(mainApiURL).then(res => res.ok ? res.json() : Promise.reject(res));
+        
+        // Fetch GFG data from separate API if username provided
+        let gfgApiPromise = Promise.resolve(null);
+        if (gfg) {
+          const gfgApiURL = `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`;
+          gfgApiPromise = fetch(gfgApiURL).then(res => res.ok ? res.json() : Promise.reject(res));
+        }
+
+        // Wait for all API calls to complete
+        const [mainData, gfgData] = await Promise.all([mainApiPromise, gfgApiPromise]);
+        
+        // Hide loading skeleton
+        document.getElementById('loading-skeleton').classList.add('hidden');
+        
+        // Clear the output div
+        const outputDiv = document.getElementById('output');
+        outputDiv.innerHTML = '';
+        
+        // Create and append cards based on available data
+        if (mainData?.leetcode) {
+          const leetcodeCard = document.getElementById('leetcode-template').content.cloneNode(true);
+          leetcodeCard.getElementById('leetcode-username').textContent = leetcode;
+          leetcodeCard.getElementById('leetcode-problems').textContent = mainData.leetcode.problems_solved || '0';
+          leetcodeCard.getElementById('leetcode-easy').textContent = mainData.leetcode.Easy || '0';
+          leetcodeCard.getElementById('leetcode-medium').textContent = mainData.leetcode.Medium || '0';
+          leetcodeCard.getElementById('leetcode-hard').textContent = mainData.leetcode.Hard || '0';
+          outputDiv.appendChild(leetcodeCard);
+        }
+        
+        if (mainData?.codechef) {
+          const codechefCard = document.getElementById('codechef-template').content.cloneNode(true);
+          codechefCard.getElementById('codechef-username').textContent = codechef;
+          codechefCard.getElementById('codechef-problems').textContent = mainData.codechef.problems_solved || '0';
+          codechefCard.getElementById('codechef-rating').textContent = mainData.codechef.contest_rating || '0';
+          codechefCard.getElementById('codechef-contests').textContent = mainData.codechef.contests_participated || '0';
+          codechefCard.getElementById('codechef-stars').textContent = mainData.codechef.stars || '0';
+          outputDiv.appendChild(codechefCard);
+        }
+        
+        if (mainData?.hackerrank) {
+          const hackerrankCard = document.getElementById('hackerrank-template').content.cloneNode(true);
+          hackerrankCard.getElementById('hackerrank-username').textContent = hackerrank;
+          hackerrankCard.getElementById('hackerrank-badges').textContent = mainData.hackerrank.badges || '0';
+          outputDiv.appendChild(hackerrankCard);
+        }
+        
+        // Handle GFG data from separate API
+        if (gfg && gfgData) {
+          const gfgCard = document.getElementById('gfg-template').content.cloneNode(true);
+          
+          // Profile info
+          gfgCard.getElementById('gfg-username').textContent = gfgData.username || gfg;
+          gfgCard.getElementById('gfg-fullname').textContent = gfgData.fullName || '';
+          gfgCard.getElementById('gfg-profile-image').src = gfgData.profileImage || 'https://media.geeksforgeeks.org/img-practice/user_web-1598433228.svg';
+          
+          // Institute info
+          gfgCard.getElementById('gfg-institute').textContent = gfgData.institute || 'Not specified';
+          if (gfgData.instituteRank) {
+            gfgCard.getElementById('gfg-institute-rank').textContent = `#${gfgData.instituteRank}`;
+          } else {
+            gfgCard.getElementById('gfg-institute-rank').style.display = 'none';
+          }
+          
+          // Stats
+          gfgCard.getElementById('gfg-problems').textContent = gfgData.totalProblemsSolved || '0';
+          gfgCard.getElementById('gfg-easy').textContent = gfgData.easyProblems || '0';
+          gfgCard.getElementById('gfg-medium').textContent = gfgData.mediumProblems || '0';
+          gfgCard.getElementById('gfg-hard').textContent = gfgData.hardProblems || '0';
+          gfgCard.getElementById('gfg-score').textContent = gfgData.codingScore || '0';
+          gfgCard.getElementById('gfg-monthly').textContent = gfgData.monthlyScore || '0';
+          gfgCard.getElementById('gfg-streak').textContent = gfgData.currentStreak ? `${gfgData.currentStreak} days` : '0 days';
+          gfgCard.getElementById('gfg-max-streak').textContent = gfgData.maxStreak ? `${gfgData.maxStreak} days` : '0 days';
+          
+          outputDiv.appendChild(gfgCard);
+        } else if (gfg) {
+          console.warn("GFG username was provided but no GFG data was returned from API");
+        }
+        
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        document.getElementById('loading-skeleton').classList.add('hidden');
+        alert("❌ Failed to fetch some coding scores. Some data may be incomplete.");
+      }
+    }
+
+    async function logout() {
+      try {
+        const { Auth } = window.aws_amplify;
+        await Auth.signOut();
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Logout failed: " + err.message);
+      }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if Amplify is available (for logout functionality)
+      if (!window.aws_amplify) {
+        console.warn("Amplify not loaded - logout may not work");
+      }
+      
+      fetchScores();
+    });
+  </script>
+</body>
+</html>
