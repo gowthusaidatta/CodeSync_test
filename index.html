@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeSync</title>
+    <title>💱CodeSync</title>
     <meta name="description" content="A powerful platform for students and college management to synchronize and manage student coding profiles across competitive programming and GitHub platforms.">
     <meta name="keywords" content="Student Coding Sync, College Dashboard, Competitive Programming Sync, GitHub Profiles, LeetCode, Codeforces, Coding Platform Integration, Student Progress Synchronization">
     <meta name="author" content="Your Company or Team Name">
@@ -137,15 +137,15 @@
                         <form id="signup-form" class="space-y-6 hidden">
                             <div>
                                 <label for="signup-username" class="sr-only">Username</label>
-                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username">
+                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username (e.g., your unique handle)">
                             </div>
                             <div>
                                 <label for="signup-full-name" class="sr-only">Full Name</label>
-                                <input id="signup-full-name" name="name" type="text" autocomplete="name" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Full Name">
+                                <input id="signup-full-name" name="name" type="text" autocomplete="name" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Your Full Name">
                             </div>
                             <div>
                                 <label for="signup-preferred-username" class="sr-only">Preferred Username</label>
-                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Username (e.g., CodeSync Handle)">
+                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Display Name (e.g., CodeSync Handle)">
                             </div>
                             <div>
                                 <label for="signup-email" class="sr-only">Email address</label>
@@ -287,6 +287,7 @@
     </div>
 
     <script>
+        // --- Mobile Menu Toggle ---
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
             var mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
@@ -299,7 +300,7 @@
             });
         });
 
-        // AWS Amplify Configuration and Auth Logic
+        // --- AWS Amplify Configuration and Authentication Logic ---
         window.addEventListener("load", () => {
             const amplify = window.aws_amplify;
             if (!amplify) {
@@ -309,9 +310,11 @@
 
             const { Auth } = amplify;
             // Ensure window.amplifyConfig is defined in your ./js/amplify_config.js file
+            // It should look something like:
+            // window.amplifyConfig = { Auth: { region: 'YOUR_REGION', userPoolId: 'YOUR_USER_POOL_ID', userPoolWebClientId: 'YOUR_CLIENT_ID' } };
             Auth.configure(window.amplifyConfig);
 
-            // Get references to elements
+            // Get references to DOM elements
             const loginTab = document.getElementById('login-tab');
             const signupTab = document.getElementById('signup-tab');
             const loginForm = document.getElementById('login-form');
@@ -319,7 +322,7 @@
             const confirmationForm = document.getElementById('confirmation-form');
 
             const loginBtn = document.getElementById('login-btn');
-            const signupBtn = document.getElementById('signup-btn-submit'); // Renamed to avoid conflict
+            const signupBtn = document.getElementById('signup-btn-submit'); // Renamed to avoid ID conflict
             const confirmBtn = document.getElementById('confirm-btn');
             const resendCodeBtn = document.getElementById('resend-code-btn');
 
@@ -346,14 +349,14 @@
 
             // --- Login Logic ---
             loginBtn.addEventListener("click", async (event) => {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault(); // Prevent default form submission to handle with JS
                 const username = document.getElementById("login-username").value.trim();
                 const password = document.getElementById("login-password").value.trim();
 
                 try {
                     await Auth.signIn(username, password);
-                    alert("Login successful! Redirecting...");
-                    window.location.href = "usernames.html"; // Redirect to your dashboard page
+                    alert("Login successful! Redirecting to dashboard...");
+                    window.location.href = "usernames.html"; // Redirect to your main application dashboard
                 } catch (err) {
                     alert("Login Failed: " + err.message);
                     console.error("Login Error:", err);
@@ -379,16 +382,17 @@
                         email,
                         name,
                         preferred_username,
-                        // Add any other custom attributes your Cognito user pool requires, e.g., 'custom:college_id'
+                        // Add any other custom attributes your Cognito user pool requires here
+                        // For example: 'custom:college_id': 'your_college_id_value'
                     };
 
                     await Auth.signUp({
-                        username,
+                        username, // This is the Cognito username
                         password,
                         attributes: userAttributes
                     });
 
-                    // On successful signup, show confirmation form
+                    // On successful signup, hide signup form and show confirmation form
                     signupForm.classList.add("hidden");
                     confirmationForm.classList.remove("hidden");
                     alert("Sign up successful! Please check your email for a verification code.");
@@ -413,11 +417,11 @@
                 try {
                     await Auth.confirmSignUp(username, code);
                     alert("Account confirmed successfully! You can now log in.");
-                    // Redirect to login form or dashboard
+                    // After successful confirmation, switch back to login form and pre-fill username
                     loginForm.classList.remove('hidden');
                     signupForm.classList.add('hidden');
                     confirmationForm.classList.add('hidden');
-                    loginTab.click(); // Programmatically click login tab to show it
+                    loginTab.click(); // Programmatically click login tab to make it active
                     document.getElementById("login-username").value = username; // Pre-fill username for convenience
 
                 } catch (err) {
@@ -446,21 +450,21 @@
             });
         });
 
-        // Password Toggle Function (modified to use Bootstrap Icons)
+        // --- Password Toggle Function (uses Bootstrap Icons) ---
         function togglePassword(inputId, buttonId) {
             const input = document.getElementById(inputId);
             const button = document.getElementById(buttonId);
-            const icon = button.querySelector('i'); // Get the icon element
+            const icon = button.querySelector('i'); // Get the icon element inside the button
 
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash'); // Changed to a "hide" icon
+                icon.classList.add('bi-eye-slash'); // Change to a "hide" icon
                 button.setAttribute('aria-label', 'Hide password');
             } else {
                 input.type = 'password';
                 icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye'); // Changed back to "show" icon
+                icon.classList.add('bi-eye'); // Change back to "show" icon
                 button.setAttribute('aria-label', 'Show password');
             }
         }
