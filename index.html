@@ -1,53 +1,469 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CodeSync Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSync</title>
+    <meta name="description" content="A powerful platform for students and college management to synchronize and manage student coding profiles across competitive programming and GitHub platforms.">
+    <meta name="keywords" content="Student Coding Sync, College Dashboard, Competitive Programming Sync, GitHub Profiles, LeetCode, Codeforces, Coding Platform Integration, Student Progress Synchronization">
+    <meta name="author" content="Your Company or Team Name">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="CodeSync - Synchronize Your Coding Journey">
+    <meta property="og:description" content="Track and manage student coding activity for colleges and institutions.">
+    <meta property="og:image" content="/images/preview.jpg">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CodeSync - Synchronize Your Coding Journey">
+    <meta name="twitter:description" content="A smart tool for institutions to synchronize student coding progress and analytics.">
+    <meta name="twitter:image" content="/images/preview.jpg">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://yourdomain.com/">
 
-  <!-- Tailwind for styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-  <!-- ✅ Working Amplify version -->
-  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
+    <script src="./js/amplify_config.js"></script>
 
-  <!-- Your config -->
-  <script src="./js/amplify_config.js"></script>
-</head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-  <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl w-96 space-y-4 text-center">
-    <h2 class="text-xl font-bold">CodeSync Login</h2>
-    <input id="username" placeholder="Email" class="w-full p-2 rounded text-black" />
-    <input id="password" type="password" placeholder="Password" class="w-full p-2 rounded text-black" />
-    <button id="login-btn" class="bg-blue-600 w-full py-2 rounded font-semibold hover:bg-blue-700">
-      Login
-    </button>
-    <a href="signup.html" class="text-blue-300 text-sm block hover:underline">Don't have an account? Sign Up</a>
-  </div>
-
-  <script>
-    window.addEventListener("load", () => {
-      const amplify = window.aws_amplify;
-      if (!amplify) {
-        alert("❌ AWS Amplify failed to load. Check your internet connection or CDN link.");
-        return;
-      }
-
-      const { Auth } = amplify;
-      Auth.configure(window.amplifyConfig);
-
-      document.getElementById("login-btn").addEventListener("click", async () => {
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
-
-        try {
-          await Auth.signIn(username, password);
-          window.location.href = "usernames.html";
-        } catch (err) {
-          alert("Login Failed: " + err.message);
+    <style>
+        /* Custom animation for hero section */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-      });
-    });
-  </script>
+        .animate-fade-in-slide-up {
+            animation: fadeInSlideUp 1s ease-out forwards;
+        }
+
+        /* Basic global styles for better font rendering, etc. */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter as a placeholder for a modern sans-serif font */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Consider adding a custom font from Google Fonts here for better typography */
+        /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
+    </style>
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal text-gray-800">
+
+    <div id="home" class="relative min-h-screen flex flex-col">
+        <header class="bg-gray-900 text-white py-4 px-6 shadow-lg sticky top-0 z-50">
+            <div class="container mx-auto flex justify-between items-center max-w-7xl">
+                <div class="text-2xl font-bold">
+                    <a href="/" class="flex items-center space-x-3">
+                        <img src="/images/logo.png" alt="CodeSync Logo" class="h-9 w-auto filter brightness-150">
+                        <h1 class="md:text-2xl text-xl font-extrabold text-white">CodeSync</h1>
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-6 text-lg">
+                    <a href="#home" class="hover:text-blue-400 transition duration-300">Home</a>
+                    <a href="#features" class="hover:text-blue-400 transition duration-300">Features</a>
+                    <a href="#about" class="hover:text-blue-400 transition duration-300">About</a>
+                    <a href="#contact" class="hover:text-blue-400 transition duration-300">Contact</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white focus:outline-none p-2 rounded-md hover:bg-gray-700">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden bg-gray-800 py-3 mt-2 rounded-b-lg shadow-inner">
+                <a href="#home" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Home</a>
+                <a href="#features" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Features</a>
+                <a href="#about" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">About</a>
+                <a href="#contact" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Contact</a>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <section class="relative h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800 overflow-hidden py-16">
+                <img src="/images/hero-bg.jpg" alt="Abstract coding background" class="absolute inset-0 w-full h-full object-cover opacity-20">
+                <div class="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
+
+                    <div class="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-2xl border border-gray-100 animate-fade-in-slide-up">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Get Started with CodeSync</h2>
+                        <div class="flex justify-center mb-6">
+                            <button id="login-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 border-blue-600 text-blue-600">Login</button>
+                            <button id="signup-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-blue-600">Sign Up</button>
+                        </div>
+
+                        <form id="login-form" class="space-y-6">
+                            <div>
+                                <label for="login-username" class="sr-only">Email address or Username</label>
+                                <input id="login-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Email or Username">
+                            </div>
+
+                            <div class="relative">
+                                <label for="login-password" class="sr-only">Password</label>
+                                <input id="login-password" name="password" type="password" autocomplete="current-password" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Password">
+                                <button
+                                    type="button"
+                                    onclick="togglePassword('login-password', 'toggleLoginPasswordButton')"
+                                    class="absolute right-3 top-3 text-gray-600 hover:text-blue-500"
+                                    aria-label="Toggle password visibility"
+                                    id="toggleLoginPasswordButton"
+                                >
+                                    <i class="bi bi-eye"></i> </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input id="remember-me" name="remember-me" type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="remember-me" class="ml-2 block text-md text-gray-900">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <div class="text-md">
+                                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
+                                        Forgot your password?
+                                    </a>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="submit" id="login-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
+                                    Sign in
+                                </button>
+                            </div>
+                        </form>
+
+                        <form id="signup-form" class="space-y-6 hidden">
+                            <div>
+                                <label for="signup-username" class="sr-only">Username</label>
+                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username">
+                            </div>
+                            <div>
+                                <label for="signup-full-name" class="sr-only">Full Name</label>
+                                <input id="signup-full-name" name="name" type="text" autocomplete="name" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Full Name">
+                            </div>
+                            <div>
+                                <label for="signup-preferred-username" class="sr-only">Preferred Username</label>
+                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Username (e.g., CodeSync Handle)">
+                            </div>
+                            <div>
+                                <label for="signup-email" class="sr-only">Email address</label>
+                                <input id="signup-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Email address">
+                            </div>
+
+                            <div class="relative">
+                                <label for="signup-password" class="sr-only">Password</label>
+                                <input
+                                    id="signup-password"
+                                    name="password"
+                                    type="password"
+                                    autocomplete="new-password"
+                                    required
+                                    class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200"
+                                    placeholder="Password"
+                                />
+                                <button
+                                    type="button"
+                                    onclick="togglePassword('signup-password', 'toggleSignupPasswordButton')"
+                                    class="absolute right-3 top-3 text-gray-600 hover:text-blue-500"
+                                    aria-label="Toggle password visibility"
+                                    id="toggleSignupPasswordButton"
+                                >
+                                    <i class="bi bi-eye"></i> </button>
+                            </div>
+                            <div>
+                                <button type="submit" id="signup-btn-submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
+                                    Create Account
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="confirmation-form" class="space-y-6 hidden">
+                            <p class="text-center text-gray-800">We sent a verification code to your email. Please enter it below to confirm your account.</p>
+                            <div>
+                                <label for="confirmation-code" class="sr-only">Verification Code</label>
+                                <input id="confirmation-code" name="code" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Verification Code">
+                            </div>
+                            <div>
+                                <button type="button" id="confirm-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
+                                    Confirm Account
+                                </button>
+                            </div>
+                            <div class="text-center text-sm">
+                                <button type="button" id="resend-code-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Resend Code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-1/2 text-center lg:text-left text-white p-8 lg:p-0 rounded-xl animate-fade-in-slide-up">
+                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-5 text-shadow-md">
+                            Sync Your Coding <br class="hidden sm:inline"> Journey with Precision
+                        </h1>
+                        <p class="text-lg md:text-xl text-blue-100 max-w-2xl lg:max-w-none mx-auto mb-8 font-light">
+                            CodeSync helps you synchronize your progress, set goals, and collaborate with peers to become a better programmer every day.
+                        </p>
+                        <a href="#features" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105 text-lg">
+                            Explore Features
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="py-20 bg-white">
+                <div class="container mx-auto px-6 text-center max-w-7xl">
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-12">Key Features of CodeSync</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
+                            <i class="bi bi-person-check-fill text-blue-600 text-6xl mb-6"></i>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Student Profiles</h3>
+                            <p class="text-gray-700 leading-relaxed">Comprehensive profiles showcasing competitive programming and GitHub activities, consolidated for easy viewing and management.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
+                            <i class="bi bi-graph-up text-green-600 text-6xl mb-6"></i>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Progress Analytics</h3>
+                            <p class="text-gray-700 leading-relaxed">Detailed analytics and visual dashboards to track student growth, identify strengths, and pinpoint areas for improvement.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
+                            <i class="bi bi-trophy-fill text-yellow-600 text-6xl mb-6"></i>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Competition Tracking</h3>
+                            <p class="text-gray-700 leading-relaxed">Monitor performance across various competitive programming platforms, enabling effective peer comparison and goal setting.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
+                            <i class="bi bi-github text-purple-600 text-6xl mb-6"></i>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">GitHub Integration</h3>
+                            <p class="text-gray-700 leading-relaxed">Seamlessly integrate GitHub activity to track contributions, repositories, and collaboration skills alongside competitive programming.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
+                            <i class="bi bi-person-lines-fill text-red-600 text-6xl mb-6"></i>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">College Management Dashboard</h3>
+                            <p class="text-gray-700 leading-relaxed">Intuitive dashboard for college administrators to oversee student progress, generate reports, and manage user accounts efficiently.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
+                            <i class="bi bi-lightbulb-fill text-orange-600 text-6xl mb-6"></i>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Goal Setting & Motivation</h3>
+                            <p class="text-gray-700 leading-relaxed">Tools to set personal coding goals and track achievements, fostering motivation and continuous improvement among students.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="about" class="py-20 bg-gray-100">
+                <div class="container mx-auto px-6 text-center max-w-7xl">
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-12">About CodeSync</h2>
+                    <p class="text-gray-700 text-lg max-w-3xl mx-auto mb-10 leading-relaxed">
+                        CodeSync is an innovative platform designed to empower educational institutions and students alike. We provide a seamless way to synchronize, monitor, and analyze student coding profiles from leading competitive programming sites and GitHub. Our mission is to foster a data-driven approach to student development, helping them achieve their full potential in the ever-evolving world of programming.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                        <div>
+                            <img src="/images/about1.jpg" alt="Team collaborating on CodeSync" class="w-full rounded-xl shadow-xl border border-gray-200 object-cover h-64 md:h-auto">
+                            <p class="mt-4 text-gray-600 text-md">Our dedicated team collaborating on innovative solutions.</p>
+                        </div>
+                        <div>
+                            <img src="/images/about2.jpg" alt="Student coding on CodeSync" class="w-full rounded-xl shadow-xl border border-gray-200 object-cover h-64 md:h-auto">
+                            <p class="mt-4 text-gray-600 text-md">Empowering students with real-time insights into their coding journey.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-gray-950 text-gray-400 py-8" id="contact">
+            <div class="container mx-auto px-6 text-center max-w-7xl">
+                <div class="mb-6 flex justify-center space-x-6">
+                    <a href="#home" class="hover:text-white transition duration-200 text-md">Home</a>
+                    <a href="#features" class="hover:text-white transition duration-200 text-md">Features</a>
+                    <a href="#about" class="hover:text-white transition duration-200 text-md">About</a>
+                    <a href="#contact" class="hover:text-white transition duration-200 text-md">Contact</a>
+                    <a href="#" class="hover:text-white transition duration-200 text-md">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition duration-200 text-md">Terms of Service</a>
+                </div>
+
+                <div class="text-sm border-t border-gray-700 pt-6">
+                    © 2025 CodeSync. All rights reserved. | Developed by <a href="https://www.linkedin.com/in/praveen-adapa-162179290/" class="text-blue-400 hover:underline font-medium">Praveen</a>.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Optional: Close mobile menu when a link is clicked
+        document.querySelectorAll('#mobile-menu a').forEach(item => {
+            item.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // AWS Amplify Configuration and Auth Logic
+        window.addEventListener("load", () => {
+            const amplify = window.aws_amplify;
+            if (!amplify) {
+                alert("❌ AWS Amplify failed to load. Check your internet connection or CDN link.");
+                return;
+            }
+
+            const { Auth } = amplify;
+            // Ensure window.amplifyConfig is defined in your ./js/amplify_config.js file
+            Auth.configure(window.amplifyConfig);
+
+            // Get references to elements
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const confirmationForm = document.getElementById('confirmation-form');
+
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn-submit'); // Renamed to avoid conflict
+            const confirmBtn = document.getElementById('confirm-btn');
+            const resendCodeBtn = document.getElementById('resend-code-btn');
+
+            // --- Tab Switching Logic ---
+            loginTab.addEventListener('click', () => {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                confirmationForm.classList.add('hidden'); // Hide confirmation form if visible
+                loginTab.classList.add('border-blue-600', 'text-blue-600');
+                loginTab.classList.remove('border-transparent', 'text-gray-500');
+                signupTab.classList.add('border-transparent', 'text-gray-500');
+                signupTab.classList.remove('border-blue-600', 'text-blue-600');
+            });
+
+            signupTab.addEventListener('click', () => {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                confirmationForm.classList.add('hidden'); // Hide confirmation form if visible
+                signupTab.classList.add('border-blue-600', 'text-blue-600');
+                signupTab.classList.remove('border-transparent', 'text-gray-500');
+                loginTab.classList.add('border-transparent', 'text-gray-500');
+                loginTab.classList.remove('border-blue-600', 'text-blue-600');
+            });
+
+            // --- Login Logic ---
+            loginBtn.addEventListener("click", async (event) => {
+                event.preventDefault(); // Prevent default form submission
+                const username = document.getElementById("login-username").value.trim();
+                const password = document.getElementById("login-password").value.trim();
+
+                try {
+                    await Auth.signIn(username, password);
+                    alert("Login successful! Redirecting...");
+                    window.location.href = "usernames.html"; // Redirect to your dashboard page
+                } catch (err) {
+                    alert("Login Failed: " + err.message);
+                    console.error("Login Error:", err);
+                }
+            });
+
+            // --- Sign Up Logic ---
+            signupBtn.addEventListener("click", async (event) => {
+                event.preventDefault(); // Prevent default form submission
+                const username = document.getElementById("signup-username").value.trim();
+                const name = document.getElementById("signup-full-name").value.trim();
+                const preferred_username = document.getElementById("signup-preferred-username").value.trim();
+                const email = document.getElementById("signup-email").value.trim();
+                const password = document.getElementById("signup-password").value.trim();
+
+                if (!username || !name || !preferred_username || !email || !password) {
+                    alert("Please fill in all signup fields.");
+                    return;
+                }
+
+                try {
+                    const userAttributes = {
+                        email,
+                        name,
+                        preferred_username,
+                        // Add any other custom attributes your Cognito user pool requires, e.g., 'custom:college_id'
+                    };
+
+                    await Auth.signUp({
+                        username,
+                        password,
+                        attributes: userAttributes
+                    });
+
+                    // On successful signup, show confirmation form
+                    signupForm.classList.add("hidden");
+                    confirmationForm.classList.remove("hidden");
+                    alert("Sign up successful! Please check your email for a verification code.");
+
+                } catch (err) {
+                    alert("Sign Up Failed: " + err.message);
+                    console.error("Sign Up Error:", err);
+                }
+            });
+
+            // --- Confirmation Logic ---
+            confirmBtn.addEventListener("click", async (event) => {
+                event.preventDefault(); // Prevent default form submission
+                const username = document.getElementById("signup-username").value.trim(); // Use the username from signup
+                const code = document.getElementById("confirmation-code").value.trim();
+
+                if (!username || !code) {
+                    alert("Please enter both username and verification code.");
+                    return;
+                }
+
+                try {
+                    await Auth.confirmSignUp(username, code);
+                    alert("Account confirmed successfully! You can now log in.");
+                    // Redirect to login form or dashboard
+                    loginForm.classList.remove('hidden');
+                    signupForm.classList.add('hidden');
+                    confirmationForm.classList.add('hidden');
+                    loginTab.click(); // Programmatically click login tab to show it
+                    document.getElementById("login-username").value = username; // Pre-fill username for convenience
+
+                } catch (err) {
+                    alert("Confirmation Failed: " + err.message);
+                    console.error("Confirmation Error:", err);
+                }
+            });
+
+            // --- Resend Code Logic ---
+            resendCodeBtn.addEventListener("click", async (event) => {
+                event.preventDefault();
+                const username = document.getElementById("signup-username").value.trim();
+
+                if (!username) {
+                    alert("Please enter your username (the one you used to sign up) to resend the code.");
+                    return;
+                }
+
+                try {
+                    await Auth.resendSignUpCode(username);
+                    alert("Verification code resent successfully! Check your email.");
+                } catch (err) {
+                    alert("Failed to resend code: " + err.message);
+                    console.error("Resend Code Error:", err);
+                }
+            });
+        });
+
+        // Password Toggle Function (modified to use Bootstrap Icons)
+        function togglePassword(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            const button = document.getElementById(buttonId);
+            const icon = button.querySelector('i'); // Get the icon element
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash'); // Changed to a "hide" icon
+                button.setAttribute('aria-label', 'Hide password');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye'); // Changed back to "show" icon
+                button.setAttribute('aria-label', 'Show password');
+            }
+        }
+    </script>
 </body>
 </html>
