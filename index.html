@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeSync</title>
+    <title>💱CodeSync</title>
     <meta name="description" content="A powerful platform for students and college management to synchronize and manage student coding profiles across competitive programming and GitHub platforms.">
     <meta name="keywords" content="Student Coding Sync, College Dashboard, Competitive Programming Sync, GitHub Profiles, LeetCode, Codeforces, Coding Platform Integration, Student Progress Synchronization">
     <meta name="author" content="Your Company or Team Name">
@@ -26,7 +26,6 @@
     <script src="./js/amplify_config.js"></script>
 
     <style>
-        /* Custom animation for hero section */
         @keyframes fadeInSlideUp {
             from {
                 opacity: 0;
@@ -40,12 +39,24 @@
         .animate-fade-in-slide-up {
             animation: fadeInSlideUp 1s ease-out forwards;
         }
-
-        /* Basic global styles for better font rendering, etc. */
         body {
-            font-family: 'Inter', sans-serif; /* Using Inter as a placeholder for a modern sans-serif font */
+            font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+        }
+        /* Styles for the password strength meter */
+        #password-strength-meter {
+            height: 5px;
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.3s, background-color 0.3s;
         }
     </style>
 </head>
@@ -97,46 +108,30 @@
                         <form id="login-form" class="space-y-6">
                             <div>
                                 <label for="login-username" class="sr-only">Email address or Username</label>
-                                <input id="login-username" name="username" type="text" autocomplete="username1" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Email or Username">
+                                <input id="login-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Email or Username">
                             </div>
-
                             <div class="relative">
                                 <label for="login-password" class="sr-only">Password</label>
                                 <input id="login-password" name="password" type="password" autocomplete="current-password" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Password">
-                                <button
-                                    type="button"
-                                    onclick="togglePassword('login-password', 'toggleLoginPasswordButton')"
-                                    class="absolute right-3 top-3 text-gray-600 hover:text-blue-500"
-                                    aria-label="Toggle password visibility"
-                                    id="toggleLoginPasswordButton"
-                                >
-                                    <i class="bi bi-eye"></i> </button>
+                                <button type="button" onclick="togglePassword('login-password', 'toggleLoginPasswordButton')" class="absolute right-3 top-3 text-gray-600 hover:text-blue-500" aria-label="Toggle password visibility" id="toggleLoginPasswordButton"><i class="bi bi-eye"></i></button>
                             </div>
+                            <div id="login-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <input id="remember-me" name="remember-me" type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="remember-me" class="ml-2 block text-md text-gray-900">
-                                        Remember me
-                                    </label>
+                                    <label for="remember-me" class="ml-2 block text-md text-gray-900">Remember me</label>
                                 </div>
-                                <div class="text-md">
-                                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">
-                                        Forgot your password?
-                                    </a>
-                                </div>
+                                <div class="text-md"><a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">Forgot your password?</a></div>
                             </div>
                             <div>
-                                <button type="submit" id="login-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
-                                    Sign in
-                                </button>
+                                <button type="submit" id="login-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">Sign in</button>
                             </div>
                         </form>
                         
-                        <!-- Signup Form Step 1: User Details -->
                         <form id="signup-form" class="space-y-6 hidden">
                             <div>
                                 <label for="signup-username" class="sr-only">Username</label>
-                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username">
+                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username (e.g., your unique handle)">
                             </div>
                             <div>
                                 <label for="signup-full-name" class="sr-only">Full Name</label>
@@ -144,65 +139,55 @@
                             </div>
                             <div>
                                 <label for="signup-preferred-username" class="sr-only">Preferred Username</label>
-                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Display Name">
+                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Display Name (e.g., CodeSync Handle)">
                             </div>
                             <div>
                                 <label for="signup-email" class="sr-only">Email address</label>
                                 <input id="signup-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Email address">
                             </div>
-
                             <div class="relative">
                                 <label for="signup-password" class="sr-only">Password</label>
-                                <input
-                                    id="signup-password"
-                                    name="password"
-                                    type="password"
-                                    autocomplete="new-password"
-                                    required
-                                    class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200"
-                                    placeholder="Password"
-                                />
-                                <button
-                                    type="button"
-                                    onclick="togglePassword('signup-password', 'toggleSignupPasswordButton')"
-                                    class="absolute right-3 top-3 text-gray-600 hover:text-blue-500"
-                                    aria-label="Toggle password visibility"
-                                    id="toggleSignupPasswordButton"
-                                >
-                                    <i class="bi bi-eye"></i> </button>
+                                <input id="signup-password" name="password" type="password" autocomplete="new-password" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Password" />
+                                <button type="button" onclick="togglePassword('signup-password', 'toggleSignupPasswordButton')" class="absolute right-3 top-3 text-gray-600 hover:text-blue-500" aria-label="Toggle password visibility" id="toggleSignupPasswordButton"><i class="bi bi-eye"></i></button>
                             </div>
+                            <!-- Password Strength Meter -->
+                            <div class="space-y-1">
+                                <div id="password-strength-meter" class="flex gap-1">
+                                    <div class="strength-bar flex-1"></div>
+                                    <div class="strength-bar flex-1"></div>
+                                    <div class="strength-bar flex-1"></div>
+                                    <div class="strength-bar flex-1"></div>
+                                </div>
+                                <div id="password-strength-text" class="text-xs text-gray-500 text-right"></div>
+                            </div>
+                            <div id="signup-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
                             <div>
-                                <button type="button" id="signup-next-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
-                                    Next
-                                    <!-- : Add Usernames -->
-                                </button>
+                                <button type="button" id="signup-next-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">Next: Add Usernames</button>
                             </div>
                         </form>
 
-                        <!-- Signup Form Step 2: Platform Usernames -->
                         <form id="platform-form" class="space-y-6 hidden">
                             <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>
-                            <!-- <p class="text-center text-gray-500 text-sm -mt-4">This allows us to sync your stats automatically.</p> -->
+                            <p class="text-center text-gray-500 text-sm -mt-4">This allows us to sync your stats automatically.</p>
                             <div>
                                 <label for="signup-leetcode" class="sr-only">LeetCode Username</label>
-                                <input id="signup-leetcode" name="leetcode_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="LeetCode Username ">
-                              </div>
-                              <div>
+                                <input id="signup-leetcode" name="leetcode_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="LeetCode Username *">
+                            </div>
+                            <div>
                                 <label for="signup-codechef" class="sr-only">CodeChef Username</label>
-                                <input id="signup-codechef" name="codechef_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="CodeChef Username ">
-                              </div>
-                              <div>
+                                <input id="signup-codechef" name="codechef_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="CodeChef Username *">
+                            </div>
+                            <div>
                                 <label for="signup-hackerrank" class="sr-only">HackerRank Username</label>
-                                <input id="signup-hackerrank" name="hackerrank_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="HackerRank Username ">
-                              </div>
-                              <div>
+                                <input id="signup-hackerrank" name="hackerrank_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="HackerRank Username *">
+                            </div>
+                            <div>
                                 <label for="signup-gfg" class="sr-only">GeeksforGeeks Username</label>
-                                <input id="signup-gfg" name="gfg_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="GFG Username ">
-                              </div>
-                              <div>
-                                <button type="submit" id="signup-btn-submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
-                                    Create Account
-                                </button>
+                                <input id="signup-gfg" name="gfg_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="GFG Username (Optional)">
+                            </div>
+                            <div id="platform-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
+                            <div>
+                                <button type="submit" id="signup-btn-submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">Create Account</button>
                             </div>
                             <div class="text-center text-sm">
                                 <button type="button" id="back-to-signup-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Back</button>
@@ -215,10 +200,9 @@
                                 <label for="confirmation-code" class="sr-only">Verification Code</label>
                                 <input id="confirmation-code" name="code" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Verification Code">
                             </div>
+                            <div id="confirmation-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
                             <div>
-                                <button type="button" id="confirm-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
-                                    Confirm Account
-                                </button>
+                                <button type="button" id="confirm-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">Confirm Account</button>
                             </div>
                             <div class="text-center text-sm">
                                 <button type="button" id="resend-code-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Resend Code</button>
@@ -227,137 +211,62 @@
                     </div>
 
                     <div class="w-full lg:w-1/2 text-center lg:text-left text-white p-8 lg:p-0 rounded-xl animate-fade-in-slide-up">
-                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-5 text-shadow-md">
-                            Sync Your Coding <br class="hidden sm:inline"> Journey with Precision
-                        </h1>
-                        <p class="text-lg md:text-xl text-blue-100 max-w-2xl lg:max-w-none mx-auto mb-8 font-light">
-                            CodeSync helps you synchronize your progress, set goals, and collaborate with peers to become a better programmer every day.
-                        </p>
-                        <a href="#features" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105 text-lg">
-                            Explore Features
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <section id="features" class="py-20 bg-white">
-                <div class="container mx-auto px-6 text-center max-w-7xl">
-                    <h2 class="text-4xl font-extrabold text-gray-900 mb-12">Key Features of CodeSync</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
-                            <i class="bi bi-person-check-fill text-blue-600 text-6xl mb-6"></i>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Student Profiles</h3>
-                            <p class="text-gray-700 leading-relaxed">Comprehensive profiles showcasing competitive programming and GitHub activities, consolidated for easy viewing and management.</p>
-                        </div>
-                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
-                            <i class="bi bi-graph-up text-green-600 text-6xl mb-6"></i>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Progress Analytics</h3>
-                            <p class="text-gray-700 leading-relaxed">Detailed analytics and visual dashboards to track student growth, identify strengths, and pinpoint areas for improvement.</p>
-                        </div>
-                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
-                            <i class="bi bi-trophy-fill text-yellow-600 text-6xl mb-6"></i>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Competition Tracking</h3>
-                            <p class="text-gray-700 leading-relaxed">Monitor performance across various competitive programming platforms, enabling effective peer comparison and goal setting.</p>
-                        </div>
-                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
-                            <i class="bi bi-github text-purple-600 text-6xl mb-6"></i>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">GitHub Integration</h3>
-                            <p class="text-gray-700 leading-relaxed">Seamlessly integrate GitHub activity to track contributions, repositories, and collaboration skills alongside competitive programming.</p>
-                        </div>
-                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
-                            <i class="bi bi-person-lines-fill text-red-600 text-6xl mb-6"></i>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">College Management Dashboard</h3>
-                            <p class="text-gray-700 leading-relaxed">Intuitive dashboard for college administrators to oversee student progress, generate reports, and manage user accounts efficiently.</p>
-                        </div>
-                        <div class="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-2 border border-gray-100">
-                            <i class="bi bi-lightbulb-fill text-orange-600 text-6xl mb-6"></i>
-                            <h3 class="text-2xl font-semibold text-gray-900 mb-3">Goal Setting & Motivation</h3>
-                            <p class="text-gray-700 leading-relaxed">Tools to set personal coding goals and track achievements, fostering motivation and continuous improvement among students.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="about" class="py-20 bg-gray-100">
-                <div class="container mx-auto px-6 text-center max-w-7xl">
-                    <h2 class="text-4xl font-extrabold text-gray-900 mb-12">About CodeSync</h2>
-                    <p class="text-gray-700 text-lg max-w-3xl mx-auto mb-10 leading-relaxed">
-                        CodeSync is an innovative platform designed to empower educational institutions and students alike. We provide a seamless way to synchronize, monitor, and analyze student coding profiles from leading competitive programming sites and GitHub. Our mission is to foster a data-driven approach to student development, helping them achieve their full potential in the ever-evolving world of programming.
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
-                        <div>
-                            <img src="/images/about1.jpg" alt="Team collaborating on CodeSync" class="w-full rounded-xl shadow-xl border border-gray-200 object-cover h-64 md:h-auto">
-                            <p class="mt-4 text-gray-600 text-md">Our dedicated team collaborating on innovative solutions.</p>
-                        </div>
-                        <div>
-                            <img src="/images/about2.jpg" alt="Student coding on CodeSync" class="w-full rounded-xl shadow-xl border border-gray-200 object-cover h-64 md:h-auto">
-                            <p class="mt-4 text-gray-600 text-md">Empowering students with real-time insights into their coding journey.</p>
-                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-5 text-shadow-md">Sync Your Coding <br class="hidden sm:inline"> Journey with Precision</h1>
+                        <p class="text-lg md:text-xl text-blue-100 max-w-2xl lg:max-w-none mx-auto mb-8 font-light">CodeSync helps you synchronize your progress, set goals, and collaborate with peers to become a better programmer every day.</p>
+                        <a href="#features" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105 text-lg">Explore Features</a>
                     </div>
                 </div>
             </section>
         </main>
-
-        <footer class="bg-gray-950 text-gray-400 py-8" id="contact">
-            <div class="container mx-auto px-6 text-center max-w-7xl">
-                <div class="mb-6 flex justify-center space-x-6">
-                    <a href="#home" class="hover:text-white transition duration-200 text-md">Home</a>
-                    <a href="#features" class="hover:text-white transition duration-200 text-md">Features</a>
-                    <a href="#about" class="hover:text-white transition duration-200 text-md">About</a>
-                    <a href="#contact" class="hover:text-white transition duration-200 text-md">Contact</a>
-                    <a href="#" class="hover:text-white transition duration-200 text-md">Privacy Policy</a>
-                    <a href="#" class="hover:text-white transition duration-200 text-md">Terms of Service</a>
-                </div>
-
-                <div class="text-sm border-t border-gray-700 pt-6">
-                    © 2025 CodeSync. All rights reserved. | Developed by <a href="https://www.linkedin.com/in/praveen-adapa-162179290/" class="text-blue-400 hover:underline font-medium">Praveen</a>.
-                </div>
-            </div>
-        </footer>
     </div>
 
     <script>
-        // --- Mobile Menu Toggle ---
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            var mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         });
-
-        // Optional: Close mobile menu when a link is clicked
         document.querySelectorAll('#mobile-menu a').forEach(item => {
             item.addEventListener('click', () => {
                 document.getElementById('mobile-menu').classList.add('hidden');
             });
         });
 
-        // --- AWS Amplify Configuration and Authentication Logic ---
         window.addEventListener("load", () => {
-            const amplify = window.aws_amplify;
-            if (!amplify) {
-                alert("❌ AWS Amplify failed to load. Check your internet connection or CDN link.");
+            if (!window.aws_amplify) {
+                console.error("AWS Amplify failed to load.");
                 return;
             }
 
-            const { Auth } = amplify;
+            const { Auth } = window.aws_amplify;
             Auth.configure(window.amplifyConfig);
 
-            // Get references to DOM elements
             const loginTab = document.getElementById('login-tab');
             const signupTab = document.getElementById('signup-tab');
-
             const loginForm = document.getElementById('login-form');
             const signupForm = document.getElementById('signup-form');
             const platformForm = document.getElementById('platform-form');
             const confirmationForm = document.getElementById('confirmation-form');
-
             const loginBtn = document.getElementById('login-btn');
             const signupNextBtn = document.getElementById('signup-next-btn');
             const backToSignupBtn = document.getElementById('back-to-signup-btn');
             const signupSubmitBtn = document.getElementById('signup-btn-submit');
             const confirmBtn = document.getElementById('confirm-btn');
             const resendCodeBtn = document.getElementById('resend-code-btn');
+            const signupPasswordInput = document.getElementById('signup-password');
 
-            // --- Tab Switching Logic ---
+            const loginErrorMsg = document.getElementById('login-error-message');
+            const signupErrorMsg = document.getElementById('signup-error-message');
+            const platformErrorMsg = document.getElementById('platform-error-message');
+            const confirmationErrorMsg = document.getElementById('confirmation-error-message');
+
+            const showMessage = (element, message) => {
+                element.textContent = message;
+                element.classList.remove('hidden');
+            };
+            const hideMessage = (element) => {
+                element.textContent = '';
+                element.classList.add('hidden');
+            };
+
             loginTab.addEventListener('click', () => {
                 loginForm.classList.remove('hidden');
                 signupForm.classList.add('hidden');
@@ -380,157 +289,149 @@
                 loginTab.classList.remove('border-blue-600', 'text-blue-600');
             });
 
-            // --- Login Logic ---
             loginBtn.addEventListener("click", async (event) => {
-                event.preventDefault(); // Prevent default form submission to handle with JS
+                event.preventDefault();
+                hideMessage(loginErrorMsg);
                 const username = document.getElementById("login-username").value.trim();
                 const password = document.getElementById("login-password").value.trim();
-
                 try {
                     await Auth.signIn(username, password);
-                    alert("Login successful! Redirecting to dashboard...");
-                    window.location.href = "results.html"; // Redirect to your main application dashboard
+                    window.location.href = "results.html";
                 } catch (err) {
-                    alert("Login Failed: " + err.message);
+                    showMessage(loginErrorMsg, err.message);
                     console.error("Login Error:", err);
                 }
             });
 
-            // --- Signup Step 1 to Step 2 ("Next" button) ---
             signupNextBtn.addEventListener("click", () => {
+                hideMessage(signupErrorMsg);
                 const username = document.getElementById("signup-username").value.trim();
                 const name = document.getElementById("signup-full-name").value.trim();
                 const email = document.getElementById("signup-email").value.trim();
-                const password = document.getElementById("signup-password").value.trim();
-
+                const password = signupPasswordInput.value.trim();
                 if (!username || !name || !email || !password) {
-                    alert("Please fill in all your personal details first.");
+                    showMessage(signupErrorMsg, "Please fill in all your personal details.");
                     return;
                 }
-
                 signupForm.classList.add('hidden');
                 platformForm.classList.remove('hidden');
             });
 
-            // --- Signup Step 2 to Step 1 ("Back" button) ---
             backToSignupBtn.addEventListener("click", () => {
                 platformForm.classList.add('hidden');
                 signupForm.classList.remove('hidden');
             });
 
-            // --- Final Sign Up Logic ---
             signupSubmitBtn.addEventListener("click", async (event) => {
-                event.preventDefault(); // Prevent default form submission
-
-                // Gather data from Step 1
+                event.preventDefault();
+                hideMessage(platformErrorMsg);
                 const username = document.getElementById("signup-username").value.trim();
                 const name = document.getElementById("signup-full-name").value.trim();
                 const preferred_username = document.getElementById("signup-preferred-username").value.trim();
                 const email = document.getElementById("signup-email").value.trim();
-                const password = document.getElementById("signup-password").value.trim();
-                
-                // Gather data from Step 2
+                const password = signupPasswordInput.value.trim();
                 const leetcode_username = document.getElementById("signup-leetcode").value.trim();
                 const codechef_username = document.getElementById("signup-codechef").value.trim();
                 const hackerrank_username = document.getElementById("signup-hackerrank").value.trim();
                 const gfg_username = document.getElementById("signup-gfg").value.trim();
 
                 if (!preferred_username || !leetcode_username || !codechef_username || !hackerrank_username) {
-                    alert("Please fill in all required fields, including platform usernames.");
+                    showMessage(platformErrorMsg, "Please fill in all required platform usernames.");
                     return;
                 }
 
                 try {
-                    const userAttributes = {
-                        email,
-                        name,
-                        preferred_username,
-                        'custom:leetcode_username': leetcode_username,
-                        'custom:codechef_username': codechef_username,
-                        'custom:hackerrank_username': hackerrank_username,
-                        'custom:gfg_username': gfg_username
-                    };
-
-                    await Auth.signUp({
-                        username,
-                        password,
-                        attributes: userAttributes
-                    });
-
-                    // On successful signup, hide platform form and show confirmation form
+                    const userAttributes = { email, name, preferred_username, 'custom:leetcode_username': leetcode_username, 'custom:codechef_username': codechef_username, 'custom:hackerrank_username': hackerrank_username, 'custom:gfg_username': gfg_username };
+                    await Auth.signUp({ username, password, attributes: userAttributes });
                     platformForm.classList.add("hidden");
                     confirmationForm.classList.remove("hidden");
-                    alert("Sign up successful! Please check your email for a verification code.");
-
                 } catch (err) {
-                    alert("Sign Up Failed: " + err.message);
+                    showMessage(platformErrorMsg, err.message);
                     console.error("Sign Up Error:", err);
                 }
             });
 
-            // --- Confirmation Logic ---
             confirmBtn.addEventListener("click", async (event) => {
                 event.preventDefault();
+                hideMessage(confirmationErrorMsg);
                 const username = document.getElementById("signup-username").value.trim();
                 const code = document.getElementById("confirmation-code").value.trim();
-
                 if (!username || !code) {
-                    alert("Please enter both username and verification code.");
+                    showMessage(confirmationErrorMsg, "Please enter the verification code.");
                     return;
                 }
-
                 try {
                     await Auth.confirmSignUp(username, code);
-                    alert("Account confirmed successfully! You can now log in.");
                     loginForm.classList.remove('hidden');
-                    signupForm.classList.add('hidden');
-                    platformForm.classList.add('hidden');
                     confirmationForm.classList.add('hidden');
                     loginTab.click();
                     document.getElementById("login-username").value = username;
-
                 } catch (err) {
-                    alert("Confirmation Failed: " + err.message);
+                    showMessage(confirmationErrorMsg, err.message);
                     console.error("Confirmation Error:", err);
                 }
             });
 
-            // --- Resend Code Logic ---
             resendCodeBtn.addEventListener("click", async (event) => {
                 event.preventDefault();
+                hideMessage(confirmationErrorMsg);
                 const username = document.getElementById("signup-username").value.trim();
-
                 if (!username) {
-                    alert("Please enter your username (the one you used to sign up) to resend the code.");
+                    showMessage(confirmationErrorMsg, "Cannot resend code without a username.");
                     return;
                 }
-
                 try {
                     await Auth.resendSignUpCode(username);
-                    alert("Verification code resent successfully! Check your email.");
+                    showMessage(confirmationErrorMsg, "A new verification code has been sent to your email.");
                 } catch (err) {
-                    alert("Failed to resend code: " + err.message);
+                    showMessage(confirmationErrorMsg, err.message);
                     console.error("Resend Code Error:", err);
                 }
             });
+
+            // --- Password Strength Meter Logic ---
+            const strengthMeter = document.getElementById('password-strength-meter');
+            const strengthBars = strengthMeter.querySelectorAll('.strength-bar');
+            const strengthText = document.getElementById('password-strength-text');
+            
+            const strengthLevels = {
+                0: { text: "", color: "" },
+                1: { text: "Weak", color: "bg-red-500" },
+                2: { text: "Fair", color: "bg-yellow-500" },
+                3: { text: "Good", color: "bg-blue-500" },
+                4: { text: "Strong", color: "bg-green-500" }
+            };
+
+            signupPasswordInput.addEventListener('input', () => {
+                const password = signupPasswordInput.value;
+                let score = 0;
+                if (password.length >= 8) score++;
+                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+                if (/\d/.test(password)) score++;
+                if (/[^A-Za-z0-9]/.test(password)) score++;
+
+                strengthText.textContent = strengthLevels[score].text;
+                strengthBars.forEach((bar, index) => {
+                    if (index < score) {
+                        bar.className = `strength-bar flex-1 ${strengthLevels[score].color}`;
+                    } else {
+                        bar.className = 'strength-bar flex-1 bg-gray-200';
+                    }
+                });
+            });
         });
 
-        // --- Password Toggle Function (uses Bootstrap Icons) ---
         function togglePassword(inputId, buttonId) {
             const input = document.getElementById(inputId);
-            const button = document.getElementById(buttonId);
-            const icon = button.querySelector('i');
-
+            const icon = document.getElementById(buttonId).querySelector('i');
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('bi-eye');
                 icon.classList.add('bi-eye-slash');
-                button.setAttribute('aria-label', 'Hide password');
             } else {
                 input.type = 'password';
                 icon.classList.remove('bi-eye-slash');
                 icon.classList.add('bi-eye');
-                button.setAttribute('aria-label', 'Show password');
             }
         }
     </script>
