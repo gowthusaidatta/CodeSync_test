@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💱CodeSync</title>
+    <title>CodeSync</title>
     <meta name="description" content="A powerful platform for students and college management to synchronize and manage student coding profiles across competitive programming and GitHub platforms.">
     <meta name="keywords" content="Student Coding Sync, College Dashboard, Competitive Programming Sync, GitHub Profiles, LeetCode, Codeforces, Coding Platform Integration, Student Progress Synchronization">
     <meta name="author" content="Your Company or Team Name">
@@ -47,8 +47,6 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        /* Consider adding a custom font from Google Fonts here for better typography */
-        /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
     </style>
 </head>
 <body class="bg-gray-50 font-sans leading-normal tracking-normal text-gray-800">
@@ -133,11 +131,12 @@
                                 </button>
                             </div>
                         </form>
-
+                        
+                        <!-- Signup Form Step 1: User Details -->
                         <form id="signup-form" class="space-y-6 hidden">
                             <div>
                                 <label for="signup-username" class="sr-only">Username</label>
-                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username (e.g., your unique handle)">
+                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Username">
                             </div>
                             <div>
                                 <label for="signup-full-name" class="sr-only">Full Name</label>
@@ -145,7 +144,7 @@
                             </div>
                             <div>
                                 <label for="signup-preferred-username" class="sr-only">Preferred Username</label>
-                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Display Name (e.g., CodeSync Handle)">
+                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="Preferred Display Name">
                             </div>
                             <div>
                                 <label for="signup-email" class="sr-only">Email address</label>
@@ -173,9 +172,40 @@
                                     <i class="bi bi-eye"></i> </button>
                             </div>
                             <div>
+                                <button type="button" id="signup-next-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
+                                    Next
+                                    <!-- : Add Usernames -->
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Signup Form Step 2: Platform Usernames -->
+                        <form id="platform-form" class="space-y-6 hidden">
+                            <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>
+                            <!-- <p class="text-center text-gray-500 text-sm -mt-4">This allows us to sync your stats automatically.</p> -->
+                            <div>
+                                <label for="signup-leetcode" class="sr-only">LeetCode Username</label>
+                                <input id="signup-leetcode" name="leetcode_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="LeetCode Username ">
+                              </div>
+                              <div>
+                                <label for="signup-codechef" class="sr-only">CodeChef Username</label>
+                                <input id="signup-codechef" name="codechef_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="CodeChef Username ">
+                              </div>
+                              <div>
+                                <label for="signup-hackerrank" class="sr-only">HackerRank Username</label>
+                                <input id="signup-hackerrank" name="hackerrank_username" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="HackerRank Username ">
+                              </div>
+                              <div>
+                                <label for="signup-gfg" class="sr-only">GeeksforGeeks Username</label>
+                                <input id="signup-gfg" name="gfg_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg transition duration-200" placeholder="GFG Username ">
+                              </div>
+                              <div>
                                 <button type="submit" id="signup-btn-submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-300 ease-in-out shadow-md hover:shadow-lg">
                                     Create Account
                                 </button>
+                            </div>
+                            <div class="text-center text-sm">
+                                <button type="button" id="back-to-signup-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Back</button>
                             </div>
                         </form>
 
@@ -309,20 +339,21 @@
             }
 
             const { Auth } = amplify;
-            // Ensure window.amplifyConfig is defined in your ./js/amplify_config.js file
-            // It should look something like:
-            // window.amplifyConfig = { Auth: { region: 'YOUR_REGION', userPoolId: 'YOUR_USER_POOL_ID', userPoolWebClientId: 'YOUR_CLIENT_ID' } };
             Auth.configure(window.amplifyConfig);
 
             // Get references to DOM elements
             const loginTab = document.getElementById('login-tab');
             const signupTab = document.getElementById('signup-tab');
+
             const loginForm = document.getElementById('login-form');
             const signupForm = document.getElementById('signup-form');
+            const platformForm = document.getElementById('platform-form');
             const confirmationForm = document.getElementById('confirmation-form');
 
             const loginBtn = document.getElementById('login-btn');
-            const signupBtn = document.getElementById('signup-btn-submit'); // Renamed to avoid ID conflict
+            const signupNextBtn = document.getElementById('signup-next-btn');
+            const backToSignupBtn = document.getElementById('back-to-signup-btn');
+            const signupSubmitBtn = document.getElementById('signup-btn-submit');
             const confirmBtn = document.getElementById('confirm-btn');
             const resendCodeBtn = document.getElementById('resend-code-btn');
 
@@ -330,7 +361,8 @@
             loginTab.addEventListener('click', () => {
                 loginForm.classList.remove('hidden');
                 signupForm.classList.add('hidden');
-                confirmationForm.classList.add('hidden'); // Hide confirmation form if visible
+                platformForm.classList.add('hidden');
+                confirmationForm.classList.add('hidden');
                 loginTab.classList.add('border-blue-600', 'text-blue-600');
                 loginTab.classList.remove('border-transparent', 'text-gray-500');
                 signupTab.classList.add('border-transparent', 'text-gray-500');
@@ -340,7 +372,8 @@
             signupTab.addEventListener('click', () => {
                 signupForm.classList.remove('hidden');
                 loginForm.classList.add('hidden');
-                confirmationForm.classList.add('hidden'); // Hide confirmation form if visible
+                platformForm.classList.add('hidden');
+                confirmationForm.classList.add('hidden');
                 signupTab.classList.add('border-blue-600', 'text-blue-600');
                 signupTab.classList.remove('border-transparent', 'text-gray-500');
                 loginTab.classList.add('border-transparent', 'text-gray-500');
@@ -363,17 +396,47 @@
                 }
             });
 
-            // --- Sign Up Logic ---
-            signupBtn.addEventListener("click", async (event) => {
+            // --- Signup Step 1 to Step 2 ("Next" button) ---
+            signupNextBtn.addEventListener("click", () => {
+                const username = document.getElementById("signup-username").value.trim();
+                const name = document.getElementById("signup-full-name").value.trim();
+                const email = document.getElementById("signup-email").value.trim();
+                const password = document.getElementById("signup-password").value.trim();
+
+                if (!username || !name || !email || !password) {
+                    alert("Please fill in all your personal details first.");
+                    return;
+                }
+
+                signupForm.classList.add('hidden');
+                platformForm.classList.remove('hidden');
+            });
+
+            // --- Signup Step 2 to Step 1 ("Back" button) ---
+            backToSignupBtn.addEventListener("click", () => {
+                platformForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            });
+
+            // --- Final Sign Up Logic ---
+            signupSubmitBtn.addEventListener("click", async (event) => {
                 event.preventDefault(); // Prevent default form submission
+
+                // Gather data from Step 1
                 const username = document.getElementById("signup-username").value.trim();
                 const name = document.getElementById("signup-full-name").value.trim();
                 const preferred_username = document.getElementById("signup-preferred-username").value.trim();
                 const email = document.getElementById("signup-email").value.trim();
                 const password = document.getElementById("signup-password").value.trim();
+                
+                // Gather data from Step 2
+                const leetcode_username = document.getElementById("signup-leetcode").value.trim();
+                const codechef_username = document.getElementById("signup-codechef").value.trim();
+                const hackerrank_username = document.getElementById("signup-hackerrank").value.trim();
+                const gfg_username = document.getElementById("signup-gfg").value.trim();
 
-                if (!username || !name || !preferred_username || !email || !password) {
-                    alert("Please fill in all signup fields.");
+                if (!preferred_username || !leetcode_username || !codechef_username || !hackerrank_username) {
+                    alert("Please fill in all required fields, including platform usernames.");
                     return;
                 }
 
@@ -382,18 +445,20 @@
                         email,
                         name,
                         preferred_username,
-                        // Add any other custom attributes your Cognito user pool requires here
-                        // For example: 'custom:college_id': 'your_college_id_value'
+                        'custom:leetcode_username': leetcode_username,
+                        'custom:codechef_username': codechef_username,
+                        'custom:hackerrank_username': hackerrank_username,
+                        'custom:gfg_username': gfg_username
                     };
 
                     await Auth.signUp({
-                        username, // This is the Cognito username
+                        username,
                         password,
                         attributes: userAttributes
                     });
 
-                    // On successful signup, hide signup form and show confirmation form
-                    signupForm.classList.add("hidden");
+                    // On successful signup, hide platform form and show confirmation form
+                    platformForm.classList.add("hidden");
                     confirmationForm.classList.remove("hidden");
                     alert("Sign up successful! Please check your email for a verification code.");
 
@@ -405,8 +470,8 @@
 
             // --- Confirmation Logic ---
             confirmBtn.addEventListener("click", async (event) => {
-                event.preventDefault(); // Prevent default form submission
-                const username = document.getElementById("signup-username").value.trim(); // Use the username from signup
+                event.preventDefault();
+                const username = document.getElementById("signup-username").value.trim();
                 const code = document.getElementById("confirmation-code").value.trim();
 
                 if (!username || !code) {
@@ -417,12 +482,12 @@
                 try {
                     await Auth.confirmSignUp(username, code);
                     alert("Account confirmed successfully! You can now log in.");
-                    // After successful confirmation, switch back to login form and pre-fill username
                     loginForm.classList.remove('hidden');
                     signupForm.classList.add('hidden');
+                    platformForm.classList.add('hidden');
                     confirmationForm.classList.add('hidden');
-                    loginTab.click(); // Programmatically click login tab to make it active
-                    document.getElementById("login-username").value = username; // Pre-fill username for convenience
+                    loginTab.click();
+                    document.getElementById("login-username").value = username;
 
                 } catch (err) {
                     alert("Confirmation Failed: " + err.message);
@@ -454,17 +519,17 @@
         function togglePassword(inputId, buttonId) {
             const input = document.getElementById(inputId);
             const button = document.getElementById(buttonId);
-            const icon = button.querySelector('i'); // Get the icon element inside the button
+            const icon = button.querySelector('i');
 
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('bi-eye');
-                icon.classList.add('bi-eye-slash'); // Change to a "hide" icon
+                icon.classList.add('bi-eye-slash');
                 button.setAttribute('aria-label', 'Hide password');
             } else {
                 input.type = 'password';
                 icon.classList.remove('bi-eye-slash');
-                icon.classList.add('bi-eye'); // Change back to "show" icon
+                icon.classList.add('bi-eye');
                 button.setAttribute('aria-label', 'Show password');
             }
         }
