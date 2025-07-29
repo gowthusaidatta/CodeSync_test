@@ -389,7 +389,7 @@
                 try {
                     await Auth.signIn(username, password);
                     alert("Login successful! Redirecting to dashboard...");
-                    window.location.href = "usernames.html"; // Redirect to your main application dashboard
+                    window.location.href = "results.html"; // Redirect to your main application dashboard
                 } catch (err) {
                     alert("Login Failed: " + err.message);
                     console.error("Login Error:", err);
