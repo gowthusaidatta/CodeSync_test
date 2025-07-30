@@ -131,6 +131,7 @@
 
       const { Auth } = window.aws_amplify;
       Auth.configure(window.amplifyConfig);
+      const session = await Auth.currentSession(); // ✅ Check if login session is valid
       const user = await Auth.currentAuthenticatedUser();
 
       try {
