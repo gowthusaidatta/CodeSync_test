@@ -49,11 +49,10 @@
             transition: color 0.3s;
         }
         .password-requirement.met {
-            color: #10B981; /* green-600 */
-            text-decoration: line-through;
+            color: #10B981; /* Tailwind's green-600 */
         }
         .password-requirement.unmet {
-            color: #6B7280; /* gray-500 */
+            color: #6B7280; /* Tailwind's gray-500 */
         }
     </style>
 </head>
@@ -91,7 +90,7 @@
         </header>
 
         <main class="flex-grow">
-            <section class="relative h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800 overflow-hidden py-16">
+            <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800 overflow-hidden py-16">
                 <img src="/images/hero-bg.jpg" alt="Abstract coding background" class="absolute inset-0 w-full h-full object-cover opacity-20">
                 <div class="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
 
@@ -233,7 +232,6 @@
             const { Auth } = window.aws_amplify;
             Auth.configure(window.amplifyConfig);
 
-            // --- Form & Button Elements ---
             const loginTab = document.getElementById('login-tab');
             const signupTab = document.getElementById('signup-tab');
             const loginForm = document.getElementById('login-form');
@@ -248,7 +246,6 @@
             const resendCodeBtn = document.getElementById('resend-code-btn');
             const signupPasswordInput = document.getElementById('signup-password');
 
-            // --- Error Message Elements ---
             const loginErrorMsg = document.getElementById('login-error-message');
             const signupErrorMsg = document.getElementById('signup-error-message');
             const platformErrorMsg = document.getElementById('platform-error-message');
@@ -263,7 +260,6 @@
                 element.classList.add('hidden');
             };
 
-            // --- Tab Switching Logic ---
             loginTab.addEventListener('click', () => {
                 loginForm.classList.remove('hidden');
                 signupForm.classList.add('hidden');
@@ -286,7 +282,6 @@
                 loginTab.classList.remove('border-blue-600', 'text-blue-600');
             });
 
-            // --- Auth Logic ---
             loginBtn.addEventListener("click", async (event) => {
                 event.preventDefault();
                 hideMessage(loginErrorMsg);
@@ -385,7 +380,6 @@
                 }
             });
 
-            // --- Password Strength Enforcement Logic ---
             const reqs = {
                 length: document.getElementById('req-length'),
                 case: document.getElementById('req-case'),
@@ -419,7 +413,6 @@
             };
 
             signupPasswordInput.addEventListener('input', validatePassword);
-            // Initial validation check
             validatePassword();
         });
 
