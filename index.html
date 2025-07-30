@@ -97,8 +97,9 @@
                         <h2 id="auth-title" class="text-3xl font-bold text-gray-900 mb-6 text-center">Get Started with CodeSync</h2>
                         
                         <div id="auth-tabs" class="flex justify-center mb-6">
-                            <button id="login-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 border-blue-600 text-blue-600">Login</button>
-                            <button id="signup-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-blue-600">Sign Up</button>
+                            <!-- MODIFIED: Added transition-colors and ensured both have borders for smooth underline -->
+                            <button id="login-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300"></button>
+                            <button id="signup-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300"></button>
                         </div>
 
                         <!-- Login Form (Existing) -->
@@ -114,12 +115,11 @@
                             </div>
                             <div id="login-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center">
+                                <!-- <div class="flex items-center">
                                     <input id="remember-me" name="remember-me" type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                     <label for="remember-me" class="ml-2 block text-md text-gray-900">Remember me</label>
-                                </div>
+                                </div> -->
                                 <div class="text-md">
-                                    <!-- MODIFIED: Changed from <a> to <button> -->
                                     <button type="button" id="forgot-password-link" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">Forgot your password?</button>
                                 </div>
                             </div>
@@ -130,7 +130,6 @@
                         
                         <!-- Signup Form Step 1 (Existing) -->
                         <form id="signup-form" class="space-y-6 hidden">
-                            <!-- All existing signup content remains here -->
                             <div>
                                 <label for="signup-username" class="sr-only">Username</label>
                                 <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Username">
@@ -166,7 +165,7 @@
 
                         <!-- Signup Form Step 2 (Existing) -->
                         <form id="platform-form" class="space-y-6 hidden">
-                            <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>                    
+                            <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>                 
                             <p class="text-center text-gray-500 text-sm -mt-4">Please provide at least one username.</p>
                             <div><input id="signup-leetcode" name="leetcode_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="LeetCode Username"></div>
                             <div><input id="signup-codechef" name="codechef_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="CodeChef Username"></div>
@@ -236,8 +235,17 @@
     </div>
 
     <script>
-        document.getElementById('mobile-menu-button').addEventListener('click', function() { /* ... */ });
-        // Other mobile menu logic...
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('#mobile-menu a').forEach(item => {
+            item.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
 
         window.addEventListener("load", () => {
             if (!window.aws_amplify) { console.error("AWS Amplify failed to load."); return; }
@@ -277,6 +285,12 @@
             const confirmationErrorMsg = document.getElementById('confirmation-error-message');
             const forgotPasswordMessage = document.getElementById('forgot-password-message');
 
+            // Password requirements for signup
+            const reqLength = document.getElementById('req-length');
+            const reqCase = document.getElementById('req-case');
+            const reqNumber = document.getElementById('req-number');
+            const reqSpecial = document.getElementById('req-special');
+
             // --- Helper Functions ---
             const showMessage = (element, message, isError = true) => {
                 element.textContent = message;
@@ -286,47 +300,122 @@
                 [loginErrorMsg, signupErrorMsg, platformErrorMsg, confirmationErrorMsg, forgotPasswordMessage].forEach(el => el.textContent = '');
             };
 
+            // Function to update tab styles based on active tab
+            const updateTabStyles = (activeTabId) => {
+                const loginTab = document.getElementById('login-tab');
+                const signupTab = document.getElementById('signup-tab');
+
+                loginTab.classList.remove('border-blue-600', 'text-blue-600');
+                loginTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-blue-600');
+                signupTab.classList.remove('border-blue-600', 'text-blue-600');
+                signupTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-blue-600');
+
+                if (activeTabId === 'login-tab') {
+                    loginTab.classList.add('border-blue-600', 'text-blue-600');
+                    loginTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-blue-600');
+                } else { // signup-tab
+                    signupTab.classList.add('border-blue-600', 'text-blue-600');
+                    signupTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-blue-600');
+                }
+            };
+
             // --- Form Switching Logic ---
             const showForm = (formToShow) => {
+                hideAllMessages(); // Clear messages when switching forms
                 [loginForm, signupForm, platformForm, confirmationForm, forgotPasswordForm].forEach(form => form.classList.add('hidden'));
                 formToShow.classList.remove('hidden');
 
                 const isAuthForm = formToShow === loginForm || formToShow === signupForm;
                 authTabs.style.display = isAuthForm ? 'flex' : 'none';
                 authTitle.textContent = isAuthForm ? 'Get Started with CodeSync' : 'Reset Your Password';
+                authCard.scrollTop = 0; // Scroll to top of card if content changed
             };
 
-            document.getElementById('login-tab').addEventListener('click', () => showForm(loginForm));
-            document.getElementById('signup-tab').addEventListener('click', () => showForm(signupForm));
-            forgotPasswordLink.addEventListener('click', () => {
+            // Initial setup for tabs
+            updateTabStyles('login-tab'); // Set login tab active by default
+            document.getElementById('login-tab').textContent = 'Login';
+            document.getElementById('signup-tab').textContent = 'Sign Up';
+
+            document.getElementById('login-tab').addEventListener('click', () => {
+                showForm(loginForm);
+                updateTabStyles('login-tab');
+            });
+            document.getElementById('signup-tab').addEventListener('click', () => {
+                showForm(signupForm);
+                updateTabStyles('signup-tab');
+            });
+            
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default button action if it was a link
                 showForm(forgotPasswordForm);
+                authTitle.textContent = 'Reset Your Password'; // Update title for clarity
                 sendCodeSection.classList.remove('hidden');
                 resetPasswordSection.classList.add('hidden');
             });
-            backToLoginBtn.addEventListener('click', () => showForm(loginForm));
+
+            backToLoginBtn.addEventListener('click', () => {
+                showForm(loginForm);
+                updateTabStyles('login-tab'); // Ensure login tab is highlighted
+            });
             
             // --- Handlers for All Forms ---
-            loginBtn.addEventListener("click", async (e) => {
+            loginForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 hideAllMessages();
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Signing in...';
                 try {
                     const user = await Auth.signIn(document.getElementById("login-username").value.trim(), document.getElementById("login-password").value.trim());
-                    window.location.href = "results.html";
+                    // console.log("User signed in:", user); // For debugging
+                    window.location.href = "results.html"; // Redirect on successful login
                 } catch (err) {
                     showMessage(loginErrorMsg, err.message);
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Sign in';
                 }
             });
 
-            // Signup logic (existing code)
             signupNextBtn.addEventListener("click", () => {
-                // ... your existing code for this ...
+                hideAllMessages(); // Clear signup-form messages
+                // Basic check for required fields before proceeding to next step
+                const username = document.getElementById("signup-username").value.trim();
+                const fullName = document.getElementById("signup-full-name").value.trim();
+                const preferredUsername = document.getElementById("signup-preferred-username").value.trim();
+                const email = document.getElementById("signup-email").value.trim();
+                const password = signupPasswordInput.value.trim();
+
+                if (!username || !fullName || !preferredUsername || !email || !password) {
+                    showMessage(signupErrorMsg, "Please fill in all required fields.");
+                    return;
+                }
+
+                // Check password requirements validity
+                const isPasswordValid = reqLength.classList.contains('met') &&
+                                        reqCase.classList.contains('met') &&
+                                        reqNumber.classList.contains('met') &&
+                                        reqSpecial.classList.contains('met');
+                
+                if (!isPasswordValid) {
+                    showMessage(signupErrorMsg, "Password does not meet all requirements.");
+                    return;
+                }
+                
                 showForm(platformForm);
+                authTitle.textContent = 'Link Coding Profiles'; // Update title
             });
-            backToSignupBtn.addEventListener('click', () => showForm(signupForm));
-            signupSubmitBtn.addEventListener("click", async (e) => {
+
+            backToSignupBtn.addEventListener('click', () => {
+                showForm(signupForm);
+                authTitle.textContent = 'Get Started with CodeSync'; // Revert title
+            });
+
+            platformForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 hideAllMessages();
-                 try {
+                signupSubmitBtn.disabled = true;
+                signupSubmitBtn.textContent = 'Creating Account...';
+                try {
                     const username = document.getElementById("signup-username").value.trim();
                     const password = signupPasswordInput.value.trim();
                     const userAttributes = {
@@ -338,23 +427,61 @@
                         'custom:hackerrank_username': document.getElementById("signup-hackerrank").value.trim(),
                         'custom:gfg_username': document.getElementById("signup-gfg").value.trim(),
                     };
+
+                    // Filter out empty custom attributes to avoid sending empty strings if not provided
+                    for (const key in userAttributes) {
+                        if (key.startsWith('custom:') && userAttributes[key] === '') {
+                            delete userAttributes[key];
+                        }
+                    }
+
                     await Auth.signUp({ username, password, attributes: userAttributes });
                     showForm(confirmationForm);
+                    authTitle.textContent = 'Confirm Your Account'; // Update title
                 } catch (err) {
                     showMessage(platformErrorMsg, err.message);
+                } finally {
+                    signupSubmitBtn.disabled = false;
+                    signupSubmitBtn.textContent = 'Create Account';
                 }
             });
+
             confirmBtn.addEventListener("click", async (e) => {
                 e.preventDefault();
                 hideAllMessages();
-                 try {
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Confirming...';
+                try {
                     const username = document.getElementById("signup-username").value.trim();
                     const code = document.getElementById("confirmation-code").value.trim();
                     await Auth.confirmSignUp(username, code);
-                    showForm(loginForm);
-                    document.getElementById('login-username').value = username;
+                    showMessage(confirmationErrorMsg, "Account confirmed successfully! Redirecting to login...", false);
+                    setTimeout(() => {
+                        showForm(loginForm);
+                        updateTabStyles('login-tab'); // Ensure login tab is active
+                        document.getElementById('login-username').value = username; // Pre-fill username
+                    }, 2000); // Redirect after 2 seconds
                 } catch (err) {
                     showMessage(confirmationErrorMsg, err.message);
+                } finally {
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Confirm Account';
+                }
+            });
+
+            resendCodeBtn.addEventListener("click", async () => {
+                hideAllMessages();
+                resendCodeBtn.disabled = true;
+                resendCodeBtn.textContent = 'Resending...';
+                try {
+                    const username = document.getElementById("signup-username").value.trim();
+                    await Auth.resendSignUpCode(username);
+                    showMessage(confirmationErrorMsg, "Verification code resent successfully!", false);
+                } catch (err) {
+                    showMessage(confirmationErrorMsg, err.message);
+                } finally {
+                    resendCodeBtn.disabled = false;
+                    resendCodeBtn.textContent = 'Resend Code';
                 }
             });
 
@@ -362,7 +489,9 @@
             sendCodeBtn.addEventListener('click', async () => {
                 hideAllMessages();
                 const username = document.getElementById('forgot-username').value.trim();
-                if (!username) { return showMessage(forgotPasswordMessage, "Please enter a username."); }
+                if (!username) { return showMessage(forgotPasswordMessage, "Please enter your username."); }
+                sendCodeBtn.disabled = true;
+                sendCodeBtn.textContent = 'Sending...';
                 try {
                     await Auth.forgotPassword(username);
                     sendCodeSection.classList.add('hidden');
@@ -370,6 +499,9 @@
                     showMessage(forgotPasswordMessage, "Reset code sent to your email.", false);
                 } catch (err) {
                     showMessage(forgotPasswordMessage, err.message);
+                } finally {
+                    sendCodeBtn.disabled = false;
+                    sendCodeBtn.textContent = 'Send Reset Code';
                 }
             });
 
@@ -378,21 +510,62 @@
                 const username = document.getElementById('forgot-username').value.trim();
                 const code = document.getElementById('reset-code').value.trim();
                 const newPassword = document.getElementById('new-password').value.trim();
-                if (!code || !newPassword) { return showMessage(forgotPasswordMessage, "Please enter the code and a new password."); }
+                
+                if (!code || !newPassword) { return showMessage(forgotPasswordMessage, "Please enter both the code and a new password."); }
+                
+                // Optional: Re-validate new password against requirements if needed
+                // For simplicity, we'll assume the new password input might also have similar validation.
+                // You could add a check here similar to the signup password validation if desired.
+                
+                resetPasswordBtn.disabled = true;
+                resetPasswordBtn.textContent = 'Submitting...';
                 try {
                     await Auth.forgotPasswordSubmit(username, code, newPassword);
-                    showMessage(forgotPasswordMessage, "Password reset! Redirecting...", false);
+                    showMessage(forgotPasswordMessage, "Password reset successfully! Redirecting to login...", false);
                     setTimeout(() => {
                         showForm(loginForm);
-                        document.getElementById('login-username').value = username;
+                        updateTabStyles('login-tab'); // Ensure login tab is active
+                        document.getElementById('login-username').value = username; // Pre-fill username
                     }, 2000);
                 } catch (err) {
                     showMessage(forgotPasswordMessage, err.message);
+                } finally {
+                    resetPasswordBtn.disabled = false;
+                    resetPasswordBtn.textContent = 'Submit New Password';
                 }
             });
 
-            // --- Password Strength Logic (Existing) ---
-            // ... your existing password validation code ...
+            // --- Password Strength Logic (Existing, with slight refactor) ---
+            const validatePassword = () => {
+                const password = signupPasswordInput.value;
+                const checks = {
+                    length: password.length >= 8,
+                    case: /[a-z]/.test(password) && /[A-Z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password),
+                };
+
+                reqLength.classList.toggle('met', checks.length);
+                reqLength.classList.toggle('unmet', !checks.length);
+
+                reqCase.classList.toggle('met', checks.case);
+                reqCase.classList.toggle('unmet', !checks.case);
+
+                reqNumber.classList.toggle('met', checks.number);
+                reqNumber.classList.toggle('unmet', !checks.number);
+
+                reqSpecial.classList.toggle('met', checks.special);
+                reqSpecial.classList.toggle('unmet', !checks.special);
+
+                const allMet = Object.values(checks).every(Boolean);
+                signupNextBtn.disabled = !allMet;
+                return allMet;
+            };
+
+            signupPasswordInput.addEventListener('keyup', validatePassword);
+
+            // Trigger validation on initial load if there's a pre-filled password (unlikely for new signup)
+            validatePassword();
         });
 
         // --- Global Toggle Password Function ---
