@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
   
-  <!-- Add Amplify scripts here to handle authentication -->
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
   <script src="./js/amplify_config.js"></script>
   
@@ -39,88 +38,54 @@
     <h1 class="text-3xl font-bold mb-6 text-purple-400">📊 Coding Profile Stats</h1>
 
     <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 sm:grid-cols-1">
-      <!-- Loading skeleton -->
       <div id="loading-skeleton" class="space-y-4 col-span-full">
         <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
       </div>
     </div>
 
-    <!-- Template for LeetCode Card -->
+    <!-- Card Templates -->
     <template id="leetcode-template">
       <div class="platform-card bg-gradient-to-br from-orange-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
         <div class="flex items-center gap-3 mb-4">
           <img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-8 h-8">
           <h2 class="text-xl font-semibold">LeetCode</h2>
         </div>
-        <p class="text-gray-300 mb-1">@<span id="leetcode-username" class="text-white">Loading...</span></p>
+        <p class="text-gray-300 mb-1">@<span id="leetcode-username" class="text-white"></span></p>
         <div class="mt-4 space-y-2">
-          <div class="flex justify-between">
-            <span>Total Solved:</span>
-            <span id="leetcode-problems" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-green-400">
-            <span>Easy:</span>
-            <span id="leetcode-easy" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-yellow-400">
-            <span>Medium:</span>
-            <span id="leetcode-medium" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-red-400">
-            <span>Hard:</span>
-            <span id="leetcode-hard" class="font-bold">0</span>
-          </div>
+          <div class="flex justify-between"><span>Total Solved:</span><span id="leetcode-problems" class="font-bold">0</span></div>
+          <div class="flex justify-between text-green-400"><span>Easy:</span><span id="leetcode-easy" class="font-bold">0</span></div>
+          <div class="flex justify-between text-yellow-400"><span>Medium:</span><span id="leetcode-medium" class="font-bold">0</span></div>
+          <div class="flex justify-between text-red-400"><span>Hard:</span><span id="leetcode-hard" class="font-bold">0</span></div>
         </div>
       </div>
     </template>
-
-    <!-- Template for CodeChef Card -->
     <template id="codechef-template">
       <div class="platform-card bg-gradient-to-br from-yellow-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
         <div class="flex items-center gap-3 mb-4">
           <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-8 h-8">
           <h2 class="text-xl font-semibold">CodeChef</h2>
         </div>
-        <p class="text-gray-300 mb-1">@<span id="codechef-username" class="text-white">Loading...</span></p>
+        <p class="text-gray-300 mb-1">@<span id="codechef-username" class="text-white"></span></p>
         <div class="mt-4 space-y-2">
-          <div class="flex justify-between">
-            <span>Problems Solved:</span>
-            <span id="codechef-problems" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-blue-300">
-            <span>Rating:</span>
-            <span id="codechef-rating" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between">
-            <span>Contests:</span>
-            <span id="codechef-contests" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between star-rating">
-            <span>Stars:</span>
-            <span id="codechef-stars" class="font-bold">0</span>
-          </div>
+          <div class="flex justify-between"><span>Problems Solved:</span><span id="codechef-problems" class="font-bold">0</span></div>
+          <div class="flex justify-between text-blue-300"><span>Rating:</span><span id="codechef-rating" class="font-bold">0</span></div>
+          <div class="flex justify-between"><span>Contests:</span><span id="codechef-contests" class="font-bold">0</span></div>
+          <div class="flex justify-between star-rating"><span>Stars:</span><span id="codechef-stars" class="font-bold">0</span></div>
         </div>
       </div>
     </template>
-
-    <!-- Template for HackerRank Card -->
     <template id="hackerrank-template">
       <div class="platform-card bg-gradient-to-br from-green-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
         <div class="flex items-center gap-3 mb-4">
           <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-8 h-8">
           <h2 class="text-xl font-semibold">HackerRank</h2>
         </div>
-        <p class="text-gray-300 mb-1">@<span id="hackerrank-username" class="text-white">Loading...</span></p>
+        <p class="text-gray-300 mb-1">@<span id="hackerrank-username" class="text-white"></span></p>
         <div class="mt-4 space-y-2">
-          <div class="flex justify-between">
-            <span>Badges:</span>
-            <span id="hackerrank-badges" class="font-bold">0</span>
-          </div>
+          <div class="flex justify-between"><span>Badges:</span><span id="hackerrank-badges" class="font-bold">0</span></div>
         </div>
       </div>
     </template>
-
-    <!-- Template for GFG Card -->
     <template id="gfg-template">
       <div class="platform-card bg-gradient-to-br from-green-800/50 to-gray-800 p-6 rounded-2xl shadow-md">
         <div class="flex items-center gap-3 mb-4">
@@ -130,49 +95,21 @@
         <div class="flex items-center gap-3 mb-3">
           <img id="gfg-profile-image" src="" alt="Profile" class="w-10 h-10 rounded-full">
           <div>
-            <p class="text-gray-300">@<span id="gfg-username" class="text-white">Loading...</span></p>
+            <p class="text-gray-300">@<span id="gfg-username" class="text-white"></span></p>
             <p id="gfg-fullname" class="text-sm text-gray-400 truncate max-w-xs"></p>
           </div>
         </div>
-        
         <div class="institute-badge text-xs px-2 py-1 rounded-full mb-3 inline-flex items-center">
           <span id="gfg-institute" class="truncate max-w-xs"></span>
           <span id="gfg-institute-rank" class="ml-1 bg-purple-800 px-1 rounded"></span>
         </div>
-        
         <div class="mt-2 space-y-2">
-          <div class="flex justify-between">
-            <span>Problems Solved:</span>
-            <span id="gfg-problems" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-green-400">
-            <span>Easy:</span>
-            <span id="gfg-easy" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-yellow-400">
-            <span>Medium:</span>
-            <span id="gfg-medium" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between text-red-400">
-            <span>Hard:</span>
-            <span id="gfg-hard" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between">
-            <span>Coding Score:</span>
-            <span id="gfg-score" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between">
-            <span>Monthly Score:</span>
-            <span id="gfg-monthly" class="font-bold">0</span>
-          </div>
-          <div class="flex justify-between streak-fire">
-            <span>Current Streak:</span>
-            <span id="gfg-streak" class="font-bold">0 days</span>
-          </div>
-          <div class="flex justify-between text-gray-400">
-            <span>Max Streak:</span>
-            <span id="gfg-max-streak" class="font-bold">0 days</span>
-          </div>
+          <div class="flex justify-between"><span>Problems Solved:</span><span id="gfg-problems" class="font-bold">0</span></div>
+          <div class="flex justify-between text-green-400"><span>Easy:</span><span id="gfg-easy" class="font-bold">0</span></div>
+          <div class="flex justify-between text-yellow-400"><span>Medium:</span><span id="gfg-medium" class="font-bold">0</span></div>
+          <div class="flex justify-between text-red-400"><span>Hard:</span><span id="gfg-hard" class="font-bold">0</span></div>
+          <div class="flex justify-between"><span>Coding Score:</span><span id="gfg-score" class="font-bold">0</span></div>
+          <div class="flex justify-between streak-fire"><span>Current Streak:</span><span id="gfg-streak" class="font-bold">0 days</span></div>
         </div>
       </div>
     </template>
@@ -186,12 +123,9 @@
   </div>
 
   <script>
-    // This function will be called automatically when the page loads
     document.addEventListener('DOMContentLoaded', async () => {
-      // First, make sure Amplify is available
       if (!window.aws_amplify) {
-        console.error("Amplify not loaded - cannot fetch user data.");
-        alert("A critical error occurred. Please refresh the page.");
+        console.error("Amplify not loaded.");
         return;
       }
 
@@ -199,130 +133,104 @@
       Auth.configure(window.amplifyConfig);
 
       try {
-        // Show a loading state while we fetch data
         document.getElementById('loading-skeleton').classList.remove('hidden');
-
-        // 1. Check who is the currently authenticated user
         const user = await Auth.currentAuthenticatedUser();
-
-        // 2. Fetch all attributes for that user from Cognito
         const attributes = await Auth.userAttributes(user);
-
-        // 3. Convert the attributes array into a simple key-value object for easy access
         const attributeMap = {};
         attributes.forEach(attr => {
           attributeMap[attr.Name] = attr.Value;
         });
 
-        // 4. Get the specific platform usernames from our new map
-        const leetcode = attributeMap['custom:leetcode_username'];
-        const codechef = attributeMap['custom:codechef_username'];
-        const hackerrank = attributeMap['custom:hackerrank_username'];
-        const gfg = attributeMap['custom:gfg_username'];
-
-        // 5. Now, call the function to fetch the scores with the retrieved usernames
-        await fetchScores(leetcode, codechef, hackerrank, gfg);
+        await fetchScores(
+          attributeMap['custom:leetcode_username'],
+          attributeMap['custom:codechef_username'],
+          attributeMap['custom:hackerrank_username'],
+          attributeMap['custom:gfg_username'],
+          attributeMap['name'] // Pass user's full name to GFG card
+        );
 
       } catch (err) {
-        // If there's any error (like user not logged in), redirect to the login page
-        console.error("Authentication error:", err);
+        console.error("Authentication error, redirecting...", err);
         window.location.href = "index.html";
       }
     });
 
-    // Modified to accept usernames as arguments instead of reading from URL
-    async function fetchScores(leetcode, codechef, hackerrank, gfg) {
-      if (!leetcode && !codechef && !hackerrank && !gfg) {
+    async function fetchScores(leetcode, codechef, hackerrank, gfg, fullName) {
+      const outputDiv = document.getElementById('output');
+      const hasAtLeastOneUsername = leetcode || codechef || hackerrank || gfg;
+
+      if (!hasAtLeastOneUsername) {
+        outputDiv.innerHTML = `<p class="text-center col-span-full">No platform usernames found for your account. Please <a href="usernames.html" class="text-purple-400 underline">update them</a>.</p>`;
         document.getElementById('loading-skeleton').classList.add('hidden');
-        document.getElementById('output').innerHTML = `<p class="text-center col-span-full">No platform usernames found for your account. Please <a href="usernames.html" class="text-purple-400 underline">update them</a>.</p>`;
         return;
       }
-
-      try {
-        // Fetch data from main API
-        const mainApiURL = `https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode || ''}&codechef=${codechef || ''}&hackerrank=${hackerrank || ''}`;
-        const mainApiPromise = fetch(mainApiURL).then(res => res.ok ? res.json() : Promise.reject({ status: res.status, url: res.url }));
-        
-        // Fetch GFG data from separate API if username provided
-        let gfgApiPromise = Promise.resolve(null);
-        if (gfg) {
-          const gfgApiURL = `https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`;
-          gfgApiPromise = fetch(gfgApiURL).then(res => res.ok ? res.json() : Promise.reject({ status: res.status, url: res.url }));
+      
+      const platformsToFetch = [];
+      if (leetcode) platformsToFetch.push(fetch(`https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?leetcode=${leetcode}`).then(res => res.json()));
+      if (codechef) platformsToFetch.push(fetch(`https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?codechef=${codechef}`).then(res => res.json()));
+      if (hackerrank) platformsToFetch.push(fetch(`https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score?hackerrank=${hackerrank}`).then(res => res.json()));
+      if (gfg) platformsToFetch.push(fetch(`https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score?username=${gfg}`).then(res => res.json()));
+      
+      const results = await Promise.allSettled(platformsToFetch);
+      
+      document.getElementById('loading-skeleton').classList.add('hidden');
+      outputDiv.innerHTML = '';
+      
+      results.forEach(result => {
+        if (result.status === 'fulfilled' && result.value) {
+            const data = result.value;
+            if (data.leetcode) {
+                const card = document.getElementById('leetcode-template').content.cloneNode(true);
+                card.getElementById('leetcode-username').textContent = leetcode;
+                card.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
+                card.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
+                card.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
+                card.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
+                outputDiv.appendChild(card);
+            }
+            if (data.codechef) {
+                const card = document.getElementById('codechef-template').content.cloneNode(true);
+                card.getElementById('codechef-username').textContent = codechef;
+                card.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
+                card.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
+                card.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
+                card.getElementById('codechef-stars').textContent = data.codechef.stars || '0';
+                outputDiv.appendChild(card);
+            }
+            if (data.hackerrank) {
+                const card = document.getElementById('hackerrank-template').content.cloneNode(true);
+                card.getElementById('hackerrank-username').textContent = hackerrank;
+                card.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
+                outputDiv.appendChild(card);
+            }
+            if (data.username) { // Check for GFG data structure
+                const card = document.getElementById('gfg-template').content.cloneNode(true);
+                card.getElementById('gfg-username').textContent = data.username || gfg;
+                card.getElementById('gfg-fullname').textContent = data.fullName || fullName;
+                card.getElementById('gfg-profile-image').src = data.profileImage || 'https://media.geeksforgeeks.org/img-practice/user_web-1598433228.svg';
+                card.getElementById('gfg-institute').textContent = data.institute || 'Not specified';
+                if (data.instituteRank) card.getElementById('gfg-institute-rank').textContent = `#${data.instituteRank}`;
+                else card.getElementById('gfg-institute-rank').style.display = 'none';
+                card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
+                card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
+                card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
+                card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
+                card.getElementById('gfg-score').textContent = data.codingScore || '0';
+                card.getElementById('gfg-streak').textContent = `${data.currentStreak || 0} days`;
+                outputDiv.appendChild(card);
+            }
         }
-
-        const [mainData, gfgData] = await Promise.allSettled([mainApiPromise, gfgApiPromise]);
-        
-        document.getElementById('loading-skeleton').classList.add('hidden');
-        const outputDiv = document.getElementById('output');
-        outputDiv.innerHTML = '';
-        
-        // Render cards based on successful API calls
-        if (mainData.status === 'fulfilled' && mainData.value?.leetcode) {
-          const card = document.getElementById('leetcode-template').content.cloneNode(true);
-          card.getElementById('leetcode-username').textContent = leetcode;
-          card.getElementById('leetcode-problems').textContent = mainData.value.leetcode.problems_solved || '0';
-          card.getElementById('leetcode-easy').textContent = mainData.value.leetcode.Easy || '0';
-          card.getElementById('leetcode-medium').textContent = mainData.value.leetcode.Medium || '0';
-          card.getElementById('leetcode-hard').textContent = mainData.value.leetcode.Hard || '0';
-          outputDiv.appendChild(card);
-        }
-        
-        if (mainData.status === 'fulfilled' && mainData.value?.codechef) {
-          const card = document.getElementById('codechef-template').content.cloneNode(true);
-          card.getElementById('codechef-username').textContent = codechef;
-          card.getElementById('codechef-problems').textContent = mainData.value.codechef.problems_solved || '0';
-          card.getElementById('codechef-rating').textContent = mainData.value.codechef.contest_rating || '0';
-          card.getElementById('codechef-contests').textContent = mainData.value.codechef.contests_participated || '0';
-          card.getElementById('codechef-stars').textContent = mainData.value.codechef.stars || '0';
-          outputDiv.appendChild(card);
-        }
-        
-        if (mainData.status === 'fulfilled' && mainData.value?.hackerrank) {
-          const card = document.getElementById('hackerrank-template').content.cloneNode(true);
-          card.getElementById('hackerrank-username').textContent = hackerrank;
-          card.getElementById('hackerrank-badges').textContent = mainData.value.hackerrank.badges || '0';
-          outputDiv.appendChild(card);
-        }
-        
-        if (gfg && gfgData.status === 'fulfilled' && gfgData.value) {
-          const card = document.getElementById('gfg-template').content.cloneNode(true);
-          const data = gfgData.value;
-          card.getElementById('gfg-username').textContent = data.username || gfg;
-          card.getElementById('gfg-fullname').textContent = data.fullName || '';
-          card.getElementById('gfg-profile-image').src = data.profileImage || 'https://media.geeksforgeeks.org/img-practice/user_web-1598433228.svg';
-          card.getElementById('gfg-institute').textContent = data.institute || 'Not specified';
-          if (data.instituteRank) {
-            card.getElementById('gfg-institute-rank').textContent = `#${data.instituteRank}`;
-          } else {
-            card.getElementById('gfg-institute-rank').style.display = 'none';
-          }
-          card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
-          card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
-          card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
-          card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
-          card.getElementById('gfg-score').textContent = data.codingScore || '0';
-          card.getElementById('gfg-monthly').textContent = data.monthlyScore || '0';
-          card.getElementById('gfg-streak').textContent = data.currentStreak ? `${data.currentStreak} days` : '0 days';
-          card.getElementById('gfg-max-streak').textContent = data.maxStreak ? `${data.maxStreak} days` : '0 days';
-          outputDiv.appendChild(card);
-        }
-        
-      } catch (err) {
-        console.error("Error fetching score data:", err);
-        document.getElementById('loading-skeleton').classList.add('hidden');
-        document.getElementById('output').innerHTML = `<p class="text-center col-span-full">❌ Failed to fetch coding scores. Please try again later.</p>`;
-      }
+      });
     }
 
     async function logout() {
       try {
         const { Auth } = window.aws_amplify;
         await Auth.signOut();
-        // Also clear any local storage to avoid issues for the next user
         localStorage.clear();
         window.location.href = "index.html";
       } catch (err) {
-        alert("Logout failed: " + err.message);
+        console.error("Logout failed:", err);
       }
     }
   </script>
