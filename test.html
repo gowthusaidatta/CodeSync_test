@@ -10,6 +10,19 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
 
+  <!-- Logo + Notification Layout -->
+  <div class="flex items-center space-x-4 absolute top-6 right-6">
+    <label for="photoUpload" class="cursor-pointer">
+      <img id="profilePhoto" src="https://via.placeholder.com/40" alt="Profile" class="rounded-full w-10 h-10 object-cover" />
+    </label>
+    <input type="file" id="photoUpload" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)" />
+    <button onclick="subscribeToNotifications()" title="Subscribe to notifications">
+      🔔
+    </button>
+    <button onclick="logout()" title="Logout" class="text-sm underline text-gray-400 hover:text-white">Logout</button>
+  </div>
+
+  <!-- Main Container -->
   <div class="bg-white/10 p-6 rounded-xl shadow-md text-center w-[360px]">
     <h1 class="text-xl font-bold text-purple-400 mb-2">🔔 Subscribe to Notifications</h1>
     <p class="text-gray-300 text-sm mb-4">Receive coding alerts directly to your email</p>
@@ -24,7 +37,7 @@
   </div>
 
   <script>
-    const API_ENDPOINT = "https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail/subscribeEmail"; // Your API Gateway URL
+    const API_ENDPOINT = "https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail"; // ✅ Corrected URL
 
     window.addEventListener("load", async () => {
       const { Auth } = window.aws_amplify;
@@ -46,7 +59,7 @@
             "Authorization": token,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({})  // No body needed unless your Lambda expects it
+          body: JSON.stringify({})
         });
 
         const result = await response.json();
@@ -64,7 +77,28 @@
         status.className = "text-red-400 text-sm mt-4";
       }
     }
-  </script>
 
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("profilePhoto").src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function logout() {
+      try {
+        const { Auth } = window.aws_amplify;
+        await Auth.signOut();
+        localStorage.clear();
+        window.location.href = "index.html";
+      } catch (err) {
+        console.error("Logout failed:", err);
+      }
+    }
+  </script>
 </body>
 </html>
