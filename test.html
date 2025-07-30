@@ -26,7 +26,7 @@
   </div>
 
   <script>
-    const API_ENDPOINT = "https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail"; // Replace with your deployed URL
+    const API_ENDPOINT = "https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail"; // ✅ Set your deployed API URL
 
     window.addEventListener("load", async () => {
       const { Auth } = window.aws_amplify;
@@ -35,7 +35,7 @@
       try {
         await Auth.currentAuthenticatedUser();
       } catch (err) {
-        console.warn("Not logged in, redirecting to login page...");
+        console.warn("Not logged in, redirecting...");
         window.location.href = "index.html";
       }
     });
@@ -55,7 +55,7 @@
             "Authorization": token,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({})
+          body: JSON.stringify({})  // No need to send email explicitly
         });
 
         const result = await response.json();
