@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CodeSync | Notifications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subscribe to Notifications | CodeSync</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
   <script src="./js/amplify_config.js"></script>
@@ -12,7 +12,7 @@
 
   <div class="bg-white/10 p-6 rounded-xl shadow-md text-center w-[360px]">
     <h1 class="text-xl font-bold text-purple-400 mb-2">🔔 Subscribe to Notifications</h1>
-    <p class="text-gray-300 text-sm mb-4">Get coding alerts via email</p>
+    <p class="text-gray-300 text-sm mb-4">Receive coding alerts directly to your email</p>
 
     <button 
       onclick="subscribeToNotifications()" 
@@ -21,20 +21,29 @@
     </button>
 
     <div id="status" class="text-sm mt-4"></div>
+
+    <button onclick="window.location.href='results.html'" class="mt-4 text-sm text-gray-300 hover:underline">⬅ Back to Results</button>
   </div>
 
   <script>
-    const API_ENDPOINT = "https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail"; // Corrected path
+    const API_ENDPOINT = "https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail"; // Replace with your deployed URL
 
-    window.addEventListener("load", () => {
+    window.addEventListener("load", async () => {
       const { Auth } = window.aws_amplify;
       Auth.configure(window.amplifyConfig);
+
+      try {
+        await Auth.currentAuthenticatedUser();
+      } catch (err) {
+        console.warn("Not logged in, redirecting to login page...");
+        window.location.href = "index.html";
+      }
     });
 
     async function subscribeToNotifications() {
       const { Auth } = window.aws_amplify;
       const status = document.getElementById("status");
-      status.textContent = "🔄 Sending subscription request...";
+      status.textContent = "🔄 Subscribing...";
 
       try {
         const session = await Auth.currentSession();
@@ -46,16 +55,16 @@
             "Authorization": token,
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({}) // empty body, only token used
+          body: JSON.stringify({})
         });
 
         const result = await response.json();
 
         if (response.ok) {
-          status.textContent = result.message || "✅ Please confirm from your email.";
+          status.textContent = result.message || "✅ Check your email to confirm subscription!";
           status.className = "text-green-400 text-sm mt-4";
         } else {
-          throw new Error(result.error || "❌ Something went wrong.");
+          throw new Error(result.error || "❌ Subscription failed.");
         }
 
       } catch (err) {
@@ -65,5 +74,6 @@
       }
     }
   </script>
+
 </body>
 </html>
