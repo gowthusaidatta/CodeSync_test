@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CodeSync | Subscribe Notifications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
+  <script src="./js/amplify_config.js"></script> <!-- ✅ Your Amplify config file -->
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+
+  <div class="bg-white/10 p-8 rounded-lg backdrop-blur-lg w-[400px] text-center shadow-xl">
+    <h1 class="text-2xl font-bold mb-4 text-yellow-400">🔔 Subscribe to Notifications</h1>
+    <p class="text-gray-300 text-sm mb-6">Click below to subscribe and receive CodeSync updates via email.</p>
+
+    <button onclick="subscribeToNotifications()" 
+            class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded transition">
+      🔔 Subscribe via Email
+    </button>
+
+    <div id="status" class="text-sm mt-4"></div>
+
+    <div class="mt-6">
+      <a href="results.html" class="text-sm text-gray-400 hover:underline">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    const { Auth } = window.aws_amplify;
+    Auth.configure(window.amplifyConfig); // from amplify_config.js
+
+    async function subscribeToNotifications() {
+      const status = document.getElementById("status");
+      status.textContent = "⏳ Submitting subscription request...";
+
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        const username = user.getUsername();
+
+        const response = await fetch("https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          status.className = "text-green-400 mt-4";
+          status.textContent = data.message || "✅ Subscription email sent. Please check your inbox.";
+        } else {
+          throw new Error(data.error || "Unknown server error.");
+        }
+      } catch (err) {
+        console.error("Subscription error:", err);
+        status.className = "text-red-400 mt-4";
+        status.textContent = "❌ Subscription failed: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
