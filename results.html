@@ -123,37 +123,43 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      if (!window.aws_amplify) {
-        console.error("Amplify not loaded.");
-        return;
-      }
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (!window.aws_amplify) {
+      console.error("❌ Amplify not loaded.");
+      return;
+    }
 
-      const { Auth } = window.aws_amplify;
-      Auth.configure(window.amplifyConfig);
+    const { Auth } = window.aws_amplify;
+    Auth.configure(window.amplifyConfig);
 
-      try {
-        document.getElementById('loading-skeleton').classList.remove('hidden');
-        const user = await Auth.currentAuthenticatedUser();
-        const attributes = await Auth.userAttributes(user);
-        const attributeMap = {};
-        attributes.forEach(attr => {
-          attributeMap[attr.Name] = attr.Value;
-        });
+    // ✅ Step 1: Check session (instead of just currentAuthenticatedUser)
+    try {
+      const session = await Auth.currentSession();
+      const user = await Auth.currentAuthenticatedUser();
+      const attributes = await Auth.userAttributes(user);
+      const attributeMap = {};
 
-        await fetchScores(
-          attributeMap['custom:leetcode_username'],
-          attributeMap['custom:codechef_username'],
-          attributeMap['custom:hackerrank_username'],
-          attributeMap['custom:gfg_username'],
-          attributeMap['name'] // Pass user's full name to GFG card
-        );
+      attributes.forEach(attr => {
+        attributeMap[attr.Name] = attr.Value;
+      });
 
-      } catch (err) {
-        console.error("Authentication error, redirecting...", err);
-        window.location.href = "index.html";
-      }
-    });
+      // ✅ Step 2: Load scores only after auth success
+      await fetchScores(
+        attributeMap['custom:leetcode_username'],
+        attributeMap['custom:codechef_username'],
+        attributeMap['custom:hackerrank_username'],
+        attributeMap['custom:gfg_username'],
+        attributeMap['name'] // Full name for GFG
+      );
+
+    } catch (err) {
+      console.warn("🔐 Session expired or not logged in:", err);
+      // Redirect to login page
+      window.location.href = "index.html";
+    }
+  });
+
+
 
     async function fetchScores(leetcode, codechef, hackerrank, gfg, fullName) {
       const outputDiv = document.getElementById('output');
