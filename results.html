@@ -17,72 +17,38 @@
     <script src="./js/amplify_config.js"></script>    
     
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #111827; 
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #111827; }
         .platform-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            background-color: #1F2937;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; background-color: #1F2937;
+            border-radius: 1rem; padding: 1.5rem; height: 100%;
+            box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;
         }
-        .platform-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
+        .platform-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a; }
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top: 4px solid #a78bfa; 
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
+            border: 4px solid #ffffff33; border-top: 4px solid #a78bfa; 
+            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Sidebar Styling */
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .sidebar {
             position: fixed; z-index: 100; height: 100vh; top: 0; left: 0; width: 280px;
             transform: translateX(-100%); transition: transform 0.3s ease-in-out; flex-shrink: 0;
         }
         .sidebar.active { transform: translateX(0); }
-        
         #sidebar-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #00000080;
             z-index: 90; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-in-out;
         }
         #sidebar-backdrop.active { opacity: 1; visibility: visible; }
-
-        /* Toast Notification Styling */
-        #toast-notification {
-            position: fixed; top: 1.25rem; right: 1.25rem; z-index: 200; color: white;
-            padding: 0.75rem 1.25rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateX(120%); opacity: 0; transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-        #toast-notification.show { transform: translateX(0); opacity: 1; }
-        #toast-notification.success { background-color: #10B981; }
-        #toast-notification.error { background-color: #EF4444; }
-
-        /* NEW: Subscription Instruction Modal Styling */
         #instruction-modal-backdrop {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 150;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none; align-items: center; justify-content: center;
+            background-color: #00000099; display: none; align-items: center; justify-content: center;
         }
         #instruction-modal-backdrop.active { display: flex; }
-
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex">
-    <!-- Sidebar Container -->
+    <!-- Sidebar Container (no changes) -->
     <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
-        <!-- Sidebar content remains unchanged -->
         <div class="p-5 border-b border-gray-800 flex justify-between items-center"><h2 class="text-xl font-semibold text-purple-400">User Profile</h2><button id="sidebar-close-button" class="text-gray-400 hover:text-purple-300 p-1 rounded-full"><i class="bi bi-x-lg text-lg"></i></button></div>
         <div class="p-4"><button onclick="window.location.href='/usernames.html'" class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"><i class="bi bi-pencil-square text-xl"></i><span>Update Usernames</span></button></div>
         <div class="p-5 flex flex-col items-center border-b border-gray-800"><img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User" alt="Profile" class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600"><h3 id="user-name" class="text-lg font-semibold text-center text-gray-50">Loading...</h3><p id="user-email" class="text-gray-400 text-sm text-center break-words mt-1">user@example.com</p></div>
@@ -91,10 +57,7 @@
     </div>
     <div id="sidebar-backdrop"></div>
     
-    <!-- Animated Toast Notification element -->
-    <div id="toast-notification"><p id="toast-message"></p></div>
-
-    <!-- NEW: Subscription Instruction Modal -->
+    <!-- Subscription Instruction Modal -->
     <div id="instruction-modal-backdrop">
         <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 border border-gray-700 text-center relative mx-4">
              <button id="instruction-modal-close" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
@@ -102,7 +65,7 @@
             </button>
             <i class="bi bi-envelope-check-fill text-purple-400 text-6xl mb-4"></i>
             <h2 class="text-2xl font-bold text-white mb-3">Confirm Your Subscription!</h2>
-            <p class="text-gray-300 mb-6">A confirmation link was sent to <b id="confirmation-email" class="text-purple-300">your email</b>. Please follow the steps below to start receiving notifications.</p>
+            <p class="text-gray-300 mb-6">A confirmation link was sent to <b id="confirmation-email" class="text-purple-300">your email</b>. Please follow the steps below.</p>
             <div class="bg-gray-900 p-4 rounded-lg text-left text-sm space-y-4">
                 <div>
                     <p class="font-semibold text-gray-200 mb-2">How to Confirm:</p>
@@ -112,8 +75,9 @@
                         <li>Click the "Confirm subscription" link inside.</li>
                     </ol>
                 </div>
-                <div class="bg-yellow-900/50 border-l-4 border-yellow-500 text-yellow-200 p-3 rounded-r-lg">
-                    <b>Please Note:</b> The confirmation email may take 5-10 minutes to arrive. Please be patient and check your spam folder.
+                <!-- MODIFIED: Added ID to this note for easy access -->
+                <div id="subscription-delay-note" class="bg-yellow-900/50 border-l-4 border-yellow-500 text-yellow-200 p-3 rounded-r-lg">
+                    <b>Please Note:</b> The confirmation email may take 5-10 minutes to arrive. Please check your spam folder if you don't see it.
                 </div>
             </div>
         </div>
@@ -145,7 +109,7 @@
                 <div class="space-y-6 col-span-full" id="initial-loading-skeleton"><div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse"></div></div>
             </div>
 
-            <!-- Card Templates -->
+            <!-- Card Templates (no changes) -->
             <template id="leetcode-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">LeetCode</h2></div><p id="leetcode-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Total Solved:</span><span id="leetcode-problems" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Easy:</span><span id="leetcode-easy" class="font-bold text-green-400">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Medium:</span><span id="leetcode-medium" class="font-bold text-yellow-400">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Hard:</span><span id="leetcode-hard" class="font-bold text-red-400">0</span></div></div></div></template>
             <template id="codechef-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">CodeChef</h2></div><p id="codechef-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Problems Solved:</span><span id="codechef-problems" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Rating:</span><span id="codechef-rating" class="font-bold text-blue-300">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Contests:</span><span id="codechef-contests" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium text-yellow-400">Stars:</span><span id="codechef-stars" class="font-bold text-yellow-400">0</span></div></div></div></template>
             <template id="hackerrank-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">HackerRank</h2></div><p id="hackerrank-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Badges:</span><span id="hackerrank-badges" class="font-bold text-white">0</span></div></div></div></template>
@@ -171,14 +135,13 @@
         const notificationBtn = document.getElementById('notification-btn');
         const instructionModalBackdrop = document.getElementById('instruction-modal-backdrop');
         const instructionModalClose = document.getElementById('instruction-modal-close');
-        let toastTimeout;
 
         // --- Main execution starts here ---
         document.addEventListener('DOMContentLoaded', async () => {
             setupEventListeners();
             
             if (!window.aws_amplify || !window.amplifyConfig) {
-                handleFatalError("Amplify or its configuration is missing.");
+                console.error("Amplify or its configuration is missing.");
                 return;
             }
 
@@ -210,23 +173,6 @@
             refreshButton.addEventListener('click', () => fetchScores(currentUserAttributes));
         }
         
-        function handleFatalError(message) {
-            console.error(message);
-            showToast(message, 'error');
-            initialLoadingSkeleton.style.display = 'none';
-            refreshButton.disabled = true;
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast-notification');
-            const toastMessage = document.getElementById('toast-message');
-            clearTimeout(toastTimeout);
-            toastMessage.textContent = message;
-            toast.className = 'fixed top-5 right-5 z-[200] text-white py-3 px-5 rounded-lg shadow-lg';
-            toast.classList.add('show', type);
-            toastTimeout = setTimeout(() => toast.classList.remove('show'), 5000);
-        }
-
         function updateUIWithUserInfo(attributes) {
             const userName = attributes['name'] || 'Coder';
             const userEmail = attributes['email'] || 'N/A';
@@ -240,10 +186,36 @@
             document.getElementById('welcome-header').textContent = `Welcome, ${userName}!`;
         }
 
+        /**
+         * MODIFIED: Controls the instruction modal visibility and content.
+         * @param {string} email - The user's email to display.
+         * @param {string} status - 'success' or 'failure' to control the delay note.
+         */
+        function showInstructionModal(email, status) {
+            const modalBackdrop = document.getElementById('instruction-modal-backdrop');
+            const delayNote = document.getElementById('subscription-delay-note');
+            const confirmationEmailSpan = document.getElementById('confirmation-email');
+            
+            confirmationEmailSpan.textContent = email;
+
+            if (status === 'success') {
+                // If API call is successful, HIDE the delay note
+                delayNote.style.display = 'none';
+            } else {
+                // If API call fails, SHOW the delay note
+                delayNote.style.display = 'block';
+            }
+            modalBackdrop.classList.add('active');
+        }
+
+        /**
+         * MODIFIED: Main subscription logic to use the new modal flow.
+         */
         async function handleSubscription() {
             const email = currentUserAttributes['email'];
             if (!email) {
-                showToast("Could not find a user email to subscribe.", "error");
+                // This is a genuine error, we can't proceed.
+                alert('Could not find a user email to subscribe.');
                 return;
             }
             
@@ -254,16 +226,22 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email })
                 });
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+
+                if (!response.ok) {
+                    // Treat a non-200 response as a 'failure' for the UI
+                    throw new Error(`API responded with status: ${response.status}`);
+                }
                 
-                // On success, show the instruction modal
-                document.getElementById('confirmation-email').textContent = email;
-                instructionModalBackdrop.classList.add('active');
+                // --- SUCCESS CASE ---
+                // API call worked, show modal WITHOUT delay note
+                showInstructionModal(email, 'success');
 
             } catch (error) {
-                // On failure, show an error toast
+                // --- FAILURE CASE ---
+                // API call failed (network error or bad response), show modal WITH delay note
                 console.error("Subscription failed:", error);
-                showToast("Subscription request failed. Please try again.", "error");
+                showInstructionModal(email, 'failure');
+
             } finally {
                 notificationBtn.disabled = false;
             }
@@ -292,14 +270,9 @@
                         return res.json().then(data => ({ ...p, data }));
                     })
                 ));
-                
                 results.forEach(result => {
-                    if (result.status === 'fulfilled') {
-                        renderCard(result.value.name, result.value.username, result.value.data);
-                    } else {
-                        console.error(`Fetch failed:`, result.reason);
-                        appendErrorCard('Platform');
-                    }
+                    if (result.status === 'fulfilled') { renderCard(result.value.name, result.value.username, result.value.data); } 
+                    else { console.error(`Fetch failed:`, result.reason); appendErrorCard('Platform'); }
                 });
             }
 
