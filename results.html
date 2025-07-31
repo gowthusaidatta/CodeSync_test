@@ -74,55 +74,14 @@
         .sidebar.active {
             transform: translateX(0);
         }
-        /* Sidebar collapsed state (desktop only, for icon view) */
-        /* This class is no longer used for a partially visible state, but for hiding text on small screens */
-        .sidebar.collapsed {
-            /* No specific width or transform here, handled by default .sidebar and .active */
-        }
-
-        /* Main content styling: always full width, no left margin */
-        .main-content {
-            flex-grow: 1; /* Allow main content to take remaining space */
-            width: 100%; /* Always full width */
-            margin-left: 0 !important; /* Ensure no margin is applied */
-            max-width: 100%; /* Ensure it doesn't overflow */
-            transition: all 0.3s ease-in-out; /* For any future transitions */
-        }
         
-        /* Hide text content within sidebar when collapsed */
-        .sidebar.collapsed .sidebar-text {
-            opacity: 0;
-            width: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            transition: opacity 0.1s ease-out, width 0.1s ease-out; /* Faster hide */
-        }
-        .sidebar:not(.collapsed) .sidebar-text {
-            opacity: 1;
-            width: auto;
-            transition: opacity 0.2s ease-in 0.1s, width 0.2s ease-in 0.1s; /* Slight delay for show */
-        }
-        /* Ensure icons remain visible when sidebar is collapsed */
-        .sidebar .sidebar-icon {
-            flex-shrink: 0; /* Prevent icons from shrinking */
-        }
-
-        /* Adjustments for the "Update Usernames" button when sidebar is collapsed */
-        .sidebar.collapsed #update-usernames-btn .sidebar-text {
-            display: none; /* Hide text */
-        }
-        .sidebar.collapsed #update-usernames-btn {
-            width: 48px; /* Make it a square button */
-            height: 48px;
-            padding: 0; /* Remove padding */
-            justify-content: center; /* Center icon */
-            border-radius: 50%; /* Make it circular */
-        }
-        .sidebar:not(.collapsed) #update-usernames-btn {
-            width: auto; /* Restore width */
-            height: auto;
-            padding: 0.75rem 1.25rem; /* Restore padding, slightly more vertical */
-            border-radius: 0.625rem; /* Restore rounded corners */
+        /* Main content styling */
+        .main-content {
+            flex-grow: 1; 
+            width: 100%; 
+            margin-left: 0 !important; 
+            max-width: 100%; 
+            transition: all 0.3s ease-in-out;
         }
 
         /* Sidebar Backdrop for mobile overlay */
@@ -143,107 +102,126 @@
             visibility: visible;
         }
 
-        /* Media queries for responsiveness */
-        @media (min-width: 768px) {
-            /* On desktop, the sidebar is initially hidden (off-screen) */
-            .sidebar {
-                transform: translateX(-100%); 
-            }
-            /* When active on desktop, it slides into view */
-            .sidebar.active {
-                transform: translateX(0);
-            }
+        /* Notification Modal Styling */
+        #notification-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
+        #notification-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        #notification-modal .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        #notification-modal.active .modal-content {
+            transform: scale(1);
+        }
+
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex">
     <!-- Sidebar Container -->
     <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
-        <!-- Sidebar Header with User Profile Title and Internal Toggle Button -->
+        <!-- Sidebar content remains unchanged -->
         <div class="p-5 border-b border-gray-800 flex justify-between items-center">
             <h2 class="text-xl font-semibold text-purple-400 sidebar-text">User Profile</h2>
-            <!-- Button to close the sidebar (X icon) -->
-            <button id="sidebar-toggle" class="text-gray-400 hover:text-purple-300 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500" onclick="closeSidebar()">
+            <button id="sidebar-close-button" class="text-gray-400 hover:text-purple-300 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500">
                 <i class="bi bi-x-lg text-lg"></i>
             </button>
         </div>
-        
-        <!-- "Update Usernames" Button - prominent like a "New Chat" button -->
         <div class="p-4">
-            <button id="update-usernames-btn" onclick="window.location.href='/usernames.html'" 
-                    class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
+            <button onclick="window.location.href='/usernames.html'" class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
                 <i class="bi bi-pencil-square sidebar-icon text-xl"></i> 
                 <span class="sidebar-text">Update Usernames</span>
             </button>
         </div>
-
-        <!-- User Profile Section - compact -->
         <div class="p-5 flex flex-col items-center border-b border-gray-800">
-            <!-- User Profile Avatar -->
-            <img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User" 
-                 alt="Profile" 
-                 class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600 flex-shrink-0 shadow-md">
-            <!-- User Name -->
+            <img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User" alt="Profile" class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600 flex-shrink-0 shadow-md">
             <h3 id="user-name" class="text-lg font-semibold sidebar-text text-center text-gray-50">Loading...</h3>
-            <!-- User Email - hidden when collapsed -->
             <p id="user-email" class="text-gray-400 text-sm sidebar-text text-center break-words overflow-hidden mt-1">user@example.com</p>
         </div>
-        
-        <!-- Coding Profiles Section - as navigation links -->
         <div class="p-4 border-b border-gray-800 flex-grow overflow-y-auto">
             <h4 class="font-medium text-gray-300 mb-3 sidebar-text px-1">Coding Profiles</h4>
             <ul class="space-y-2">
-                <!-- LeetCode Profile Link Status -->
                 <li id="leetcode-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-file-code-fill mr-3 sidebar-icon text-orange-500 text-xl"></i>
                     <span class="sidebar-text text-sm font-medium">LeetCode: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
-                <!-- CodeChef Profile Link Status -->
                 <li id="codechef-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-joystick mr-3 sidebar-icon text-yellow-500 text-xl"></i>
                     <span class="sidebar-text text-sm font-medium">CodeChef: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
-                <!-- HackerRank Profile Link Status -->
                 <li id="hackerrank-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-terminal-fill mr-3 sidebar-icon text-green-500 text-xl"></i>
                     <span class="sidebar-text text-sm font-medium">HackerRank: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
-                <!-- GFG Profile Link Status -->
                 <li id="gfg-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-code-square mr-3 sidebar-icon text-blue-500 text-xl"></i>
                     <span class="sidebar-text text-sm font-medium">GFG: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
             </ul>
         </div>
-        
-        <!-- Logout Button (aligned to bottom using mt-auto) -->
         <div class="p-4 mt-auto">
-            <button onclick="logout()" 
-                    class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75">
+            <button onclick="logout()" class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75">
                 <i class="bi bi-box-arrow-right sidebar-icon text-xl"></i> 
                 <span class="sidebar-text">Logout</span>
             </button>
         </div>
     </div>
 
-    <!-- Sidebar Backdrop (for overlay effect on mobile) -->
+    <!-- Sidebar Backdrop -->
     <div id="sidebar-backdrop"></div>
+    
+    <!-- Notification Subscription Modal -->
+    <div id="notification-modal">
+        <div class="modal-content bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 border border-gray-700 text-center relative">
+             <button id="notification-modal-close" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+                <i class="bi bi-x-lg text-2xl"></i>
+            </button>
+            <i class="bi bi-envelope-check-fill text-purple-400 text-6xl mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-3">Check Your Inbox!</h2>
+            <p class="text-gray-300 mb-6">A confirmation email has been sent to <b id="confirmation-email" class="text-purple-300">your email</b>. Please click the confirmation link in the email to start receiving notifications.</p>
+            <div class="bg-gray-900 p-4 rounded-lg text-left text-sm">
+                <p class="font-semibold text-gray-200 mb-2">Steps to Confirm:</p>
+                <ol class="list-decimal list-inside text-gray-400 space-y-1">
+                    <li>Open your email client.</li>
+                    <li>Find the email from "AWS Notifications".</li>
+                    <li>Click the "Confirm subscription" link.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Main Content Area -->
     <div id="main-content" class="main-content px-6 py-8 min-h-screen">
         <div class="max-w-7xl mx-auto"> 
-            <!-- Main Header (now for stats section) -->
             <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
                 <h1 class="text-4xl font-extrabold text-purple-400 mb-4 sm:mb-0">📊 Coding Platform Stats</h1>
                 <div class="flex items-center gap-4">
-                    <!-- Button to open sidebar (always visible, hamburger icon) -->
+                    <!-- ADDED: Notification Bell Button -->
+                    <button id="notification-btn" class="text-gray-300 hover:text-white p-3 rounded-lg bg-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <i class="bi bi-bell-fill text-2xl"></i>
+                    </button>
                     <button id="mobile-open-sidebar-button" class="text-gray-300 hover:text-white p-3 rounded-lg bg-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                         <i class="bi bi-list text-2xl"></i>
                     </button>
                 </div>
             </header>
 
-            <!-- Refresh Button and Last Updated Timestamp -->
             <div class="flex flex-col sm:flex-row justify-between items-center mb-8 py-5 px-6 bg-gray-800 rounded-2xl shadow-xl border border-gray-700">
                 <div class="text-center sm:text-left mb-4 sm:mb-0">
                     <h1 id="welcome-header" class="text-3xl font-bold text-purple-300">Welcome, Coder!</h1>
@@ -256,27 +234,21 @@
                 </div>
             </div>
 
-            <!-- Area where platform stats cards will be displayed -->
             <div id="output" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Initial loading skeleton (will be replaced by JS) -->
                 <div class="space-y-6 col-span-full" id="initial-loading-skeleton">
                     <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse"></div>
                     <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse hidden md:block"></div>
                     <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse hidden lg:block"></div>
-                    <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse hidden lg:block"></div>
                 </div>
             </div>
 
-            <!-- Card Templates (hidden by default, cloned and populated by JS) -->
-            <!-- Loading Card Template -->
+            <!-- Card Templates remain unchanged -->
             <template id="loading-card-template">
                 <div class="platform-card bg-gray-800 p-6 rounded-2xl shadow-md animate-pulse h-52 flex flex-col items-center justify-center">
                     <div class="spinner mb-3"></div>
                     <div class="text-gray-500 text-lg font-medium">Loading...</div>
                 </div>
             </template>
-
-            <!-- Error Card Template -->
             <template id="error-card-template">
                 <div class="platform-card bg-red-900/40 border border-red-700 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center text-center">
                     <i class="bi bi-exclamation-triangle-fill text-red-400 text-4xl mb-3"></i>
@@ -284,8 +256,6 @@
                     <p class="text-red-200 text-sm">Failed to load data. Please check the username or try again later.</p>
                 </div>
             </template>
-
-            <!-- LeetCode Card Template -->
             <template id="leetcode-template">
                 <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
                     <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
@@ -294,26 +264,13 @@
                     </div>
                     <p class="text-gray-300 mb-3 text-base">Username: <span id="leetcode-username" class="text-orange-400 font-medium"></span></p>
                     <div class="mt-4 space-y-2 text-gray-200">
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium">Total Solved:</span>
-                            <span id="leetcode-problems" class="font-bold text-lg text-white">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-green-400">
-                            <span class="font-medium">Easy:</span>
-                            <span id="leetcode-easy" class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-yellow-400">
-                            <span class="font-medium">Medium:</span>
-                            <span id="leetcode-medium" class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-red-400">
-                            <span class="font-medium">Hard:</span>
-                            <span id="leetcode-hard" class="font-bold text-lg">0</span>
-                        </div>
+                        <div class="flex justify-between items-center"><span class="font-medium">Total Solved:</span><span id="leetcode-problems" class="font-bold text-lg text-white">0</span></div>
+                        <div class="flex justify-between items-center text-green-400"><span class="font-medium">Easy:</span><span id="leetcode-easy" class="font-bold text-lg">0</span></div>
+                        <div class="flex justify-between items-center text-yellow-400"><span class="font-medium">Medium:</span><span id="leetcode-medium" class="font-bold text-lg">0</span></div>
+                        <div class="flex justify-between items-center text-red-400"><span class="font-medium">Hard:</span><span id="leetcode-hard" class="font-bold text-lg">0</span></div>
                     </div>
                 </div>
             </template>
-            <!-- CodeChef Card Template -->
             <template id="codechef-template">
                 <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
                     <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
@@ -322,26 +279,13 @@
                     </div>
                     <p class="text-gray-300 mb-3 text-base">Username: <span id="codechef-username" class="text-yellow-400 font-medium"></span></p>
                     <div class="mt-4 space-y-2 text-gray-200">
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium">Problems Solved:</span>
-                            <span id="codechef-problems" class="font-bold text-lg text-white">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-blue-300">
-                            <span class="font-medium">Rating:</span>
-                            <span id="codechef-rating" class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium">Contests:</span>
-                            <span id="codechef-contests" class="font-bold text-lg text-white">0</span>
-                        </div>
-                        <div class="flex justify-between items-center star-rating">
-                            <span class="font-medium">Stars:</span>
-                            <span id="codechef-stars" class="font-bold text-lg">0</span>
-                        </div>
+                        <div class="flex justify-between items-center"><span class="font-medium">Problems Solved:</span><span id="codechef-problems" class="font-bold text-lg text-white">0</span></div>
+                        <div class="flex justify-between items-center text-blue-300"><span class="font-medium">Rating:</span><span id="codechef-rating" class="font-bold text-lg">0</span></div>
+                        <div class="flex justify-between items-center"><span class="font-medium">Contests:</span><span id="codechef-contests" class="font-bold text-lg text-white">0</span></div>
+                        <div class="flex justify-between items-center star-rating"><span class="font-medium">Stars:</span><span id="codechef-stars" class="font-bold text-lg">0</span></div>
                     </div>
                 </div>
             </template>
-            <!-- HackerRank Card Template -->
             <template id="hackerrank-template">
                 <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
                     <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
@@ -350,14 +294,10 @@
                     </div>
                     <p class="text-gray-300 mb-3 text-base">Username: <span id="hackerrank-username" class="text-green-400 font-medium"></span></p>
                     <div class="mt-4 space-y-2 text-gray-200">
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium">Badges:</span>
-                            <span id="hackerrank-badges" class="font-bold text-lg text-white">0</span>
-                        </div>
+                        <div class="flex justify-between items-center"><span class="font-medium">Badges:</span><span id="hackerrank-badges" class="font-bold text-lg text-white">0</span></div>
                     </div>
                 </div>
             </template>
-            <!-- GeeksForGeeks (GFG) Card Template -->
             <template id="gfg-template">
                 <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
                     <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
@@ -376,30 +316,12 @@
                         <span id="gfg-institute-rank" class="ml-2 bg-purple-900/50 px-2 py-0.5 rounded-full text-purple-200"></span>
                     </div>
                     <div class="mt-2 space-y-2 text-gray-200">
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium">Problems Solved:</span>
-                            <span id="gfg-problems" class="font-bold text-lg text-white">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-green-400">
-                            <span class="font-medium">Easy:</span>
-                            <span id="gfg-easy" class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-yellow-400">
-                            <span class="font-medium">Medium:</span>
-                            <span id="gfg-medium" class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center text-red-400">
-                            <span class="font-medium">Hard:</span>
-                            <span id="gfg-hard" class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-medium">Coding Score:</span>
-                            <span id="gfg-score" class="font-bold text-lg text-white">0</span>
-                        </div>
-                        <div class="flex justify-between items-center streak-fire">
-                            <span class="font-medium">Current Streak:</span>
-                            <span id="gfg-streak" class="font-bold text-lg">0 days</span>
-                        </div>
+                        <div class="flex justify-between items-center"><span class="font-medium">Problems Solved:</span><span id="gfg-problems" class="font-bold text-lg text-white">0</span></div>
+                        <div class="flex justify-between items-center text-green-400"><span class="font-medium">Easy:</span><span id="gfg-easy" class="font-bold text-lg">0</span></div>
+                        <div class="flex justify-between items-center text-yellow-400"><span class="font-medium">Medium:</span><span id="gfg-medium" class="font-bold text-lg">0</span></div>
+                        <div class="flex justify-between items-center text-red-400"><span class="font-medium">Hard:</span><span id="gfg-hard" class="font-bold text-lg">0</span></div>
+                        <div class="flex justify-between items-center"><span class="font-medium">Coding Score:</span><span id="gfg-score" class="font-bold text-lg text-white">0</span></div>
+                        <div class="flex justify-between items-center streak-fire"><span class="font-medium">Current Streak:</span><span id="gfg-streak" class="font-bold text-lg">0 days</span></div>
                     </div>
                 </div>
             </template>
@@ -411,40 +333,32 @@
         let currentUserAttributes = {};
         const API_BASE_URL_GENERAL = 'https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score';
         const API_BASE_URL_GFG = 'https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score';
+        const API_SUBSCRIBE_URL = 'https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail';
 
         // Get references to DOM elements
         const sidebar = document.getElementById('sidebar'); 
-        const sidebarToggle = document.getElementById('sidebar-toggle'); 
+        const sidebarCloseButton = document.getElementById('sidebar-close-button'); 
         const mobileOpenSidebarButton = document.getElementById('mobile-open-sidebar-button'); 
-        const mainContent = document.getElementById('main-content'); 
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
         const userProfileAvatar = document.getElementById('user-profile-avatar'); 
         const welcomeHeader = document.getElementById('welcome-header');
         const lastUpdatedTimestamp = document.getElementById('last-updated-timestamp');
         const refreshButton = document.getElementById('refresh-stats-btn');
         const outputDiv = document.getElementById('output');
-        const loadingCardTemplate = document.getElementById('loading-card-template');
-        const errorCardTemplate = document.getElementById('error-card-template');
         const initialLoadingSkeleton = document.getElementById('initial-loading-skeleton');
-        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 
-
-        /**
-         * Updates the user's profile avatar using ui-avatars.com based on their name.
-         * @param {string} name - The user's name.
-         */
-        function updateUserAvatar(name) {
-            const avatarUrl = https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(name || 'User')};
-            userProfileAvatar.src = avatarUrl;
-        }
+        // NEW: Notification elements
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationModal = document.getElementById('notification-modal');
+        const notificationModalClose = document.getElementById('notification-modal-close');
+        const confirmationEmailSpan = document.getElementById('confirmation-email');
 
         /**
          * Opens the sidebar and shows the backdrop.
          */
         function openSidebar() {
             sidebar.classList.add('active'); 
-            sidebar.style.transform = 'translateX(0)';
-            mobileOpenSidebarButton.classList.add('hidden'); // Hide external open button
-            sidebarBackdrop.classList.add('active'); // Show backdrop
+            sidebarBackdrop.classList.add('active'); 
         }
 
         /**
@@ -452,101 +366,56 @@
          */
         function closeSidebar() {
             sidebar.classList.remove('active');
-            sidebar.style.transform = 'translateX(-100%)';
-            mobileOpenSidebarButton.classList.remove('hidden'); // Show external open button
-            sidebarBackdrop.classList.remove('active'); // Hide backdrop
+            sidebarBackdrop.classList.remove('active'); 
         }
 
-        /**
-         * Sets the initial state of the sidebar and its toggle buttons based on screen width.
-         * This runs on page load and window resize.
-         */
-        function setInitialSidebarState() {
-            // Sidebar is always hidden by default, and opened by the external button
-            sidebar.classList.remove('active'); 
-            sidebar.style.transform = 'translateX(-100%)';
-            mobileOpenSidebarButton.classList.remove('hidden'); // Always show external open button initially
-            sidebarBackdrop.classList.remove('active'); // Ensure backdrop is hidden initially
+        // --- Main execution starts here ---
+
+        // Setup event listeners for UI elements
+        function setupEventListeners() {
+            mobileOpenSidebarButton.addEventListener('click', openSidebar); 
+            sidebarCloseButton.addEventListener('click', closeSidebar);
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+            notificationBtn.addEventListener('click', handleSubscription);
+            notificationModalClose.addEventListener('click', () => notificationModal.classList.remove('active'));
+            refreshButton.addEventListener('click', () => fetchScores(currentUserAttributes));
         }
 
-        // Set initial state when the script loads
-        setInitialSidebarState();
-
-        // Add event listeners for sidebar interactions
-        mobileOpenSidebarButton.addEventListener('click', openSidebar); 
-        sidebarBackdrop.addEventListener('click', closeSidebar); // Close sidebar when clicking backdrop
-
-
-        // Adjust sidebar state on window resize to handle orientation changes or breakpoint shifts
-        window.addEventListener('resize', setInitialSidebarState);
-
-
-        // Main DOM content loaded handler
         document.addEventListener('DOMContentLoaded', async () => {
-            // Check if Amplify is loaded before proceeding
-            if (!window.aws_amplify) {
-                console.error("Amplify not loaded. Please ensure aws-amplify.min.js and amplify_config.js are correctly linked.");
-                // Display a user-friendly error message if Amplify fails to load
-                outputDiv.innerHTML = `
-                    <div class="col-span-full text-center bg-red-900/50 p-6 rounded-xl">
-                        <i class="bi bi-x-circle text-red-400 text-4xl mb-3"></i>
-                        <h3 class="text-xl font-semibold mb-2">Application Error</h3>
-                        <p class="text-red-200 mb-4">Failed to load core components. Please try refreshing the page or contact support.</p>
-                    </div>`;
-                initialLoadingSkeleton.classList.add('hidden'); 
-                refreshButton.disabled = true; 
+            setupEventListeners();
+            
+            if (!window.aws_amplify || !window.amplifyConfig) {
+                console.error("Amplify or its configuration is missing.");
+                outputDiv.innerHTML = `<div class="col-span-full text-center bg-red-900/50 p-6 rounded-xl"><h3 class="text-xl font-semibold">Application Error</h3><p class="text-red-200">Failed to load core components.</p></div>`;
+                initialLoadingSkeleton.style.display = 'none';
+                refreshButton.disabled = true;
                 return;
             }
 
             const { Auth } = window.aws_amplify;
-
-            // --- ADDED: Check for Amplify config before configuring ---
-            if (!window.amplifyConfig || !window.amplifyConfig.Auth) {
-                console.error("Amplify configuration (window.amplifyConfig.Auth) is missing or incomplete. Please ensure amplify_config.js is correctly set up with Auth properties.");
-                // Optionally, display a user-facing message here instead of just logging to console
-                outputDiv.innerHTML = <p class="text-center col-span-full text-red-400 p-4 bg-gray-800 rounded-lg shadow-md">Authentication configuration missing. Please ensure your Amplify setup is correct.</p>;
-                initialLoadingSkeleton.classList.add('hidden');
-                refreshButton.disabled = true; 
-                return; 
-            }
-            // --- END ADDED ---
-
             Auth.configure(window.amplifyConfig);
 
             try {
-                // Attempt to get current session and authenticated user
                 await Auth.currentSession(); 
                 const user = await Auth.currentAuthenticatedUser();
-
-                // Fetch user attributes and map them for easier access
                 const attributes = await Auth.userAttributes(user);
                 
                 attributes.forEach(attr => {
                     currentUserAttributes[attr.Name] = attr.Value;
                 });
 
-                // Update user profile details in the sidebar
                 updateSidebarProfile(currentUserAttributes); 
-
-                // Initial fetch of scores
                 await fetchScores(currentUserAttributes);
 
             } catch (err) {
-                // Handle authentication errors: log and redirect to login page
                 console.error("❌ Authentication error, redirecting to login...", err);
                 localStorage.clear(); 
                 window.location.href = "/index.html";
             }
-
-            // Add event listener for refresh button
-            refreshButton.addEventListener('click', async () => {
-                await fetchScores(currentUserAttributes);
-            });
         });
 
         /**
          * Updates the user profile section in the sidebar.
-         * @param {Object} attributes - User attributes from Amplify.
          */
         function updateSidebarProfile(attributes) {
             const userName = attributes['name'] || attributes['preferred_username'] || 'Coder';
@@ -554,216 +423,183 @@
 
             document.getElementById('user-name').textContent = userName;
             document.getElementById('user-email').textContent = userEmail;
-            updateUserAvatar(userName); 
+            userProfileAvatar.src = `https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(userName)}`; 
 
-            // Update linked coding profiles in the sidebar based on custom attributes
-            const leetcodeUsername = attributes['custom:leetcode_username'];
-            const codechefUsername = attributes['custom:codechef_username'];
-            const hackerrankUsername = attributes['custom:hackerrank_username'];
-            const gfgUsername = attributes['custom:gfg_username'];
+            document.getElementById('leetcode-profile').querySelector('span:last-child').textContent = attributes['custom:leetcode_username'] || 'Not linked';
+            document.getElementById('codechef-profile').querySelector('span:last-child').textContent = attributes['custom:codechef_username'] || 'Not linked';
+            document.getElementById('hackerrank-profile').querySelector('span:last-child').textContent = attributes['custom:hackerrank_username'] || 'Not linked';
+            document.getElementById('gfg-profile').querySelector('span:last-child').textContent = attributes['custom:gfg_username'] || 'Not linked';
 
-            document.getElementById('leetcode-profile').querySelector('span:last-child').textContent = leetcodeUsername || 'Not linked';
-            document.getElementById('codechef-profile').querySelector('span:last-child').textContent = codechefUsername || 'Not linked';
-            document.getElementById('hackerrank-profile').querySelector('span:last-child').textContent = hackerrankUsername || 'Not linked';
-            document.getElementById('gfg-profile').querySelector('span:last-child').textContent = gfgUsername || 'Not linked';
-
-            // Also update the welcome header in the main content area
-            welcomeHeader.textContent = Welcome, ${userName}!;
+            welcomeHeader.textContent = `Welcome, ${userName}!`;
         }
 
         /**
-         * Fetches coding scores from various platforms and updates the UI.
-         * It dynamically adds loading cards, then replaces them with actual data or error messages.
-         * @param {Object} attributes - User attributes containing platform usernames.
+         * NEW: Handles the notification subscription process.
+         */
+        async function handleSubscription() {
+            const email = currentUserAttributes['email'];
+            const name = currentUserAttributes['name'] || 'Coder';
+
+            if (!email) {
+                alert("Could not find user email. Cannot subscribe.");
+                return;
+            }
+            
+            notificationBtn.disabled = true;
+            notificationBtn.querySelector('i').classList.add('animate-ping');
+
+            try {
+                const response = await fetch(API_SUBSCRIBE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, name: name })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                await response.json(); // Assuming the API returns JSON
+                
+                confirmationEmailSpan.textContent = email;
+                notificationModal.classList.add('active');
+
+            } catch (error) {
+                console.error("Subscription failed:", error);
+                alert("Failed to subscribe for notifications. Please try again later.");
+            } finally {
+                notificationBtn.disabled = false;
+                notificationBtn.querySelector('i').classList.remove('animate-ping');
+            }
+        }
+
+
+        /**
+         * REWRITTEN: Fetches coding scores and updates the UI.
          */
         async function fetchScores(attributes) {
-            // Hide the initial full-width loading skeleton
-            initialLoadingSkeleton.classList.add('hidden');
-
-            // Clear any previous content in the output area
+            initialLoadingSkeleton.style.display = 'none';
             outputDiv.innerHTML = ''; 
-
-            // Show loading spinner on refresh button and disable it
             refreshButton.disabled = true;
             refreshButton.innerHTML = '<div class="spinner"></div> Fetching...'; 
 
-            const leetcode = attributes['custom:leetcode_username'];
-            const codechef = attributes['custom:codechef_username'];
-            const hackerrank = attributes['custom:hackerrank_username'];
-            const gfg = attributes['custom:gfg_username'];
-            const fullName = attributes['name'];
+            const platformsToFetch = [];
+            if (attributes['custom:leetcode_username']) platformsToFetch.push({ name: 'leetcode', username: attributes['custom:leetcode_username'], url: `${API_BASE_URL_GENERAL}?leetcode=${attributes['custom:leetcode_username']}`});
+            if (attributes['custom:codechef_username']) platformsToFetch.push({ name: 'codechef', username: attributes['custom:codechef_username'], url: `${API_BASE_URL_GENERAL}?codechef=${attributes['custom:codechef_username']}`});
+            if (attributes['custom:hackerrank_username']) platformsToFetch.push({ name: 'hackerrank', username: attributes['custom:hackerrank_username'], url: `${API_BASE_URL_GENERAL}?hackerrank=${attributes['custom:hackerrank_username']}`});
+            if (attributes['custom:gfg_username']) platformsToFetch.push({ name: 'gfg', username: attributes['custom:gfg_username'], url: `${API_BASE_URL_GFG}?username=${attributes['custom:gfg_username']}`});
 
-            const hasAtLeastOneUsername = leetcode || codechef || hackerrank || gfg;
-
-            if (!hasAtLeastOneUsername) {
+            if (platformsToFetch.length === 0) {
                 outputDiv.innerHTML = `
                     <div class="col-span-full text-center bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
                         <i class="bi bi-exclamation-triangle-fill text-yellow-500 text-4xl mb-3"></i>
                         <h3 class="text-xl font-semibold mb-2 text-gray-50">No platform usernames found</h3>
                         <p class="text-gray-400 mb-4">Please update your coding platform usernames to see your stats.</p>
-                        <button onclick="window.location.href='/usernames.html'" 
-                                class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 px-5 py-2.5 rounded-lg font-semibold text-white shadow-md hover:shadow-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
+                        <button onclick="window.location.href='/usernames.html'" class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 px-5 py-2.5 rounded-lg font-semibold text-white shadow-md hover:shadow-lg transition duration-200">
                             <i class="bi bi-pencil-square mr-2"></i> Update Usernames
                         </button>
                     </div>`;
-                lastUpdatedTimestamp.textContent = Last updated: ${new Date().toLocaleTimeString()};
+                lastUpdatedTimestamp.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
                 refreshButton.disabled = false;
                 refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats';
                 return;
             }
             
-            const fetchPromises = []; 
+            // Show loading cards
+            platformsToFetch.forEach(() => {
+                const loadingCard = document.getElementById('loading-card-template').content.cloneNode(true);
+                outputDiv.appendChild(loadingCard);
+            });
 
-            // Add loading cards for each linked platform before fetching data
-            if (leetcode) outputDiv.appendChild(loadingCardTemplate.content.cloneNode(true));
-            if (codechef) outputDiv.appendChild(loadingCardTemplate.content.cloneNode(true));
-            if (hackerrank) outputDiv.appendChild(loadingCardTemplate.content.cloneNode(true));
-            if (gfg) outputDiv.appendChild(loadingCardTemplate.content.cloneNode(true));
+            const fetchPromises = platformsToFetch.map(p => fetch(p.url).then(res => {
+                if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+                return res.json();
+            }));
 
-            // Fetch LeetCode data if username exists
-            if (leetcode) {
-                fetchPromises.push(
-                    fetch(${API_BASE_URL_GENERAL}?leetcode=${leetcode})
-                        .then(res => {
-                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
-                            return res.json();
-                        })
-                        .then(data => ({ platform: 'leetcode', status: 'fulfilled', value: data }))
-                        .catch(error => ({ platform: 'leetcode', status: 'rejected', reason: error.message || 'Network error' }))
-                );
-            }
-
-            // Fetch CodeChef data if username exists
-            if (codechef) {
-                fetchPromises.push(
-                    fetch(${API_BASE_URL_GENERAL}?codechef=${codechef})
-                        .then(res => {
-                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
-                            return res.json();
-                        })
-                        .then(data => ({ platform: 'codechef', status: 'fulfilled', value: data }))
-                        .catch(error => ({ platform: 'codechef', status: 'rejected', reason: error.message || 'Network error' }))
-                );
-            }
-
-            // Fetch HackerRank data if username exists
-            if (hackerrank) {
-                fetchPromises.push(
-                    fetch(${API_BASE_URL_GENERAL}?hackerrank=${hackerrank})
-                        .then(res => {
-                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
-                            return res.json();
-                        })
-                        .then(data => ({ platform: 'hackerrank', status: 'fulfilled', value: data }))
-                        .catch(error => ({ platform: 'hackerrank', status: 'rejected', reason: error.message || 'Network error' }))
-                );
-            }
-
-            // Fetch GFG data if username exists
-            if (gfg) {
-                fetchPromises.push(
-                    fetch(${API_BASE_URL_GFG}?username=${gfg})
-                        .then(res => {
-                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
-                            return res.json();
-                        })
-                        .then(data => ({ platform: 'gfg', status: 'fulfilled', value: data }))
-                        .catch(error => ({ platform: 'gfg', status: 'rejected', reason: error.message || 'Network error' }))
-                );
-            }
+            const results = await Promise.allSettled(fetchPromises);
             
-            // Wait for all fetch calls to complete (either fulfilled or rejected)
-            const results = await Promise.allSettled(fetchPromises); 
+            outputDiv.innerHTML = ''; // Clear loaders
 
-            // Clear all loading skeletons before rendering actual content
-            outputDiv.innerHTML = '';
+            results.forEach((result, index) => {
+                const platform = platformsToFetch[index];
+                
+                if (result.status === 'fulfilled' && result.value) {
+                    const data = result.value;
+                    let card;
 
-            // Process each fetch result and append the corresponding card
-            results.forEach(result => {
-                const platformName = result.value ? result.value.platform : 'Unknown';
-                let cardToAppend;
-
-                if (result.status === 'fulfilled' && result.value.value) { // Check for actual data presence
-                    const data = result.value.value;
-                    
-                    if (platformName === 'leetcode' && data.leetcode) {
-                        const card = document.getElementById('leetcode-template').content.cloneNode(true);
-                        card.getElementById('leetcode-username').textContent = leetcode;
-                        card.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
-                        card.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
-                        card.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
-                        card.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
-                        cardToAppend = card;
-                    } else if (platformName === 'codechef' && data.codechef) {
-                        const card = document.getElementById('codechef-template').content.cloneNode(true);
-                        card.getElementById('codechef-username').textContent = codechef;
-                        card.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
-                        card.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
-                        card.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
-                        card.getElementById('codechef-stars').textContent = data.codechef.stars || '0';
-                        cardToAppend = card;
-                    } else if (platformName === 'hackerrank' && data.hackerrank) {
-                        const card = document.getElementById('hackerrank-template').content.cloneNode(true);
-                        card.getElementById('hackerrank-username').textContent = hackerrank;
-                        card.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
-                        cardToAppend = card;
-                    } else if (platformName === 'gfg' && data.username) { // GFG API returns 'username' directly
-                        const card = document.getElementById('gfg-template').content.cloneNode(true);
-                        card.getElementById('gfg-username').textContent = data.username || gfg;
-                        card.getElementById('gfg-fullname').textContent = data.fullName || fullName; // Use passed fullName
-                        card.getElementById('gfg-profile-image').src = data.profileImage || https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(data.fullName || fullName || 'GFG User')};
-                        card.getElementById('gfg-institute').textContent = data.institute || 'Not specified';
-                        if (data.instituteRank) card.getElementById('gfg-institute-rank').textContent = #${data.instituteRank};
-                        else card.getElementById('gfg-institute-rank').style.display = 'none';
-                        card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
-                        card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
-                        card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
-                        card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
-                        card.getElementById('gfg-score').textContent = data.codingScore || '0';
-                        card.getElementById('gfg-streak').textContent = ${data.currentStreak || 0} days;
-                        cardToAppend = card;
-                    } else {
-                        // Handle cases where data structure is unexpected for a fulfilled promise
-                        console.warn(Unexpected data structure for ${platformName}:, data);
-                        const errorCard = errorCardTemplate.content.cloneNode(true);
-                        errorCard.querySelector('.platform-name').textContent = platformName.charAt(0).toUpperCase() + platformName.slice(1);
-                        cardToAppend = errorCard;
+                    try {
+                        switch(platform.name) {
+                            case 'leetcode':
+                                if (!data.leetcode) throw new Error("Invalid LeetCode data structure");
+                                card = document.getElementById('leetcode-template').content.cloneNode(true);
+                                card.getElementById('leetcode-username').textContent = platform.username;
+                                card.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
+                                card.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
+                                card.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
+                                card.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
+                                break;
+                            case 'codechef':
+                                if (!data.codechef) throw new Error("Invalid CodeChef data structure");
+                                card = document.getElementById('codechef-template').content.cloneNode(true);
+                                card.getElementById('codechef-username').textContent = platform.username;
+                                card.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
+                                card.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
+                                card.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
+                                card.getElementById('codechef-stars').textContent = data.codechef.stars || '0';
+                                break;
+                            case 'hackerrank':
+                                if (!data.hackerrank) throw new Error("Invalid HackerRank data structure");
+                                card = document.getElementById('hackerrank-template').content.cloneNode(true);
+                                card.getElementById('hackerrank-username').textContent = platform.username;
+                                card.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
+                                break;
+                            case 'gfg':
+                                if (!data.username) throw new Error("Invalid GFG data structure");
+                                card = document.getElementById('gfg-template').content.cloneNode(true);
+                                card.getElementById('gfg-username').textContent = data.username;
+                                card.getElementById('gfg-fullname').textContent = data.fullName || attributes['name'];
+                                card.getElementById('gfg-profile-image').src = data.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName || attributes['name'])}`;
+                                card.getElementById('gfg-institute').textContent = data.institute || 'N/A';
+                                const rankEl = card.getElementById('gfg-institute-rank');
+                                if (data.instituteRank) rankEl.textContent = `#${data.instituteRank}`; else rankEl.style.display = 'none';
+                                card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
+                                card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
+                                card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
+                                card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
+                                card.getElementById('gfg-score').textContent = data.codingScore || '0';
+                                card.getElementById('gfg-streak').textContent = `${data.currentStreak || 0} days`;
+                                break;
+                        }
+                        if (card) outputDiv.appendChild(card);
+                    } catch (e) {
+                         console.error(`Error parsing data for ${platform.name}:`, e);
+                         appendErrorCard(platform.name);
                     }
-                } else if (result.status === 'rejected') {
-                    // Handle rejected promises (API call failed)
-                    console.error(Error fetching ${platformName} data:, result.reason);
-                    const errorCard = errorCardTemplate.content.cloneNode(true);
-                    errorCard.querySelector('.platform-name').textContent = platformName.charAt(0).toUpperCase() + platformName.slice(1);
-                    // Optionally add more detail to the error card if needed
-                    cardToAppend = errorCard;
-                }
-
-                // Append the generated card (data or error) to the output div
-                if (cardToAppend) {
-                    outputDiv.appendChild(cardToAppend);
+                } else {
+                    console.error(`Error fetching ${platform.name} data:`, result.reason);
+                    appendErrorCard(platform.name);
                 }
             });
 
-            // Update last updated timestamp
-            lastUpdatedTimestamp.textContent = Last updated: ${new Date().toLocaleTimeString()};
-            
-            // Re-enable refresh button
+            lastUpdatedTimestamp.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
             refreshButton.disabled = false;
             refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats';
         }
 
-        /**
-         * Handles user logout using AWS Amplify and redirects to the login page.
-         */
+        function appendErrorCard(platformName) {
+            const errorCard = document.getElementById('error-card-template').content.cloneNode(true);
+            errorCard.querySelector('.platform-name').textContent = platformName.charAt(0).toUpperCase() + platformName.slice(1);
+            outputDiv.appendChild(errorCard);
+        }
+
         async function logout() {
             try {
                 const { Auth } = window.aws_amplify;
                 await Auth.signOut();
-                localStorage.clear(); // Clear any local storage data
-                window.location.href = "/index.html"; // Use absolute path
+                localStorage.clear();
+                window.location.href = "/index.html";
             } catch (err) {
                 console.error("Logout failed:", err);
-                // Optionally, display an error message to the user here
             }
         }
     </script>
