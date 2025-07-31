@@ -160,7 +160,7 @@
             } catch (err) {
                 console.error("❌ Authentication error, redirecting...", err);
                 localStorage.clear(); 
-                window.location.href = "/index.html";
+                window.location.href = "CodeSync_test/index.html";
             }
         });
 
@@ -327,7 +327,7 @@
                 const { Auth } = window.aws_amplify;
                 await Auth.signOut();
                 localStorage.clear();
-                window.location.href = "/index.html";
+                window.location.href = "CodeSync_test/index.html";
             } catch (err) {
                 console.error("Logout failed:", err);
             }
