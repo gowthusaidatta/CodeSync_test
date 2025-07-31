@@ -1,99 +1,177 @@
+<!-- Paste this code into your results.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CodeSync Sign Up</title>
+  <title>CodeSync | Results</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Use the same Amplify version as in login page -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
   <script src="./js/amplify_config.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .platform-card { transition: transform 0.2s; }
+    .platform-card:hover { transform: translateY(-5px); }
+    .star-rating { color: gold; text-shadow: 0 0 2px rgba(255, 215, 0, 0.8); }
+    .streak-fire { color: #ff4500; text-shadow: 0 0 4px rgba(255, 69, 0, 0.5); }
+    .institute-badge {
+      background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+    }
+  </style>
 </head>
-<body class="flex items-center justify-center h-screen bg-gray-900 text-white">
-  <div class="p-6 bg-white/10 backdrop-blur-lg rounded-xl w-96 space-y-4">
-    <h2 class="text-xl font-bold mb-2 text-center">Sign Up</h2>
-    
-    <div id="signup-form" class="space-y-4">
-      <input id="username" placeholder="Username" class="w-full p-2 rounded text-black" />
-      <input id="name" placeholder="Full Name" class="w-full p-2 rounded text-black" />
-      <input id="preferred_username" placeholder="Preferred Username" class="w-full p-2 rounded text-black" />
-      <input id="email" placeholder="Email" type="email" class="w-full p-2 rounded text-black" />
-      <input id="password" placeholder="Password" type="password" class="w-full p-2 rounded text-black" />
-      <button id="signup-btn" class="bg-purple-600 w-full py-2 rounded font-bold hover:bg-purple-700">
-        Sign Up
-      </button>
+<body class="bg-gray-900 text-white min-h-screen p-4">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-purple-400">📊 Coding Profile Stats</h1>
+
+    <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 sm:grid-cols-1">
+      <div id="loading-skeleton" class="space-y-4 col-span-full">
+        <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
+      </div>
     </div>
 
-    <div id="confirmation" class="hidden mt-4 space-y-4">
-      <p class="text-center">We sent a verification code to your email</p>
-      <input id="code" placeholder="Verification Code" class="w-full p-2 rounded text-black" />
-      <button id="confirm-btn" class="bg-green-600 w-full py-2 rounded font-bold hover:bg-green-700">
-        Confirm
+    <!-- CARD TEMPLATES -->
+    <!-- Include your templates here (unchanged) -->
+    <!-- ... same template blocks as before ... -->
+    <!-- Omitted here for brevity but your file already has them -->
+
+    <div class="mt-8 flex justify-center">
+      <button onclick="window.location.href='usernames.html'" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded font-semibold text-white">
+        🔄 Update Usernames
       </button>
+      <button onclick="logout()" class="ml-4 text-sm text-gray-300 hover:underline mt-2">🚪 Logout</button>
     </div>
-    
-    <a href="index.html" class="text-sm text-blue-400 block text-center hover:underline">Back to Login</a>
   </div>
 
   <script>
-    window.addEventListener("load", () => {
-      const amplify = window.aws_amplify;
-      if (!amplify) {
-        alert("❌ AWS Amplify failed to load. Check your internet connection or CDN link.");
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!window.aws_amplify) {
+        console.error("Amplify not loaded.");
         return;
       }
 
-      const { Auth } = amplify;
+      const { Auth } = window.aws_amplify;
       Auth.configure(window.amplifyConfig);
 
-      document.getElementById("signup-btn").addEventListener("click", async () => {
-        const username = document.getElementById("username").value.trim();
-        const name = document.getElementById("name").value.trim();
-        const preferred_username = document.getElementById("preferred_username").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
+      try {
+        await Auth.currentSession();
+        const user = await Auth.currentAuthenticatedUser();
+        const attributes = await Auth.userAttributes(user);
+        const attrMap = {};
+        attributes.forEach(attr => attrMap[attr.Name] = attr.Value);
 
-        if (!username || !name || !preferred_username || !email || !password) {
-          alert("Please fill in all fields");
-          return;
-        }
-
-        try {
-          const userAttributes = {
-            email,
-            name,
-            preferred_username,
-            // Add any other custom attributes your Cognito user pool requires
-          };
-
-          const signUpResponse = await Auth.signUp({
-            username,
-            password,
-            attributes: userAttributes
-          });
-
-          document.getElementById("signup-form").classList.add("hidden");
-          document.getElementById("confirmation").classList.remove("hidden");
-        } catch (err) {
-          alert("Sign Up Failed: " + err.message);
-          console.error(err);
-        }
-      });
-
-      document.getElementById("confirm-btn").addEventListener("click", async () => {
-        const username = document.getElementById("username").value.trim();
-        const code = document.getElementById("code").value.trim();
-
-        try {
-          await Auth.confirmSignUp(username, code);
-          alert("Account confirmed successfully! Redirecting to login...");
-          window.location.href = "index.html";
-        } catch (err) {
-          alert("Confirmation Failed: " + err.message);
-          console.error(err);
-        }
-      });
+        await fetchScores(
+          attrMap['custom:leetcode_username'],
+          attrMap['custom:codechef_username'],
+          attrMap['custom:hackerrank_username'],
+          attrMap['custom:gfg_username'],
+          attrMap['name']
+        );
+      } catch (err) {
+        console.error("❌ Auth error:", err);
+        window.location.href = "index.html";
+      }
     });
+
+    async function fetchScores(leetcode, codechef, hackerrank, gfg, fullName) {
+      const outputDiv = document.getElementById('output');
+      const skeleton = document.getElementById('loading-skeleton');
+
+      if (!(leetcode || codechef || hackerrank || gfg)) {
+        outputDiv.innerHTML = `<p class="col-span-full text-center text-gray-300">No usernames found. <a href="usernames.html" class="text-purple-400 underline">Update now</a></p>`;
+        skeleton.classList.add('hidden');
+        return;
+      }
+
+      const api1Base = 'https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score';
+      const api2Base = 'https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score';
+      const promises = [];
+
+      if (leetcode || codechef || hackerrank) {
+        const params = new URLSearchParams();
+        if (leetcode) params.append('leetcode', leetcode);
+        if (codechef) params.append('codechef', codechef);
+        if (hackerrank) params.append('hackerrank', hackerrank);
+
+        promises.push(
+          fetch(`${api1Base}?${params}`).then(res => res.json()).then(data => ({ type: "multi", data }))
+        );
+      }
+
+      if (gfg) {
+        promises.push(
+          fetch(`${api2Base}?username=${gfg}`).then(res => res.json()).then(data => ({ type: "gfg", data }))
+        );
+      }
+
+      const results = await Promise.allSettled(promises);
+      skeleton.classList.add('hidden');
+      outputDiv.innerHTML = '';
+
+      results.forEach(result => {
+        if (result.status !== "fulfilled") return;
+
+        const { type, data } = result.value;
+
+        if (type === "multi") {
+          if (data.leetcode) {
+            const card = document.getElementById('leetcode-template').content.cloneNode(true);
+            card.getElementById('leetcode-username').textContent = leetcode;
+            card.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
+            card.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
+            card.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
+            card.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
+            outputDiv.appendChild(card);
+          }
+
+          if (data.codechef) {
+            const card = document.getElementById('codechef-template').content.cloneNode(true);
+            card.getElementById('codechef-username').textContent = codechef;
+            card.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
+            card.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
+            card.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
+            card.getElementById('codechef-stars').textContent = data.codechef.stars || '0';
+            outputDiv.appendChild(card);
+          }
+
+          if (data.hackerrank) {
+            const card = document.getElementById('hackerrank-template').content.cloneNode(true);
+            card.getElementById('hackerrank-username').textContent = hackerrank;
+            card.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
+            outputDiv.appendChild(card);
+          }
+        }
+
+        if (type === "gfg" && data.username) {
+          const card = document.getElementById('gfg-template').content.cloneNode(true);
+          card.getElementById('gfg-username').textContent = data.username;
+          card.getElementById('gfg-fullname').textContent = data.fullName || fullName;
+          card.getElementById('gfg-profile-image').src = data.profileImage || `https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(data.fullName || fullName || 'User')}`;
+          card.getElementById('gfg-institute').textContent = data.institute || 'Not specified';
+          const instituteRank = card.getElementById('gfg-institute-rank');
+          if (data.instituteRank) instituteRank.textContent = `#${data.instituteRank}`;
+          else instituteRank.style.display = 'none';
+          card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
+          card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
+          card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
+          card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
+          card.getElementById('gfg-score').textContent = data.codingScore || '0';
+          card.getElementById('gfg-streak').textContent = `${data.currentStreak || 0} days`;
+          outputDiv.appendChild(card);
+        }
+      });
+    }
+
+    async function logout() {
+      try {
+        const { Auth } = window.aws_amplify;
+        await Auth.signOut();
+        localStorage.clear();
+        window.location.href = "index.html";
+      } catch (err) {
+        console.error("Logout failed:", err);
+      }
+    }
   </script>
 </body>
 </html>
