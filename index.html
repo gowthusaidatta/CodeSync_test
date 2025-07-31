@@ -61,16 +61,16 @@
         <header class="bg-gray-900 text-white py-4 px-6 shadow-lg sticky top-0 z-50">
             <div class="container mx-auto flex justify-between items-center max-w-7xl">
                 <div class="text-2xl font-bold">
-                    <a href="/" class="flex items-center space-x-3">
-                        <img src="/images/logo.png" alt="CodeSync Logo" class="h-9 w-auto filter brightness-150">
+                    <a href="/" class="flex items-center space-x-3"> <!-- Adjusted space-x to 3 -->
+                        <img src="/images/logo.png" alt="CodeSync Logo" class="h-10 w-auto filter brightness-150">
                         <h1 class="md:text-2xl text-xl font-extrabold text-white">CodeSync</h1>
                     </a>
                 </div>
-                <nav class="hidden md:flex space-x-6 text-lg">
-                    <a href="#home" class="hover:text-blue-400 transition duration-300">Home</a>
-                    <a href="#features" class="hover:text-blue-400 transition duration-300">Features</a>
-                    <a href="#about" class="hover:text-blue-400 transition duration-300">About</a>
-                    <a href="#contact" class="hover:text-blue-400 transition duration-300">Contact</a>
+                <nav class="hidden md:flex space-x-6 text-lg"> <!-- Adjusted space-x to 6 -->
+                    <a href="#home" class="hover:text-blue-400 transition duration-300 font-medium">Home</a>
+                    <a href="#features" class="hover:text-blue-400 transition duration-300 font-medium">Features</a>
+                    <a href="#about" class="hover:text-blue-400 transition duration-300 font-medium">About</a>
+                    <a href="#contact" class="hover:text-blue-400 transition duration-300 font-medium">Contact</a>
                 </nav>
                 <div class="md:hidden">
                     <button id="mobile-menu-button" class="text-white focus:outline-none p-2 rounded-md hover:bg-gray-700">
@@ -165,7 +165,7 @@
 
                         <!-- Signup Form Step 2 (Existing) -->
                         <form id="platform-form" class="space-y-6 hidden">
-                            <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>                 
+                            <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>              
                             <p class="text-center text-gray-500 text-sm -mt-4">Please provide at least one username.</p>
                             <div><input id="signup-leetcode" name="leetcode_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="LeetCode Username"></div>
                             <div><input id="signup-codechef" name="codechef_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="CodeChef Username"></div>
@@ -392,9 +392,9 @@
 
                 // Check password requirements validity
                 const isPasswordValid = reqLength.classList.contains('met') &&
-                                        reqCase.classList.contains('met') &&
-                                        reqNumber.classList.contains('met') &&
-                                        reqSpecial.classList.contains('met');
+                                         reqCase.classList.contains('met') &&
+                                         reqNumber.classList.contains('met') &&
+                                         reqSpecial.classList.contains('met');
                 
                 if (!isPasswordValid) {
                     showMessage(signupErrorMsg, "Password does not meet all requirements.");
