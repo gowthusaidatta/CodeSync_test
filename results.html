@@ -50,7 +50,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Sidebar styling: fixed width, smooth transitions */
+        /* Sidebar styling */
         .sidebar {
             position: fixed; 
             z-index: 100;
@@ -66,11 +66,6 @@
             transform: translateX(0);
         }
         
-        .main-content {
-            flex-grow: 1; 
-            width: 100%;
-        }
-
         /* Sidebar Backdrop */
         #sidebar-backdrop {
             position: fixed;
@@ -89,26 +84,31 @@
             visibility: visible;
         }
 
-        /* Notification Modal Styling */
-        #notification-modal {
+        /* NEW: Toast Notification Styling */
+        #toast-notification {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 1.25rem;
+            right: 1.25rem;
             z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateX(120%);
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
-        #notification-modal.active {
+        #toast-notification.show {
+            transform: translateX(0);
             opacity: 1;
-            visibility: visible;
         }
+        #toast-notification.success {
+            background-color: #10B981; /* Tailwind green-500 */
+        }
+        #toast-notification.error {
+            background-color: #EF4444; /* Tailwind red-500 */
+        }
+
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex">
@@ -161,18 +161,13 @@
     </div>
     <div id="sidebar-backdrop"></div>
     
-    <!-- Notification Subscription Modal (no changes) -->
-    <div id="notification-modal">
-        <div class="modal-content bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 border border-gray-700 text-center relative">
-             <button id="notification-modal-close" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="bi bi-x-lg text-2xl"></i></button>
-            <i class="bi bi-envelope-check-fill text-purple-400 text-6xl mb-4"></i>
-            <h2 class="text-2xl font-bold text-white mb-3">Check Your Inbox!</h2>
-            <p class="text-gray-300 mb-6">A confirmation email was sent to <b id="confirmation-email" class="text-purple-300">your email</b>. Click the link inside to subscribe.</p>
-        </div>
+    <!-- NEW: Animated Toast Notification element -->
+    <div id="toast-notification">
+        <p id="toast-message"></p>
     </div>
 
     <!-- Main Content Area -->
-    <div id="main-content" class="main-content px-6 py-8 min-h-screen">
+    <div class="flex-grow w-full px-6 py-8 min-h-screen">
         <div class="max-w-screen-xl mx-auto"> 
             <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
                 <h1 class="text-4xl font-extrabold text-purple-400 mb-4 sm:mb-0">📊 Coding Platform Stats</h1>
@@ -187,28 +182,27 @@
                     <h1 id="welcome-header" class="text-3xl font-bold text-purple-300">Welcome, Coder!</h1>
                     <p id="last-updated-timestamp" class="text-sm text-gray-400 mt-2">Last updated: Never</p>
                 </div>
-                <button id="refresh-stats-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2 transition duration-200 shadow-md">
-                    <i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats
-                </button>
+                 <!-- MODIFIED: Added Leaderboard button -->
+                <div class="flex flex-wrap justify-center sm:justify-end gap-4">
+                    <a href="leaderboard.html" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2 transition duration-200 shadow-md">
+                        <i class="bi bi-trophy-fill text-lg"></i> Leaderboard
+                    </a>
+                    <button id="refresh-stats-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2 transition duration-200 shadow-md">
+                        <i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats
+                    </button>
+                </div>
             </div>
 
-            <!-- MODIFIED: Changed grid to 4 columns on large screens -->
             <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <div class="space-y-6 col-span-full" id="initial-loading-skeleton">
                     <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse"></div>
                 </div>
             </div>
 
-            <!-- Card Templates (hidden by default, cloned and populated by JS) -->
-            <!-- MODIFIED: All templates updated for new design -->
-
-            <!-- LeetCode Card Template -->
+            <!-- Card Templates (no changes) -->
             <template id="leetcode-template">
                 <div class="platform-card">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-auto h-7">
-                        <h2 class="text-2xl font-bold text-gray-50">LeetCode</h2>
-                    </div>
+                    <div class="flex items-center gap-3 mb-6"><img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">LeetCode</h2></div>
                     <p id="leetcode-username" class="text-gray-300 mb-6 text-lg"></p>
                     <div class="space-y-3 text-gray-300">
                         <div class="flex justify-between items-center text-lg"><span class="font-medium">Total Solved:</span><span id="leetcode-problems" class="font-bold text-white">0</span></div>
@@ -218,13 +212,9 @@
                     </div>
                 </div>
             </template>
-            <!-- CodeChef Card Template -->
             <template id="codechef-template">
                  <div class="platform-card">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-auto h-7">
-                        <h2 class="text-2xl font-bold text-gray-50">CodeChef</h2>
-                    </div>
+                    <div class="flex items-center gap-3 mb-6"><img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">CodeChef</h2></div>
                     <p id="codechef-username" class="text-gray-300 mb-6 text-lg"></p>
                     <div class="space-y-3 text-gray-300">
                         <div class="flex justify-between items-center text-lg"><span class="font-medium">Problems Solved:</span><span id="codechef-problems" class="font-bold text-white">0</span></div>
@@ -234,26 +224,16 @@
                     </div>
                 </div>
             </template>
-            <!-- HackerRank Card Template -->
             <template id="hackerrank-template">
                 <div class="platform-card">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-auto h-7">
-                        <h2 class="text-2xl font-bold text-gray-50">HackerRank</h2>
-                    </div>
+                    <div class="flex items-center gap-3 mb-6"><img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">HackerRank</h2></div>
                     <p id="hackerrank-username" class="text-gray-300 mb-6 text-lg"></p>
-                    <div class="space-y-3 text-gray-300">
-                        <div class="flex justify-between items-center text-lg"><span class="font-medium">Badges:</span><span id="hackerrank-badges" class="font-bold text-white">0</span></div>
-                    </div>
+                    <div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Badges:</span><span id="hackerrank-badges" class="font-bold text-white">0</span></div></div>
                 </div>
             </template>
-            <!-- GeeksForGeeks (GFG) Card Template -->
             <template id="gfg-template">
                 <div class="platform-card">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-auto h-7">
-                        <h2 class="text-2xl font-bold text-gray-50">GeeksForGeeks</h2>
-                    </div>
+                    <div class="flex items-center gap-3 mb-6"><img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">GeeksForGeeks</h2></div>
                     <p id="gfg-username" class="text-gray-300 mb-6 text-lg"></p>
                     <div class="space-y-3 text-gray-300">
                         <div class="flex justify-between items-center text-lg"><span class="font-medium">Problems Solved:</span><span id="gfg-problems" class="font-bold text-white">0</span></div>
@@ -263,8 +243,7 @@
                     </div>
                 </div>
             </template>
-             <!-- Error Card Template -->
-            <template id="error-card-template">
+             <template id="error-card-template">
                 <div class="platform-card bg-red-900/40 border border-red-700 p-6 flex flex-col items-center justify-center text-center">
                     <i class="bi bi-exclamation-triangle-fill text-red-400 text-4xl mb-3"></i>
                     <h2 class="text-xl font-semibold text-red-300 mb-2"><span class="platform-name"></span></h2>
@@ -289,11 +268,9 @@
         const outputDiv = document.getElementById('output');
         const initialLoadingSkeleton = document.getElementById('initial-loading-skeleton');
         const notificationBtn = document.getElementById('notification-btn');
-        const notificationModal = document.getElementById('notification-modal');
-        const notificationModalClose = document.getElementById('notification-modal-close');
-        const confirmationEmailSpan = document.getElementById('confirmation-email');
         const welcomeHeader = document.getElementById('welcome-header');
         const lastUpdatedTimestamp = document.getElementById('last-updated-timestamp');
+        let toastTimeout;
 
         // --- Main execution starts here ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -324,11 +301,10 @@
         });
 
         function setupEventListeners() {
-            mobileOpenSidebarButton.addEventListener('click', () => sidebar.classList.add('active') || sidebarBackdrop.classList.add('active'));
-            sidebarCloseButton.addEventListener('click', () => sidebar.classList.remove('active') || sidebarBackdrop.classList.remove('active'));
-            sidebarBackdrop.addEventListener('click', () => sidebar.classList.remove('active') || sidebarBackdrop.classList.remove('active'));
+            mobileOpenSidebarButton.addEventListener('click', () => { sidebar.classList.add('active'); sidebarBackdrop.classList.add('active'); });
+            sidebarCloseButton.addEventListener('click', () => { sidebar.classList.remove('active'); sidebarBackdrop.classList.remove('active'); });
+            sidebarBackdrop.addEventListener('click', () => { sidebar.classList.remove('active'); sidebarBackdrop.classList.remove('active'); });
             notificationBtn.addEventListener('click', handleSubscription);
-            notificationModalClose.addEventListener('click', () => notificationModal.classList.remove('active'));
             refreshButton.addEventListener('click', () => fetchScores(currentUserAttributes));
         }
         
@@ -337,6 +313,26 @@
             outputDiv.innerHTML = `<div class="col-span-full text-center bg-red-900/50 p-6 rounded-xl"><h3 class="text-xl font-semibold">Application Error</h3><p class="text-red-200">Failed to load core components.</p></div>`;
             initialLoadingSkeleton.style.display = 'none';
             refreshButton.disabled = true;
+        }
+
+        /**
+         * NEW: Shows an animated toast notification.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success' or 'error' to control the color.
+         */
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const toastMessage = document.getElementById('toast-message');
+
+            clearTimeout(toastTimeout); // Clear previous timeout if any
+
+            toastMessage.textContent = message;
+            toast.className = 'fixed top-5 right-5 text-white py-3 px-5 rounded-lg shadow-lg'; // Reset classes
+            toast.classList.add('show', type);
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000); // Hide after 4 seconds
         }
 
         function updateSidebarProfile(attributes) {
@@ -353,10 +349,13 @@
             welcomeHeader.textContent = `Welcome, ${userName}!`;
         }
 
+        /**
+         * MODIFIED: Handles the notification subscription with new payload and toast messages.
+         */
         async function handleSubscription() {
-            const email = currentUserAttributes['email'];
-            if (!email) {
-                alert("Could not find user email to subscribe.");
+            const username = currentUserAttributes['name'];
+            if (!username) {
+                showToast("Cannot subscribe without a username.", "error");
                 return;
             }
             
@@ -365,15 +364,14 @@
                 const response = await fetch(API_SUBSCRIBE_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, name: currentUserAttributes['name'] || 'Coder' })
+                    body: JSON.stringify({ username: username })
                 });
                 if (!response.ok) throw new Error(`API request failed`);
                 
-                confirmationEmailSpan.textContent = email;
-                notificationModal.classList.add('active');
+                showToast("Subscription email sent! Check your inbox to confirm.", "success");
             } catch (error) {
                 console.error("Subscription failed:", error);
-                alert("Failed to subscribe. Please try again later.");
+                showToast("Failed to subscribe. Please try again later.", "error");
             } finally {
                 notificationBtn.disabled = false;
             }
@@ -400,18 +398,14 @@
                     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
                     return res.json().then(data => ({ ...p, data }));
                 }));
-
                 const results = await Promise.allSettled(fetchPromises);
                 
                 results.forEach(result => {
                     if (result.status === 'fulfilled') {
                         renderCard(result.value.name, result.value.username, result.value.data);
                     } else {
-                        // Find which platform failed from the original array
-                        const url = result.reason.message.includes('fetch') ? result.reason.message.split(' ')[1] : '';
-                        const failedPlatform = platformsToFetch.find(p => p.url === url) || { name: 'Unknown' };
-                        console.error(`Error fetching ${failedPlatform.name} data:`, result.reason);
-                        appendErrorCard(failedPlatform.name);
+                        console.error(`Fetch failed:`, result.reason);
+                        appendErrorCard('Platform'); // Generic error as we can't easily identify which one failed
                     }
                 });
             }
@@ -423,7 +417,9 @@
 
         function renderCard(platformName, username, data) {
             try {
-                const card = document.getElementById(`${platformName}-template`).content.cloneNode(true);
+                const cardTemplate = document.getElementById(`${platformName}-template`);
+                if (!cardTemplate) return;
+                const card = cardTemplate.content.cloneNode(true);
                 card.getElementById(`${platformName}-username`).textContent = `@${username}`;
 
                 switch(platformName) {
@@ -443,7 +439,7 @@
                         card.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
                         break;
                     case 'gfg':
-                        card.getElementById(`${platformName}-username`).textContent = `@${data.username}`; // GFG provides username in response
+                        card.getElementById(`${platformName}-username`).textContent = `@${data.username}`; // GFG provides username
                         card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
                         card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
                         card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
