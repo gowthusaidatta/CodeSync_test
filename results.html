@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN for utility classes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter for consistent typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap Icons for various icons (e.g., menu, chevron, platform icons) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
@@ -23,29 +23,31 @@
         }
         /* Styling for individual platform cards with transition for hover effect */
         .platform-card {
-            transition: transform 0.2s;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .platform-card:hover {
-            transform: translateY(-5px); /* Lift card slightly on hover */
+            transform: translateY(-3px); /* Slightly less lift on hover */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
         }
         /* Specific styling for star ratings (e.g., CodeChef stars) */
         .star-rating {
             color: gold;
-            text-shadow: 0 0 2px rgba(255, 215, 0, 0.8);
+            text-shadow: 0 0 3px rgba(255, 215, 0, 0.6); /* Softer glow */
         }
         /* Specific styling for streak fire icon/text (e.g., GFG streak) */
         .streak-fire {
-            color: #ff4500;
-            text-shadow: 0 0 4px rgba(255, 69, 0, 0.5);
+            color: #ff6347; /* Tomato red for a slightly softer fire */
+            text-shadow: 0 0 5px rgba(255, 99, 71, 0.5);
         }
         /* Styling for institute badge (e.g., GFG institute) */
         .institute-badge {
-            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); /* Adjusted purple gradient */
+            color: #e5e7eb; /* Lighter text for better contrast */
         }
         /* Custom styles for loading spinner */
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #8B5CF6; /* Purple color for spinner */
+            border: 4px solid rgba(255, 255, 255, 0.2); /* Softer border color */
+            border-top: 4px solid #a78bfa; /* Lighter purple for spinner */
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -58,33 +60,35 @@
 
         /* Sidebar styling: fixed width, smooth transitions */
         .sidebar {
-            transition: all 0.3s ease-in-out;
+            position: fixed; /* Always fixed for overlay behavior */
+            z-index: 100; /* Ensures it's above other content */
+            height: 100vh;
+            top: 0;
+            left: 0;
             width: 280px; /* Expanded width */
-            transform: translateX(0); /* Default state: visible */
+            transform: translateX(-100%); /* Start fully off-screen */
+            transition: transform 0.3s ease-in-out;
             flex-shrink: 0; /* Prevent sidebar from shrinking */
         }
-        /* Sidebar collapsed state: narrower width, moves off-screen to the left */
+        /* Sidebar active state (opened) */
+        .sidebar.active {
+            transform: translateX(0);
+        }
+        /* Sidebar collapsed state (desktop only, for icon view) */
+        /* This class is no longer used for a partially visible state, but for hiding text on small screens */
         .sidebar.collapsed {
-            width: 72px; /* Collapsed width, enough for icons */
-            transform: translateX(0); /* Still visible, just narrower */
+            /* No specific width or transform here, handled by default .sidebar and .active */
         }
-        /* Main content styling: initially shifted by sidebar width on desktop */
+
+        /* Main content styling: always full width, no left margin */
         .main-content {
-            transition: all 0.3s ease-in-out;
-            margin-left: 280px; /* Shifted by expanded sidebar width */
             flex-grow: 1; /* Allow main content to take remaining space */
+            width: 100%; /* Always full width */
+            margin-left: 0 !important; /* Ensure no margin is applied */
+            max-width: 100%; /* Ensure it doesn't overflow */
+            transition: all 0.3s ease-in-out; /* For any future transitions */
         }
-        /* Main content when sidebar is collapsed on desktop: no left margin */
-        .main-content.sidebar-collapsed {
-            margin-left: 72px; /* Shifted by collapsed sidebar width */
-        }
-        /* Sidebar toggle button (internal chevron) rotation for visual feedback */
-        .sidebar-toggle {
-            transition: transform 0.3s ease-in-out;
-        }
-        .sidebar-toggle.rotated {
-            transform: rotate(180deg);
-        }
+        
         /* Hide text content within sidebar when collapsed */
         .sidebar.collapsed .sidebar-text {
             opacity: 0;
@@ -117,102 +121,97 @@
         .sidebar:not(.collapsed) #update-usernames-btn {
             width: auto; /* Restore width */
             height: auto;
-            padding: 0.5rem 1rem; /* Restore padding */
-            border-radius: 0.5rem; /* Restore rounded corners */
+            padding: 0.75rem 1.25rem; /* Restore padding, slightly more vertical */
+            border-radius: 0.625rem; /* Restore rounded corners */
+        }
+
+        /* Sidebar Backdrop for mobile overlay */
+        #sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            z-index: 90; /* Below sidebar, above main content */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        #sidebar-backdrop.active {
+            opacity: 1;
+            visibility: visible;
         }
 
         /* Media queries for responsiveness */
-        @media (max-width: 768px) {
-            /* Sidebar on mobile: fixed position, full height, covers content */
+        @media (min-width: 768px) {
+            /* On desktop, the sidebar is initially hidden (off-screen) */
             .sidebar {
-                position: fixed;
-                z-index: 100; /* Ensures it's above other content */
-                height: 100vh;
-                top: 0;
-                left: 0;
-                transform: translateX(-280px); /* Start collapsed on mobile */
+                transform: translateX(-100%); 
             }
-            /* Sidebar active state on mobile (opened) */
+            /* When active on desktop, it slides into view */
             .sidebar.active {
                 transform: translateX(0);
-            }
-            /* Main content on mobile: always full width, no left margin */
-            .main-content {
-                margin-left: 0 !important; 
-            }
-            /* Hide the internal sidebar toggle button on mobile */
-            #sidebar-toggle {
-                display: none;
-            }
-            /* Show mobile open/close buttons on mobile */
-            .md\:hidden {
-                display: flex !important;
-            }
-            #mobile-open-sidebar-button.hidden {
-                display: none; /* Manage visibility via JS */
-            }
-            #mobile-close-sidebar-button.hidden {
-                display: none; /* Manage visibility via JS */
             }
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex">
+<body class="bg-gray-950 text-gray-100 min-h-screen flex">
     <!-- Sidebar Container -->
-    <div id="sidebar" class="sidebar bg-gray-800 h-screen fixed md:relative flex flex-col z-50">
+    <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
         <!-- Sidebar Header with User Profile Title and Internal Toggle Button -->
-        <div class="p-4 border-b border-gray-700 flex justify-between items-center">
-            <h2 class="text-xl font-bold text-purple-400 sidebar-text">User Profile</h2>
-            <!-- Button to close/collapse the sidebar (chevron-left icon) -->
-            <button id="sidebar-toggle" class="sidebar-toggle text-gray-400 hover:text-white p-1 rounded-full">
-                <i class="bi bi-chevron-left"></i>
+        <div class="p-5 border-b border-gray-800 flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-purple-400 sidebar-text">User Profile</h2>
+            <!-- Button to close the sidebar (X icon) -->
+            <button id="sidebar-toggle" class="text-gray-400 hover:text-purple-300 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500" onclick="closeSidebar()">
+                <i class="bi bi-x-lg text-lg"></i>
             </button>
         </div>
         
         <!-- "Update Usernames" Button - prominent like a "New Chat" button -->
         <div class="p-4">
             <button id="update-usernames-btn" onclick="window.location.href='/usernames.html'" 
-                    class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition-all duration-300 ease-in-out">
+                    class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all duration-300 ease-in-out shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
                 <i class="bi bi-pencil-square sidebar-icon text-xl"></i> 
                 <span class="sidebar-text">Update Usernames</span>
             </button>
         </div>
 
         <!-- User Profile Section - compact -->
-        <div class="p-4 flex flex-col items-center border-b border-gray-700">
+        <div class="p-5 flex flex-col items-center border-b border-gray-800">
             <!-- User Profile Avatar -->
             <img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User" 
                  alt="Profile" 
-                 class="w-16 h-16 rounded-full mb-2 border-2 border-purple-500 flex-shrink-0">
+                 class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600 flex-shrink-0 shadow-md">
             <!-- User Name -->
-            <h3 id="user-name" class="text-lg font-semibold sidebar-text text-center">Loading...</h3>
+            <h3 id="user-name" class="text-lg font-semibold sidebar-text text-center text-gray-50">Loading...</h3>
             <!-- User Email - hidden when collapsed -->
-            <p id="user-email" class="text-gray-400 text-sm sidebar-text text-center break-words overflow-hidden">user@example.com</p>
+            <p id="user-email" class="text-gray-400 text-sm sidebar-text text-center break-words overflow-hidden mt-1">user@example.com</p>
         </div>
         
         <!-- Coding Profiles Section - as navigation links -->
-        <div class="p-4 border-b border-gray-700 flex-grow overflow-y-auto">
-            <h4 class="font-medium text-gray-300 mb-2 sidebar-text">Coding Profiles</h4>
+        <div class="p-4 border-b border-gray-800 flex-grow overflow-y-auto">
+            <h4 class="font-medium text-gray-300 mb-3 sidebar-text px-1">Coding Profiles</h4>
             <ul class="space-y-2">
                 <!-- LeetCode Profile Link Status -->
-                <li id="leetcode-profile" class="flex items-center text-gray-300 p-2 rounded-lg hover:bg-gray-700 transition duration-200 cursor-pointer">
+                <li id="leetcode-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-file-code-fill mr-3 sidebar-icon text-orange-500 text-xl"></i>
-                    <span class="sidebar-text">LeetCode: <span class="text-white">Not linked</span></span>
+                    <span class="sidebar-text text-sm font-medium">LeetCode: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
                 <!-- CodeChef Profile Link Status -->
-                <li id="codechef-profile" class="flex items-center text-gray-300 p-2 rounded-lg hover:bg-gray-700 transition duration-200 cursor-pointer">
+                <li id="codechef-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-joystick mr-3 sidebar-icon text-yellow-500 text-xl"></i>
-                    <span class="sidebar-text">CodeChef: <span class="text-white">Not linked</span></span>
+                    <span class="sidebar-text text-sm font-medium">CodeChef: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
                 <!-- HackerRank Profile Link Status -->
-                <li id="hackerrank-profile" class="flex items-center text-gray-300 p-2 rounded-lg hover:bg-gray-700 transition duration-200 cursor-pointer">
+                <li id="hackerrank-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-terminal-fill mr-3 sidebar-icon text-green-500 text-xl"></i>
-                    <span class="sidebar-text">HackerRank: <span class="text-white">Not linked</span></span>
+                    <span class="sidebar-text text-sm font-medium">HackerRank: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
                 <!-- GFG Profile Link Status -->
-                <li id="gfg-profile" class="flex items-center text-gray-300 p-2 rounded-lg hover:bg-gray-700 transition duration-200 cursor-pointer">
+                <li id="gfg-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800 transition duration-200 cursor-pointer">
                     <i class="bi bi-code-square mr-3 sidebar-icon text-blue-500 text-xl"></i>
-                    <span class="sidebar-text">GFG: <span class="text-white">Not linked</span></span>
+                    <span class="sidebar-text text-sm font-medium">GFG: <span class="text-gray-50 font-normal">Not linked</span></span>
                 </li>
             </ul>
         </div>
@@ -220,142 +219,187 @@
         <!-- Logout Button (aligned to bottom using mt-auto) -->
         <div class="p-4 mt-auto">
             <button onclick="logout()" 
-                    class="w-full bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition duration-200">
+                    class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-75">
                 <i class="bi bi-box-arrow-right sidebar-icon text-xl"></i> 
                 <span class="sidebar-text">Logout</span>
             </button>
         </div>
     </div>
 
+    <!-- Sidebar Backdrop (for overlay effect on mobile) -->
+    <div id="sidebar-backdrop"></div>
+
     <!-- Main Content Area -->
-    <div id="main-content" class="main-content flex-1 p-4 min-h-screen">
-        <div class="max-w-6xl mx-auto">
+    <div id="main-content" class="main-content px-6 py-8 min-h-screen">
+        <div class="max-w-7xl mx-auto"> 
             <!-- Main Header (now for stats section) -->
-            <header class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-purple-400">📊 Coding Platform Stats</h1>
-                <div class="md:hidden flex items-center gap-3">
-                    <!-- Button to open sidebar (visible when sidebar is closed on mobile) -->
-                    <button id="mobile-open-sidebar-button" class="text-gray-400 hover:text-white p-2 rounded-lg bg-gray-800">
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                <h1 class="text-4xl font-extrabold text-purple-400 mb-4 sm:mb-0">📊 Coding Platform Stats</h1>
+                <div class="flex items-center gap-4">
+                    <!-- Button to open sidebar (always visible, hamburger icon) -->
+                    <button id="mobile-open-sidebar-button" class="text-gray-300 hover:text-white p-3 rounded-lg bg-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                         <i class="bi bi-list text-2xl"></i>
-                    </button>
-                    <!-- Button to close sidebar (visible when sidebar is open on mobile) -->
-                    <button id="mobile-close-sidebar-button" class="text-gray-400 hover:text-white p-2 rounded-lg bg-gray-800 hidden">
-                        <i class="bi bi-x-lg text-2xl"></i>
                     </button>
                 </div>
             </header>
 
             <!-- Refresh Button and Last Updated Timestamp -->
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 py-4 px-4 bg-gray-800 rounded-xl shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 py-5 px-6 bg-gray-800 rounded-2xl shadow-xl border border-gray-700">
                 <div class="text-center sm:text-left mb-4 sm:mb-0">
-                    <h1 id="welcome-header" class="text-3xl font-bold text-purple-400">Welcome, Coder!</h1>
-                    <p id="last-updated-timestamp" class="text-sm text-gray-400 mt-1">Last updated: Never</p>
+                    <h1 id="welcome-header" class="text-3xl font-bold text-purple-300">Welcome, Coder!</h1>
+                    <p id="last-updated-timestamp" class="text-sm text-gray-400 mt-2">Last updated: Never</p>
                 </div>
-                <div class="flex flex-wrap justify-center sm:justify-end gap-3">
-                    <button id="refresh-stats-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold text-white flex items-center gap-2 transition duration-200">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh Stats
+                <div class="flex flex-wrap justify-center sm:justify-end gap-4">
+                    <button id="refresh-stats-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2 transition duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">
+                        <i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats
                     </button>
                 </div>
             </div>
 
             <!-- Area where platform stats cards will be displayed -->
-            <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1">
+            <div id="output" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <!-- Initial loading skeleton (will be replaced by JS) -->
-                <div class="space-y-4 col-span-full" id="initial-loading-skeleton">
-                    <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse"></div>
-                    <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse hidden md:block"></div>
-                    <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse hidden lg:block"></div>
-                    <div class="bg-gray-800 p-4 rounded-2xl shadow-md h-48 animate-pulse hidden lg:block"></div>
+                <div class="space-y-6 col-span-full" id="initial-loading-skeleton">
+                    <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse"></div>
+                    <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse hidden md:block"></div>
+                    <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse hidden lg:block"></div>
+                    <div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse hidden lg:block"></div>
                 </div>
             </div>
 
             <!-- Card Templates (hidden by default, cloned and populated by JS) -->
             <!-- Loading Card Template -->
             <template id="loading-card-template">
-                <div class="platform-card bg-gray-800 p-6 rounded-2xl shadow-md animate-pulse h-48 flex items-center justify-center">
-                    <div class="text-gray-500 text-lg">Loading...</div>
+                <div class="platform-card bg-gray-800 p-6 rounded-2xl shadow-md animate-pulse h-52 flex flex-col items-center justify-center">
+                    <div class="spinner mb-3"></div>
+                    <div class="text-gray-500 text-lg font-medium">Loading...</div>
                 </div>
             </template>
 
             <!-- Error Card Template -->
             <template id="error-card-template">
-                <div class="platform-card bg-red-900/50 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center text-center">
-                    <i class="bi bi-exclamation-triangle text-red-400 text-3xl mb-2"></i>
-                    <h2 class="text-xl font-semibold text-red-300 mb-1"><span class="platform-name"></span></h2>
+                <div class="platform-card bg-red-900/40 border border-red-700 p-6 rounded-2xl shadow-md flex flex-col items-center justify-center text-center">
+                    <i class="bi bi-exclamation-triangle-fill text-red-400 text-4xl mb-3"></i>
+                    <h2 class="text-xl font-semibold text-red-300 mb-2"><span class="platform-name"></span></h2>
                     <p class="text-red-200 text-sm">Failed to load data. Please check the username or try again later.</p>
                 </div>
             </template>
 
             <!-- LeetCode Card Template -->
             <template id="leetcode-template">
-                <div class="platform-card bg-gradient-to-br from-orange-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-8 h-8">
-                        <h2 class="text-xl font-semibold">LeetCode</h2>
+                <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
+                        <img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-9 h-9">
+                        <h2 class="text-2xl font-semibold text-gray-50">LeetCode</h2>
                     </div>
-                    <p class="text-gray-300 mb-1">@<span id="leetcode-username" class="text-white"></span></p>
-                    <div class="mt-4 space-y-2">
-                        <div class="flex justify-between"><span>Total Solved:</span><span id="leetcode-problems" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-green-400"><span>Easy:</span><span id="leetcode-easy" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-yellow-400"><span>Medium:</span><span id="leetcode-medium" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-red-400"><span>Hard:</span><span id="leetcode-hard" class="font-bold">0</span></div>
+                    <p class="text-gray-300 mb-3 text-base">Username: <span id="leetcode-username" class="text-orange-400 font-medium"></span></p>
+                    <div class="mt-4 space-y-2 text-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Total Solved:</span>
+                            <span id="leetcode-problems" class="font-bold text-lg text-white">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-green-400">
+                            <span class="font-medium">Easy:</span>
+                            <span id="leetcode-easy" class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-yellow-400">
+                            <span class="font-medium">Medium:</span>
+                            <span id="leetcode-medium" class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-red-400">
+                            <span class="font-medium">Hard:</span>
+                            <span id="leetcode-hard" class="font-bold text-lg">0</span>
+                        </div>
                     </div>
                 </div>
             </template>
             <!-- CodeChef Card Template -->
             <template id="codechef-template">
-                <div class="platform-card bg-gradient-to-br from-yellow-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-8 h-8">
-                        <h2 class="text-xl font-semibold">CodeChef</h2>
+                <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
+                        <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-9 h-9">
+                        <h2 class="text-2xl font-semibold text-gray-50">CodeChef</h2>
                     </div>
-                    <p class="text-gray-300 mb-1">@<span id="codechef-username" class="text-white"></span></p>
-                    <div class="mt-4 space-y-2">
-                        <div class="flex justify-between"><span>Problems Solved:</span><span id="codechef-problems" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-blue-300"><span>Rating:</span><span id="codechef-rating" class="font-bold">0</span></div>
-                        <div class="flex justify-between"><span>Contests:</span><span id="codechef-contests" class="font-bold">0</span></div>
-                        <div class="flex justify-between star-rating"><span>Stars:</span><span id="codechef-stars" class="font-bold">0</span></div>
+                    <p class="text-gray-300 mb-3 text-base">Username: <span id="codechef-username" class="text-yellow-400 font-medium"></span></p>
+                    <div class="mt-4 space-y-2 text-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Problems Solved:</span>
+                            <span id="codechef-problems" class="font-bold text-lg text-white">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-blue-300">
+                            <span class="font-medium">Rating:</span>
+                            <span id="codechef-rating" class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Contests:</span>
+                            <span id="codechef-contests" class="font-bold text-lg text-white">0</span>
+                        </div>
+                        <div class="flex justify-between items-center star-rating">
+                            <span class="font-medium">Stars:</span>
+                            <span id="codechef-stars" class="font-bold text-lg">0</span>
+                        </div>
                     </div>
                 </div>
             </template>
             <!-- HackerRank Card Template -->
             <template id="hackerrank-template">
-                <div class="platform-card bg-gradient-to-br from-green-900/50 to-gray-800 p-6 rounded-2xl shadow-md">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-8 h-8">
-                        <h2 class="text-xl font-semibold">HackerRank</h2>
+                <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-9 h-9">
+                        <h2 class="text-2xl font-semibold text-gray-50">HackerRank</h2>
                     </div>
-                    <p class="text-gray-300 mb-1">@<span id="hackerrank-username" class="text-white"></span></p>
-                    <div class="mt-4 space-y-2">
-                        <div class="flex justify-between"><span>Badges:</span><span id="hackerrank-badges" class="font-bold">0</span></div>
+                    <p class="text-gray-300 mb-3 text-base">Username: <span id="hackerrank-username" class="text-green-400 font-medium"></span></p>
+                    <div class="mt-4 space-y-2 text-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Badges:</span>
+                            <span id="hackerrank-badges" class="font-bold text-lg text-white">0</span>
+                        </div>
                     </div>
                 </div>
             </template>
             <!-- GeeksForGeeks (GFG) Card Template -->
             <template id="gfg-template">
-                <div class="platform-card bg-gradient-to-br from-green-800/50 to-gray-800 p-6 rounded-2xl shadow-md">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-8 h-8">
-                        <h2 class="text-xl font-semibold">GeeksForGeeks</h2>
+                <div class="platform-card bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-6 rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-4 pb-4 mb-4 border-b border-gray-700">
+                        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20230814180542/gfg_logo.png" alt="GFG" class="w-9 h-9">
+                        <h2 class="text-2xl font-semibold text-gray-50">GeeksForGeeks</h2>
                     </div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <img id="gfg-profile-image" src="" alt="Profile" class="w-10 h-10 rounded-full">
+                    <div class="flex items-center gap-4 mb-4">
+                        <img id="gfg-profile-image" src="" alt="Profile" class="w-12 h-12 rounded-full border-2 border-purple-500 flex-shrink-0">
                         <div>
-                            <p class="text-gray-300">@<span id="gfg-username" class="text-white"></span></p>
-                            <p id="gfg-fullname" class="text-sm text-gray-400 truncate max-w-xs"></p>
+                            <p class="text-gray-300 text-base font-medium">@<span id="gfg-username" class="text-blue-400"></span></p>
+                            <p id="gfg-fullname" class="text-sm text-gray-400 truncate max-w-xs mt-1"></p>
                         </div>
                     </div>
-                    <div class="institute-badge text-xs px-2 py-1 rounded-full mb-3 inline-flex items-center">
+                    <div class="institute-badge text-xs px-3 py-1.5 rounded-full mb-4 inline-flex items-center font-semibold shadow-sm">
                         <span id="gfg-institute" class="truncate max-w-xs"></span>
-                        <span id="gfg-institute-rank" class="ml-1 bg-purple-800 px-1 rounded"></span>
+                        <span id="gfg-institute-rank" class="ml-2 bg-purple-900/50 px-2 py-0.5 rounded-full text-purple-200"></span>
                     </div>
-                    <div class="mt-2 space-y-2">
-                        <div class="flex justify-between"><span>Problems Solved:</span><span id="gfg-problems" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-green-400"><span>Easy:</span><span id="gfg-easy" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-yellow-400"><span>Medium:</span><span id="gfg-medium" class="font-bold">0</span></div>
-                        <div class="flex justify-between text-red-400"><span>Hard:</span><span id="gfg-hard" class="font-bold">0</span></div>
-                        <div class="flex justify-between"><span>Coding Score:</span><span id="gfg-score" class="font-bold">0</span></div>
-                        <div class="flex justify-between streak-fire"><span>Current Streak:</span><span id="gfg-streak" class="font-bold">0 days</span></div>
+                    <div class="mt-2 space-y-2 text-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Problems Solved:</span>
+                            <span id="gfg-problems" class="font-bold text-lg text-white">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-green-400">
+                            <span class="font-medium">Easy:</span>
+                            <span id="gfg-easy" class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-yellow-400">
+                            <span class="font-medium">Medium:</span>
+                            <span id="gfg-medium" class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center text-red-400">
+                            <span class="font-medium">Hard:</span>
+                            <span id="gfg-hard" class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Coding Score:</span>
+                            <span id="gfg-score" class="font-bold text-lg text-white">0</span>
+                        </div>
+                        <div class="flex justify-between items-center streak-fire">
+                            <span class="font-medium">Current Streak:</span>
+                            <span id="gfg-streak" class="font-bold text-lg">0 days</span>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -369,12 +413,11 @@
         const API_BASE_URL_GFG = 'https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score';
 
         // Get references to DOM elements
-        const sidebar = document.getElementById('sidebar'); // Re-added sidebar element reference
-        const sidebarToggle = document.getElementById('sidebar-toggle'); // Re-added sidebar toggle button reference
-        const mobileOpenSidebarButton = document.getElementById('mobile-open-sidebar-button'); // Re-added mobile open button reference
-        const mobileCloseSidebarButton = document.getElementById('mobile-close-sidebar-button'); // Re-added mobile close button reference
-        const mainContent = document.getElementById('main-content'); // Re-added main content reference
-        const userProfileAvatar = document.getElementById('user-profile-avatar'); // Re-added avatar reference
+        const sidebar = document.getElementById('sidebar'); 
+        const sidebarToggle = document.getElementById('sidebar-toggle'); 
+        const mobileOpenSidebarButton = document.getElementById('mobile-open-sidebar-button'); 
+        const mainContent = document.getElementById('main-content'); 
+        const userProfileAvatar = document.getElementById('user-profile-avatar'); 
         const welcomeHeader = document.getElementById('welcome-header');
         const lastUpdatedTimestamp = document.getElementById('last-updated-timestamp');
         const refreshButton = document.getElementById('refresh-stats-btn');
@@ -382,6 +425,7 @@
         const loadingCardTemplate = document.getElementById('loading-card-template');
         const errorCardTemplate = document.getElementById('error-card-template');
         const initialLoadingSkeleton = document.getElementById('initial-loading-skeleton');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 
 
         /**
@@ -389,36 +433,28 @@
          * @param {string} name - The user's name.
          */
         function updateUserAvatar(name) {
-            const avatarUrl = `https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(name || 'User')}`;
+            const avatarUrl = https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(name || 'User')};
             userProfileAvatar.src = avatarUrl;
         }
 
         /**
-         * Opens the mobile sidebar and manages button visibility.
-         * This function is called by the dedicated 'open' button on the main page.
+         * Opens the sidebar and shows the backdrop.
          */
-        function openMobileSidebar() {
-            sidebar.classList.add('active'); // Use 'active' class for mobile open state
-            sidebar.classList.remove('collapsed'); // Ensure collapsed is removed if it somehow got added
-            mobileOpenSidebarButton.classList.add('hidden');
-            mobileCloseSidebarButton.classList.remove('hidden');
+        function openSidebar() {
+            sidebar.classList.add('active'); 
+            sidebar.style.transform = 'translateX(0)';
+            mobileOpenSidebarButton.classList.add('hidden'); // Hide external open button
+            sidebarBackdrop.classList.add('active'); // Show backdrop
         }
 
         /**
-         * Explicitly closes the sidebar if it's open and manages button visibility.
-         * This function is called by the internal chevron button, the external 'close' button, and outside clicks.
+         * Closes the sidebar and hides the backdrop.
          */
-        function closeSidebarInternal() {
-            // For desktop, toggle collapsed state
-            if (window.innerWidth >= 768) {
-                sidebar.classList.toggle('collapsed');
-                mainContent.classList.toggle('sidebar-collapsed');
-                sidebarToggle.classList.toggle('rotated');
-            } else { // For mobile, always close and manage active class
-                sidebar.classList.remove('active');
-                mobileCloseSidebarButton.classList.add('hidden');
-                mobileOpenSidebarButton.classList.remove('hidden');
-            }
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            sidebar.style.transform = 'translateX(-100%)';
+            mobileOpenSidebarButton.classList.remove('hidden'); // Show external open button
+            sidebarBackdrop.classList.remove('active'); // Hide backdrop
         }
 
         /**
@@ -426,41 +462,20 @@
          * This runs on page load and window resize.
          */
         function setInitialSidebarState() {
-            if (window.innerWidth >= 768) {
-                // Desktop: sidebar is open by default, main content is shifted
-                sidebar.classList.remove('collapsed', 'active'); // Ensure no mobile-specific or collapsed classes
-                mainContent.classList.remove('sidebar-collapsed');
-                sidebarToggle.classList.remove('rotated'); // Chevron points left (open)
-                mobileOpenSidebarButton.classList.add('hidden'); // Hide mobile open button on desktop
-                mobileCloseSidebarButton.classList.add('hidden'); // Hide mobile close button on desktop
-            } else {
-                // Mobile: sidebar is collapsed by default, main content is not shifted
-                sidebar.classList.add('collapsed'); // Start with collapsed class
-                sidebar.classList.remove('active'); // Ensure it's not active initially
-                mainContent.classList.remove('sidebar-collapsed'); // Ensure no margin on mobile
-                sidebarToggle.classList.add('rotated'); // Chevron points right (collapsed)
-                mobileOpenSidebarButton.classList.remove('hidden'); // Show mobile open button
-                mobileCloseSidebarButton.classList.add('hidden'); // Hide mobile close button
-            }
+            // Sidebar is always hidden by default, and opened by the external button
+            sidebar.classList.remove('active'); 
+            sidebar.style.transform = 'translateX(-100%)';
+            mobileOpenSidebarButton.classList.remove('hidden'); // Always show external open button initially
+            sidebarBackdrop.classList.remove('active'); // Ensure backdrop is hidden initially
         }
 
         // Set initial state when the script loads
         setInitialSidebarState();
 
         // Add event listeners for sidebar interactions
-        sidebarToggle.addEventListener('click', closeSidebarInternal); // Internal button toggles collapse
-        mobileOpenSidebarButton.addEventListener('click', openMobileSidebar); // New button opens sidebar
-        mobileCloseSidebarButton.addEventListener('click', closeSidebarInternal); // Existing button now explicitly closes sidebar
+        mobileOpenSidebarButton.addEventListener('click', openSidebar); 
+        sidebarBackdrop.addEventListener('click', closeSidebar); // Close sidebar when clicking backdrop
 
-        // Event listener to close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            // Check if on mobile, sidebar is open (active), and click is outside sidebar and both toggle buttons
-            if (window.innerWidth < 768 && sidebar.classList.contains('active') && 
-                !sidebar.contains(e.target) && !mobileOpenSidebarButton.contains(e.target) && 
-                !mobileCloseSidebarButton.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                closeSidebarInternal(); // Call the specific close function
-            }
-        });
 
         // Adjust sidebar state on window resize to handle orientation changes or breakpoint shifts
         window.addEventListener('resize', setInitialSidebarState);
@@ -478,8 +493,8 @@
                         <h3 class="text-xl font-semibold mb-2">Application Error</h3>
                         <p class="text-red-200 mb-4">Failed to load core components. Please try refreshing the page or contact support.</p>
                     </div>`;
-                initialLoadingSkeleton.classList.add('hidden'); // Hide initial skeleton
-                refreshButton.disabled = true; // Disable buttons if auth fails
+                initialLoadingSkeleton.classList.add('hidden'); 
+                refreshButton.disabled = true; 
                 return;
             }
 
@@ -489,9 +504,9 @@
             if (!window.amplifyConfig || !window.amplifyConfig.Auth) {
                 console.error("Amplify configuration (window.amplifyConfig.Auth) is missing or incomplete. Please ensure amplify_config.js is correctly set up with Auth properties.");
                 // Optionally, display a user-facing message here instead of just logging to console
-                outputDiv.innerHTML = `<p class="text-center col-span-full text-red-400 p-4 bg-gray-800 rounded-lg shadow-md">Authentication configuration missing. Please ensure your Amplify setup is correct.</p>`;
+                outputDiv.innerHTML = <p class="text-center col-span-full text-red-400 p-4 bg-gray-800 rounded-lg shadow-md">Authentication configuration missing. Please ensure your Amplify setup is correct.</p>;
                 initialLoadingSkeleton.classList.add('hidden');
-                refreshButton.disabled = true; // Disable buttons if auth fails
+                refreshButton.disabled = true; 
                 return; 
             }
             // --- END ADDED ---
@@ -511,7 +526,7 @@
                 });
 
                 // Update user profile details in the sidebar
-                updateSidebarProfile(currentUserAttributes); // Re-enabled sidebar profile update
+                updateSidebarProfile(currentUserAttributes); 
 
                 // Initial fetch of scores
                 await fetchScores(currentUserAttributes);
@@ -519,7 +534,7 @@
             } catch (err) {
                 // Handle authentication errors: log and redirect to login page
                 console.error("❌ Authentication error, redirecting to login...", err);
-                localStorage.clear(); // Clear any local storage data on authentication failure
+                localStorage.clear(); 
                 window.location.href = "/index.html";
             }
 
@@ -539,7 +554,7 @@
 
             document.getElementById('user-name').textContent = userName;
             document.getElementById('user-email').textContent = userEmail;
-            updateUserAvatar(userName); // Update avatar based on fetched name
+            updateUserAvatar(userName); 
 
             // Update linked coding profiles in the sidebar based on custom attributes
             const leetcodeUsername = attributes['custom:leetcode_username'];
@@ -553,7 +568,7 @@
             document.getElementById('gfg-profile').querySelector('span:last-child').textContent = gfgUsername || 'Not linked';
 
             // Also update the welcome header in the main content area
-            welcomeHeader.textContent = `Welcome, ${userName}!`;
+            welcomeHeader.textContent = Welcome, ${userName}!;
         }
 
         /**
@@ -582,22 +597,22 @@
 
             if (!hasAtLeastOneUsername) {
                 outputDiv.innerHTML = `
-                    <div class="col-span-full text-center bg-gray-800 p-6 rounded-xl">
-                        <i class="bi bi-exclamation-triangle text-yellow-500 text-4xl mb-3"></i>
-                        <h3 class="text-xl font-semibold mb-2">No platform usernames found</h3>
+                    <div class="col-span-full text-center bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
+                        <i class="bi bi-exclamation-triangle-fill text-yellow-500 text-4xl mb-3"></i>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-50">No platform usernames found</h3>
                         <p class="text-gray-400 mb-4">Please update your coding platform usernames to see your stats.</p>
                         <button onclick="window.location.href='/usernames.html'" 
-                                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded font-semibold text-white">
+                                class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 px-5 py-2.5 rounded-lg font-semibold text-white shadow-md hover:shadow-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">
                             <i class="bi bi-pencil-square mr-2"></i> Update Usernames
                         </button>
                     </div>`;
-                lastUpdatedTimestamp.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                lastUpdatedTimestamp.textContent = Last updated: ${new Date().toLocaleTimeString()};
                 refreshButton.disabled = false;
-                refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Refresh Stats';
+                refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats';
                 return;
             }
             
-            const fetchPromises = []; // Array to hold all fetch promises
+            const fetchPromises = []; 
 
             // Add loading cards for each linked platform before fetching data
             if (leetcode) outputDiv.appendChild(loadingCardTemplate.content.cloneNode(true));
@@ -608,9 +623,9 @@
             // Fetch LeetCode data if username exists
             if (leetcode) {
                 fetchPromises.push(
-                    fetch(`${API_BASE_URL_GENERAL}?leetcode=${leetcode}`)
+                    fetch(${API_BASE_URL_GENERAL}?leetcode=${leetcode})
                         .then(res => {
-                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
                             return res.json();
                         })
                         .then(data => ({ platform: 'leetcode', status: 'fulfilled', value: data }))
@@ -621,9 +636,9 @@
             // Fetch CodeChef data if username exists
             if (codechef) {
                 fetchPromises.push(
-                    fetch(`${API_BASE_URL_GENERAL}?codechef=${codechef}`)
+                    fetch(${API_BASE_URL_GENERAL}?codechef=${codechef})
                         .then(res => {
-                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
                             return res.json();
                         })
                         .then(data => ({ platform: 'codechef', status: 'fulfilled', value: data }))
@@ -634,9 +649,9 @@
             // Fetch HackerRank data if username exists
             if (hackerrank) {
                 fetchPromises.push(
-                    fetch(`${API_BASE_URL_GENERAL}?hackerrank=${hackerrank}`)
+                    fetch(${API_BASE_URL_GENERAL}?hackerrank=${hackerrank})
                         .then(res => {
-                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
                             return res.json();
                         })
                         .then(data => ({ platform: 'hackerrank', status: 'fulfilled', value: data }))
@@ -647,9 +662,9 @@
             // Fetch GFG data if username exists
             if (gfg) {
                 fetchPromises.push(
-                    fetch(`${API_BASE_URL_GFG}?username=${gfg}`)
+                    fetch(${API_BASE_URL_GFG}?username=${gfg})
                         .then(res => {
-                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                            if (!res.ok) throw new Error(HTTP error! status: ${res.status});
                             return res.json();
                         })
                         .then(data => ({ platform: 'gfg', status: 'fulfilled', value: data }))
@@ -696,27 +711,27 @@
                         const card = document.getElementById('gfg-template').content.cloneNode(true);
                         card.getElementById('gfg-username').textContent = data.username || gfg;
                         card.getElementById('gfg-fullname').textContent = data.fullName || fullName; // Use passed fullName
-                        card.getElementById('gfg-profile-image').src = data.profileImage || `https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(data.fullName || fullName || 'GFG User')}`;
+                        card.getElementById('gfg-profile-image').src = data.profileImage || https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(data.fullName || fullName || 'GFG User')};
                         card.getElementById('gfg-institute').textContent = data.institute || 'Not specified';
-                        if (data.instituteRank) card.getElementById('gfg-institute-rank').textContent = `#${data.instituteRank}`;
+                        if (data.instituteRank) card.getElementById('gfg-institute-rank').textContent = #${data.instituteRank};
                         else card.getElementById('gfg-institute-rank').style.display = 'none';
                         card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
                         card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
                         card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
                         card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
                         card.getElementById('gfg-score').textContent = data.codingScore || '0';
-                        card.getElementById('gfg-streak').textContent = `${data.currentStreak || 0} days`;
+                        card.getElementById('gfg-streak').textContent = ${data.currentStreak || 0} days;
                         cardToAppend = card;
                     } else {
                         // Handle cases where data structure is unexpected for a fulfilled promise
-                        console.warn(`Unexpected data structure for ${platformName}:`, data);
+                        console.warn(Unexpected data structure for ${platformName}:, data);
                         const errorCard = errorCardTemplate.content.cloneNode(true);
                         errorCard.querySelector('.platform-name').textContent = platformName.charAt(0).toUpperCase() + platformName.slice(1);
                         cardToAppend = errorCard;
                     }
                 } else if (result.status === 'rejected') {
                     // Handle rejected promises (API call failed)
-                    console.error(`Error fetching ${platformName} data:`, result.reason);
+                    console.error(Error fetching ${platformName} data:, result.reason);
                     const errorCard = errorCardTemplate.content.cloneNode(true);
                     errorCard.querySelector('.platform-name').textContent = platformName.charAt(0).toUpperCase() + platformName.slice(1);
                     // Optionally add more detail to the error card if needed
@@ -730,11 +745,11 @@
             });
 
             // Update last updated timestamp
-            lastUpdatedTimestamp.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            lastUpdatedTimestamp.textContent = Last updated: ${new Date().toLocaleTimeString()};
             
             // Re-enable refresh button
             refreshButton.disabled = false;
-            refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Refresh Stats';
+            refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats';
         }
 
         /**
