@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
@@ -49,13 +50,92 @@
 </head>
 <body class="text-gray-100 min-h-screen flex">
     <!-- Sidebar Container -->
-    <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
+<!--     <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
         <div class="p-5 border-b border-gray-800 flex justify-between items-center"><h2 class="text-xl font-semibold text-purple-400">User Profile</h2><button id="sidebar-close-button" class="text-gray-400 hover:text-purple-300 p-1 rounded-full"><i class="bi bi-x-lg text-lg"></i></button></div>
         <div class="p-4"><button onclick="window.location.href='https://gowthusaidatta.github.io/CodeSync_test/usernames.html'" class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"><i class="bi bi-pencil-square text-xl"></i><span>Update Usernames</span></button></div>
         <div class="p-5 flex flex-col items-center border-b border-gray-800"><img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User" alt="Profile" class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600"><h3 id="user-name" class="text-lg font-semibold text-center text-gray-50">Loading...</h3><p id="user-email" class="text-gray-400 text-sm text-center break-words mt-1">user@example.com</p></div>
         <div class="p-4 border-b border-gray-800 flex-grow overflow-y-auto"><h4 class="font-medium text-gray-300 mb-3 px-1">Coding Profiles</h4><ul class="space-y-2"><li id="leetcode-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-file-code-fill mr-3 text-orange-500 text-xl"></i><span class="text-sm font-medium">LeetCode: <span class="text-gray-50 font-normal">Not linked</span></span></li><li id="codechef-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-joystick mr-3 text-yellow-500 text-xl"></i><span class="text-sm font-medium">CodeChef: <span class="text-gray-50 font-normal">Not linked</span></span></li><li id="hackerrank-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-terminal-fill mr-3 text-green-500 text-xl"></i><span class="text-sm font-medium">HackerRank: <span class="text-gray-50 font-normal">Not linked</span></span></li><li id="gfg-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-code-square mr-3 text-blue-500 text-xl"></i><span class="text-sm font-medium">GFG: <span class="text-gray-50 font-normal">Not linked</span></span></li></ul></div>
         <div class="p-4 mt-auto"><button onclick="logout()" class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"><i class="bi bi-box-arrow-right text-xl"></i><span>Logout</span></button></div>
+    </div> -->
+    <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
+    <div class="p-5 border-b border-gray-800 flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-purple-400">User Profile</h2>
+        <button id="sidebar-close-button" class="text-gray-400 hover:text-purple-300 p-1 rounded-full">
+            <i class="bi bi-x-lg text-lg"></i>
+        </button>
     </div>
+
+    <div class="p-4">
+        <button onclick="window.location.href='https://gowthusaidatta.github.io/CodeSync_test/usernames.html'"
+            class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
+            <i class="bi bi-pencil-square text-xl"></i>
+            <span>Update Usernames</span>
+        </button>
+    </div>
+
+    <div class="p-5 flex flex-col items-center border-b border-gray-800">
+        <img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User"
+            alt="Profile" class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600">
+        <h3 id="user-name" class="text-lg font-semibold text-center text-gray-50">Loading...</h3>
+        <p id="user-email" class="text-gray-400 text-sm text-center break-words mt-1">user@example.com</p>
+    </div>
+
+    <div class="p-4 border-b border-gray-800 flex-grow overflow-y-auto">
+        <h4 class="font-medium text-gray-300 mb-3 px-1">Coding Profiles</h4>
+        <ul class="space-y-2">
+
+            <!-- LeetCode -->
+            <li id="leetcode-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://assets.leetcode.com/static_assets/public/icons/favicon-96x96.png" alt="LeetCode"
+                    class="w-5 h-5 mr-3 rounded-md">
+                <span class="text-sm font-medium">LeetCode:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+            <!-- CodeChef -->
+            <li id="codechef-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef"
+                    class="w-5 h-5 mr-3">
+                <span class="text-sm font-medium">CodeChef:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+            <!-- HackerRank -->
+            <li id="hackerrank-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://hrcdn.net/community-frontend/assets/favicon-c9b0a045.ico" alt="HackerRank"
+                    class="w-5 h-5 mr-3 rounded-md">
+                <span class="text-sm font-medium">HackerRank:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+            <!-- GeeksforGeeks -->
+            <li id="gfg-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/gfg_200X200.png" alt="GFG"
+                    class="w-5 h-5 mr-3 rounded-md">
+                <span class="text-sm font-medium">GFG:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="p-4 mt-auto">
+        <button onclick="logout()"
+            class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-right text-xl"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+</div>
+
     <div id="sidebar-backdrop"></div>
     
     <!-- Subscription Instruction Modal -->
