@@ -1,506 +1,403 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>CodeSync</title>
-   <link rel="icon" type="image/png" href="favicon_codesync.png">
-    
-    <meta name="description" content="A powerful platform for students and college management to synchronize and manage student coding profiles across competitive programming and GitHub platforms.">
-    <meta name="keywords" content="Student Coding Sync, College Dashboard, Competitive Programming Sync, GitHub Profiles, LeetCode, Codeforces, Coding Platform Integration, Student Progress Synchronization">
-    <meta name="author" content="Your Company or Team Name">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="CodeSync - Synchronize Your Coding Journey">
-    <meta property="og:description" content="Track and manage student coding activity for colleges and institutions.">
-    <meta property="og:image" content="/images/preview.jpg">
-    <meta property="og:url" content="https://yourdomain.com">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="CodeSync - Synchronize Your Coding Journey">
-    <meta name="twitter:description" content="A smart tool for institutions to synchronize student coding progress and analytics.">
-    <meta name="twitter:image" content="/images/preview.jpg">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://yourdomain.com/">
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CodeSync | Results</title>
+     <link rel="icon" type="image/png" href="favicon_codesync.png">
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
+    
+    <!-- AWS Amplify CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
+    <!-- Custom Amplify Config -->
+    <script src="./js/amplify_config.js"></script>    
+    
     <style>
-        @keyframes fadeInSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        body { font-family: 'Inter', sans-serif; background-color: #111827; }
+        .platform-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease; background-color: #1F2937;
+            border-radius: 1rem; padding: 1.5rem; height: 100%;
+            box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;
         }
-        .animate-fade-in-slide-up {
-            animation: fadeInSlideUp 1s ease-out forwards;
+        .platform-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a; }
+        .spinner {
+            border: 4px solid #ffffff33; border-top: 4px solid #a78bfa; 
+            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .sidebar {
+            position: fixed; z-index: 100; height: 100vh; top: 0; left: 0; width: 280px;
+            transform: translateX(-100%); transition: transform 0.3s ease-in-out; flex-shrink: 0;
         }
-        .password-requirement {
-            transition: color 0.3s;
+        .sidebar.active { transform: translateX(0); }
+        #sidebar-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #00000080;
+            z-index: 90; opacity: 0; visibility: hidden; transition: opacity 0.3s ease-in-out;
         }
-        .password-requirement.met {
-            color: #10B981; /* green-500 */
+        #sidebar-backdrop.active { opacity: 1; visibility: visible; }
+        #instruction-modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 150;
+            background-color: #00000099; display: none; align-items: center; justify-content: center;
         }
-        .password-requirement.unmet {
-            color: #6B7280; /* gray-500 */
-        }
+        #instruction-modal-backdrop.active { display: flex; }
     </style>
 </head>
-<body class="bg-gray-50 font-sans leading-normal tracking-normal text-gray-800">
+<body class="text-gray-100 min-h-screen flex">
+    <!-- Sidebar Container -->
+<!--     <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
+        <div class="p-5 border-b border-gray-800 flex justify-between items-center"><h2 class="text-xl font-semibold text-purple-400">User Profile</h2><button id="sidebar-close-button" class="text-gray-400 hover:text-purple-300 p-1 rounded-full"><i class="bi bi-x-lg text-lg"></i></button></div>
+        <div class="p-4"><button onclick="window.location.href='https://gowthusaidatta.github.io/CodeSync_test/usernames.html'" class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"><i class="bi bi-pencil-square text-xl"></i><span>Update Usernames</span></button></div>
+        <div class="p-5 flex flex-col items-center border-b border-gray-800"><img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User" alt="Profile" class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600"><h3 id="user-name" class="text-lg font-semibold text-center text-gray-50">Loading...</h3><p id="user-email" class="text-gray-400 text-sm text-center break-words mt-1">user@example.com</p></div>
+        <div class="p-4 border-b border-gray-800 flex-grow overflow-y-auto"><h4 class="font-medium text-gray-300 mb-3 px-1">Coding Profiles</h4><ul class="space-y-2"><li id="leetcode-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-file-code-fill mr-3 text-orange-500 text-xl"></i><span class="text-sm font-medium">LeetCode: <span class="text-gray-50 font-normal">Not linked</span></span></li><li id="codechef-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-joystick mr-3 text-yellow-500 text-xl"></i><span class="text-sm font-medium">CodeChef: <span class="text-gray-50 font-normal">Not linked</span></span></li><li id="hackerrank-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-terminal-fill mr-3 text-green-500 text-xl"></i><span class="text-sm font-medium">HackerRank: <span class="text-gray-50 font-normal">Not linked</span></span></li><li id="gfg-profile" class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800"><i class="bi bi-code-square mr-3 text-blue-500 text-xl"></i><span class="text-sm font-medium">GFG: <span class="text-gray-50 font-normal">Not linked</span></span></li></ul></div>
+        <div class="p-4 mt-auto"><button onclick="logout()" class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"><i class="bi bi-box-arrow-right text-xl"></i><span>Logout</span></button></div>
+    </div> -->
+    <div id="sidebar" class="sidebar bg-gray-900 shadow-lg">
+    <div class="p-5 border-b border-gray-800 flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-purple-400">User Profile</h2>
+        <button id="sidebar-close-button" class="text-gray-400 hover:text-purple-300 p-1 rounded-full">
+            <i class="bi bi-x-lg text-lg"></i>
+        </button>
+    </div>
 
-    <div id="home" class="relative min-h-screen flex flex-col">
-        <header class="bg-gray-900 text-white py-4 px-6 shadow-lg sticky top-0 z-50">
-            <div class="container mx-auto flex justify-between items-center max-w-7xl">
-                <div class="text-2xl font-bold">
-                    <a href="/" class="flex items-center space-x-3">
-                        <img src="favicon_codesync.png" alt="CodeSync Logo" class="h-10 w-auto filter brightness-150">
-                        <h1 class="md:text-2xl text-xl font-extrabold text-white">CodeSync</h1>
-                    </a>
+    <div class="p-4">
+        <button onclick="window.location.href='https://gowthusaidatta.github.io/CodeSync_test/usernames.html'"
+            class="w-full bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-800 hover:to-purple-900 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
+            <i class="bi bi-pencil-square text-xl"></i>
+            <span>Update Usernames</span>
+        </button>
+    </div>
+
+    <div class="p-5 flex flex-col items-center border-b border-gray-800">
+        <img id="user-profile-avatar" src="https://ui-avatars.com/api/?background=6d28d9&color=fff&name=User"
+            alt="Profile" class="w-20 h-20 rounded-full mb-3 border-4 border-purple-600">
+        <h3 id="user-name" class="text-lg font-semibold text-center text-gray-50">Loading...</h3>
+        <p id="user-email" class="text-gray-400 text-sm text-center break-words mt-1">user@example.com</p>
+    </div>
+
+    <div class="p-4 border-b border-gray-800 flex-grow overflow-y-auto">
+        <h4 class="font-medium text-gray-300 mb-3 px-1">Coding Profiles</h4>
+        <ul class="space-y-2">
+
+            <!-- LeetCode -->
+            <li id="leetcode-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://assets.leetcode.com/static_assets/public/icons/favicon-96x96.png" alt="LeetCode"
+                    class="w-5 h-5 mr-3 rounded-md">
+                <span class="text-sm font-medium">LeetCode:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+            <!-- CodeChef -->
+            <li id="codechef-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef"
+                    class="w-5 h-5 mr-3">
+                <span class="text-sm font-medium">CodeChef:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+            <!-- HackerRank -->
+            <li id="hackerrank-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank"
+                    class="w-5 h-5 mr-3 rounded-md">
+                <span class="text-sm font-medium">HackerRank:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+            <!-- GeeksforGeeks -->
+            <li id="gfg-profile"
+                class="flex items-center text-gray-300 p-3 rounded-lg hover:bg-gray-800">
+                <img src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/gfg_200X200.png" alt="GFG"
+                    class="w-5 h-5 mr-3 rounded-md">
+                <span class="text-sm font-medium">GFG:
+                    <span class="text-gray-50 font-normal">Not linked</span>
+                </span>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="p-4 mt-auto">
+        <button onclick="logout()"
+            class="w-full bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
+            <i class="bi bi-box-arrow-right text-xl"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+</div>
+
+    <div id="sidebar-backdrop"></div>
+    
+    <!-- Subscription Instruction Modal -->
+    <div id="instruction-modal-backdrop">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 border border-gray-700 text-center relative mx-4">
+             <button id="instruction-modal-close" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
+                <i class="bi bi-x-lg text-2xl"></i>
+            </button>
+            <i class="bi bi-envelope-check-fill text-purple-400 text-6xl mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-3">Confirm Your Subscription!</h2>
+            <p class="text-gray-300 mb-6">A confirmation link was sent to <b id="confirmation-email" class="text-purple-300">your email</b>. Please follow the steps below.</p>
+            <div class="bg-gray-900 p-4 rounded-lg text-left text-sm space-y-4">
+                <div>
+                    <p class="font-semibold text-gray-200 mb-2">How to Confirm:</p>
+                    <ol class="list-decimal list-inside text-gray-400 space-y-1">
+                        <li>Open your email inbox.</li>
+                        <li>Look for an email from "AWS Notifications".</li>
+                        <li>Click the "Confirm subscription" link inside.</li>
+                    </ol>
                 </div>
-                <nav class="hidden md:flex space-x-6 text-lg">
-                    <a href="#home" class="hover:text-blue-400 transition duration-300 font-medium">Home</a>
-                    <a href="https://gowthusaidatta.github.io/CodeSync_test/Features.html" class="hover:text-blue-400 transition duration-300 font-medium">Features</a>
-                    <a href="leaderboard.html" class="hover:text-blue-400 transition duration-300 font-medium">Leaderboard</a>
-                    <a href="https://gowthusaidatta.github.io/CodeSync_test/contact.html" class="hover:text-blue-400 transition duration-300 font-medium">Contact</a>
-                </nav>
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-white focus:outline-none p-2 rounded-md hover:bg-gray-700">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                        </svg>
-                    </button>
+                <div id="subscription-delay-note" class="bg-yellow-900/50 border-l-4 border-yellow-500 text-yellow-200 p-3 rounded-r-lg">
+                    <b>Please Note:</b> The confirmation email may take 5-10 minutes to arrive. Please check your spam folder if you don't see it.
                 </div>
             </div>
-            <div id="mobile-menu" class="hidden md:hidden bg-gray-800 py-3 mt-2 rounded-b-lg shadow-inner">
-                <a href="#home" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Home</a>
-                <a href="https://gowthusaidatta.github.io/CodeSync_test/Features.html" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Features</a>
-                <a href="leaderboard.html" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Leaderboard</a>
-                <a href="https://gowthusaidatta.github.io/CodeSync_test/contact.html" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Contact</a>
-            </div>
-        </header>
+        </div>
+    </div>
 
-        <main class="flex-grow">
-            <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800 overflow-hidden py-16">
-                <div class="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
-
-                    <div id="auth-card" class="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-2xl border border-gray-100 animate-fade-in-slide-up">
-                        <h2 id="auth-title" class="text-3xl font-bold text-gray-900 mb-6 text-center">Get Started with CodeSync</h2>
-                        
-                        <div id="auth-tabs" class="flex justify-center mb-6">
-                            <button id="login-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300">Login</button>
-                            <button id="signup-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300">Sign Up</button>
-                        </div>
-
-                        <!-- Login Form -->
-                        <form id="login-form" class="space-y-6">
-                            <div>
-                                <label for="login-email" class="sr-only">Email address</label>
-                                <input id="login-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Email Address">
-                            </div>
-                            <div class="relative">
-                                <label for="login-password" class="sr-only">Password</label>
-                                <input id="login-password" name="password" type="password" autocomplete="current-password" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Password">
-                                <button type="button" onclick="togglePassword('login-password', 'toggleLoginPasswordButton')" class="absolute right-3 top-3 text-gray-600 hover:text-blue-500" aria-label="Toggle password visibility" id="toggleLoginPasswordButton"><i class="bi bi-eye"></i></button>
-                            </div>
-                            <div id="login-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
-                            <div class="flex items-center justify-between">
-                                <div class="text-md">
-                                    <button type="button" id="forgot-password-link" class="font-medium text-blue-600 hover:text-blue-500 transition duration-200">Forgot your password?</button>
-                                </div>
-                            </div>
-                            <div>
-                                <button type="submit" id="login-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Sign in</button>
-                            </div>
-                        </form>
-                        
-                        <!-- Signup Form Step 1 -->
-                        <form id="signup-form" class="space-y-6 hidden">
-                            <div>
-                                <label for="signup-full-name" class="sr-only">Full Name</label>
-                                <input id="signup-full-name" name="name" type="text" autocomplete="name" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Your Full Name">
-                            </div>
-                            <div>
-                                <label for="signup-email" class="sr-only">Email address</label>
-                                <input id="signup-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Email address">
-                            </div>
-                            <div class="relative">
-                                <label for="signup-password" class="sr-only">Password</label>
-                                <input id="signup-password" name="password" type="password" autocomplete="new-password" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Password" />
-                                <button type="button" onclick="togglePassword('signup-password', 'toggleSignupPasswordButton')" class="absolute right-3 top-3 text-gray-600 hover:text-blue-500" aria-label="Toggle password visibility" id="toggleSignupPasswordButton"><i class="bi bi-eye"></i></button>
-                            </div>
-                            <div id="password-requirements" class="text-sm space-y-1">
-                                <p id="req-length" class="password-requirement unmet">✓ At least 8 characters</p>
-                                <p id="req-case" class="password-requirement unmet">✓ Both uppercase & lowercase letters</p>
-                                <p id="req-number" class="password-requirement unmet">✓ At least one number (0-9)</p>
-                                <p id="req-special" class="password-requirement unmet">✓ At least one special character (!, @, #, ...)</p>
-                            </div>
-                            <div id="signup-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
-                            <div>
-                                <button type="button" id="signup-next-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Next</button>
-                            </div>
-                        </form>
-
-                        <!-- Signup Form Step 2 -->
-                        <form id="platform-form" class="space-y-6 hidden">
-                            <h3 class="text-center text-gray-800 font-semibold text-xl">Link Your Coding Profiles</h3>              
-                            <p class="text-center text-gray-500 text-sm -mt-4">Please provide at least one username.</p>
-                            <div><input id="signup-leetcode" name="leetcode_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="LeetCode Username"></div>
-                            <div><input id="signup-codechef" name="codechef_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="CodeChef Username"></div>
-                            <div><input id="signup-hackerrank" name="hackerrank_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="HackerRank Username"></div>
-                            <div><input id="signup-gfg" name="gfg_username" type="text" class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="GFG Username"></div>
-                            <div id="platform-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
-                            <div><button type="submit" id="signup-btn-submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Create Account</button></div>
-                            <div class="text-center text-sm"><button type="button" id="back-to-signup-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Back</button></div>
-                        </form>
-                        
-                        <!-- Email Verification Message -->
-                        <div id="confirmation-form" class="space-y-6 hidden">
-                            <h3 class="text-center text-gray-800 font-semibold text-xl">Verify Your Email</h3>
-                            <p class="text-center text-gray-800">A verification email has been sent to your inbox. Please click the link inside to complete your registration.</p>
-                            <p class="text-center text-gray-500 text-sm">You can close this window.</p>
-                            <div id="confirmation-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
-                            <div class="text-center text-sm"><button type="button" id="back-to-login-from-confirmation-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Back to Login</button></div>
-                        </div>
-
-                        <!-- Forgot Password Form -->
-                        <form id="forgot-password-form" class="space-y-6 hidden">
-                             <h3 class="text-center text-gray-800 font-semibold text-xl">Reset Password</h3>
-                            <p class="text-center text-gray-600">Enter your email address and we'll send you a link to reset your password.</p>
-                            <div>
-                                <label for="forgot-email" class="sr-only">Email address</label>
-                                <input id="forgot-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg" placeholder="Email Address">
-                            </div>
-                            <div id="forgot-password-message" class="text-sm text-center -mt-2 hidden"></div>
-                            <div>
-                                <button type="submit" id="send-reset-link-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Send Reset Link</button>
-                            </div>
-                            <div class="text-center text-sm">
-                                <button type="button" id="back-to-login-btn" class="text-blue-600 hover:text-blue-500 hover:underline">← Back to Login</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="w-full lg:w-1/2 text-center lg:text-left text-white p-8 lg:p-0 rounded-xl animate-fade-in-slide-up">
-                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-5 text-shadow-md">Sync Your Coding <br class="hidden sm:inline"> Journey with Precision</h1>
-                        <p class="text-lg md:text-xl text-blue-100 max-w-2xl lg:max-w-none mx-auto mb-8 font-light">CodeSync helps you synchronize your progress, set goals, and collaborate with peers to become a better programmer every day.</p>
-                        <a href="https://gowthusaidatta.github.io/CodeSync_test/Features.html" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105 text-lg">Explore Features</a>
-                    </div>
+    <!-- Main Content Area -->
+    <div class="flex-grow w-full px-6 py-8 min-h-screen">
+        <div class="max-w-screen-xl mx-auto"> 
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                <h1 class="text-4xl font-extrabold text-purple-400 mb-4 sm:mb-0">📊 Coding Platform Stats</h1>
+                <div class="flex items-center gap-4">
+                    <button id="notification-btn" class="text-gray-300 hover:text-white p-3 rounded-lg bg-gray-800/50 shadow-md"><i class="bi bi-bell-fill text-2xl"></i></button>
+                    <button id="mobile-open-sidebar-button" class="text-gray-300 hover:text-white p-3 rounded-lg bg-gray-800/50 shadow-md"><i class="bi bi-list text-2xl"></i></button>
                 </div>
-            </section>
-        </main>
+            </header>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 py-5 px-6 bg-gray-800/50 rounded-2xl shadow-xl">
+                <div class="text-center sm:text-left mb-4 sm:mb-0">
+                    <h1 id="welcome-header" class="text-3xl font-bold text-purple-300">Welcome, Coder!</h1>
+                    <p id="last-updated-timestamp" class="text-sm text-gray-400 mt-2">Last updated: Never</p>
+                </div>
+                <div class="flex flex-wrap justify-center sm:justify-end gap-4">
+                    <a href="leaderboard.html" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2 transition shadow-md"><i class="bi bi-trophy-fill text-lg"></i> Leaderboard</a>
+                    <button id="refresh-stats-btn" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2 transition shadow-md"><i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats</button>
+                </div>
+            </div>
+
+            <div id="output" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div class="space-y-6 col-span-full" id="initial-loading-skeleton"><div class="bg-gray-800 p-6 rounded-2xl shadow-md h-52 animate-pulse"></div></div>
+            </div>
+
+            <!-- Card Templates -->
+            <template id="leetcode-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://leetcode.com/static/images/LeetCode_logo_rvs.png" alt="LeetCode" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">LeetCode</h2></div><p id="leetcode-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Total Solved:</span><span id="leetcode-problems" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Easy:</span><span id="leetcode-easy" class="font-bold text-green-400">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Medium:</span><span id="leetcode-medium" class="font-bold text-yellow-400">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Hard:</span><span id="leetcode-hard" class="font-bold text-red-400">0</span></div></div></div></template>
+            <template id="codechef-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://cdn.codechef.com/images/cc-logo.svg" alt="CodeChef" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">CodeChef</h2></div><p id="codechef-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Problems Solved:</span><span id="codechef-problems" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Rating:</span><span id="codechef-rating" class="font-bold text-blue-300">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Contests:</span><span id="codechef-contests" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium text-yellow-400">Stars:</span><span id="codechef-stars" class="font-bold text-yellow-400">0</span></div></div></div></template>
+            <template id="hackerrank-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">HackerRank</h2></div><p id="hackerrank-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Badges:</span><span id="hackerrank-badges" class="font-bold text-white">0</span></div></div></div></template>
+            <template id="gfg-template"><div class="platform-card"><div class="flex items-center gap-3 mb-6"><img src="https://media.geeksforgeeks.org/gfg-gg-logo.svg" alt="GFG" class="w-auto h-7"><h2 class="text-2xl font-bold text-gray-50">GeeksForGeeks</h2></div><p id="gfg-username" class="text-gray-300 mb-6 text-lg"></p><div class="space-y-3 text-gray-300"><div class="flex justify-between items-center text-lg"><span class="font-medium">Problems Solved:</span><span id="gfg-problems" class="font-bold text-white">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Easy:</span><span id="gfg-easy" class="font-bold text-green-400">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Medium:</span><span id="gfg-medium" class="font-bold text-yellow-400">0</span></div><div class="flex justify-between items-center text-lg"><span class="font-medium">Hard:</span><span id="gfg-hard" class="font-bold text-red-400">0</span></div></div></div></template>
+            <template id="error-card-template"><div class="platform-card bg-red-900/40 border border-red-700 p-6 flex flex-col items-center justify-center text-center"><i class="bi bi-exclamation-triangle-fill text-red-400 text-4xl mb-3"></i><h2 class="text-xl font-semibold text-red-300 mb-2"><span class="platform-name"></span></h2><p class="text-red-200 text-sm">Failed to load data.</p></div></template>
+        </div>
     </div>
 
     <script>
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        });
+        // Global variables and DOM element references
+        let currentUserAttributes = {};
+        const API_BASE_URL_GENERAL = 'https://8teu07es5h.execute-api.us-east-1.amazonaws.com/prob/get-score';
+        const API_BASE_URL_GFG = 'https://1irslt4qe5.execute-api.us-east-1.amazonaws.com/prob/get-score';
+        const API_SUBSCRIBE_URL = 'https://ek1hl4pvyf.execute-api.us-east-1.amazonaws.com/prob/subscribeEmail';
 
-        document.querySelectorAll('#mobile-menu a').forEach(item => {
-            item.addEventListener('click', () => {
-                document.getElementById('mobile-menu').classList.add('hidden');
-            });
-        });
+        const sidebar = document.getElementById('sidebar'); 
+        const sidebarCloseButton = document.getElementById('sidebar-close-button'); 
+        const mobileOpenSidebarButton = document.getElementById('mobile-open-sidebar-button'); 
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const refreshButton = document.getElementById('refresh-stats-btn');
+        const outputDiv = document.getElementById('output');
+        const initialLoadingSkeleton = document.getElementById('initial-loading-skeleton');
+        const notificationBtn = document.getElementById('notification-btn');
+        const instructionModalBackdrop = document.getElementById('instruction-modal-backdrop');
+        const instructionModalClose = document.getElementById('instruction-modal-close');
 
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyCDGxsS1CNVRF3wpg1eqkHfb6YVMibXOzk",
-            authDomain: "codesync-open.firebaseapp.com",
-            projectId: "codesync-open",
-            storageBucket: "codesync-open.appspot.com",
-            messagingSenderId: "664480055141",
-            appId: "1:664480055141:web:383015f7bf31a43e2d2b8c",
-            measurementId: "G-H7DD5ZK91D"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        window.addEventListener("load", () => {
-            const authCard = document.getElementById('auth-card');
-            const authTitle = document.getElementById('auth-title');
-            const authTabs = document.getElementById('auth-tabs');
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            const platformForm = document.getElementById('platform-form');
-            const confirmationForm = document.getElementById('confirmation-form');
-            const forgotPasswordForm = document.getElementById('forgot-password-form');
-            const loginBtn = document.getElementById('login-btn');
-            const signupNextBtn = document.getElementById('signup-next-btn');
-            const backToSignupBtn = document.getElementById('back-to-signup-btn');
-            const signupSubmitBtn = document.getElementById('signup-btn-submit');
-            const backToLoginFromConfirmationBtn = document.getElementById('back-to-login-from-confirmation-btn');
-            const forgotPasswordLink = document.getElementById('forgot-password-link');
-            const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
-            const backToLoginBtn = document.getElementById('back-to-login-btn');
-            const signupPasswordInput = document.getElementById('signup-password');
-            const loginErrorMsg = document.getElementById('login-error-message');
-            const signupErrorMsg = document.getElementById('signup-error-message');
-            const platformErrorMsg = document.getElementById('platform-error-message');
-            const confirmationErrorMsg = document.getElementById('confirmation-error-message');
-            const forgotPasswordMessage = document.getElementById('forgot-password-message');
-            const reqLength = document.getElementById('req-length');
-            const reqCase = document.getElementById('req-case');
-            const reqNumber = document.getElementById('req-number');
-            const reqSpecial = document.getElementById('req-special');
-
-            const showMessage = (element, message, isError = true) => {
-                element.textContent = message;
-                element.className = `text-sm text-center -mt-2 ${isError ? 'text-red-600' : 'text-green-600'}`;
-                element.classList.remove('hidden');
-            };
-            const hideAllMessages = () => {
-                [loginErrorMsg, signupErrorMsg, platformErrorMsg, confirmationErrorMsg, forgotPasswordMessage].forEach(el => {
-                    el.textContent = '';
-                    el.classList.add('hidden');
-                });
-            };
-
-            const updateTabStyles = (activeTabId) => {
-                const loginTab = document.getElementById('login-tab');
-                const signupTab = document.getElementById('signup-tab');
-                loginTab.classList.remove('border-blue-600', 'text-blue-600');
-                loginTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-blue-600');
-                signupTab.classList.remove('border-blue-600', 'text-blue-600');
-                signupTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-blue-600');
-                if (activeTabId === 'login-tab') {
-                    loginTab.classList.add('border-blue-600', 'text-blue-600');
-                    loginTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-blue-600');
-                } else {
-                    signupTab.classList.add('border-blue-600', 'text-blue-600');
-                    signupTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-blue-600');
-                }
-            };
-
-            const showForm = (formToShow) => {
-                hideAllMessages();
-                [loginForm, signupForm, platformForm, confirmationForm, forgotPasswordForm].forEach(form => form.classList.add('hidden'));
-                formToShow.classList.remove('hidden');
-                
-                const isAuthForm = formToShow === loginForm || formToShow === signupForm;
-                authTabs.style.display = isAuthForm ? 'flex' : 'none';
-
-                if (formToShow === loginForm || formToShow === signupForm) {
-                     authTitle.textContent = 'Get Started with CodeSync';
-                } else if (formToShow === platformForm) {
-                    authTitle.textContent = 'Link Coding Profiles';
-                } else if (formToShow === forgotPasswordForm) {
-                    authTitle.textContent = 'Reset Password';
-                } else if (formToShow === confirmationForm) {
-                    authTitle.textContent = 'Verify Your Email';
-                }
-                authCard.scrollTop = 0;
-            };
-
-            updateTabStyles('login-tab');
-
-            document.getElementById('login-tab').addEventListener('click', (e) => {
-                e.preventDefault();
-                showForm(loginForm);
-                updateTabStyles('login-tab');
-            });
-
-            document.getElementById('signup-tab').addEventListener('click', (e) => {
-                e.preventDefault();
-                showForm(signupForm);
-                updateTabStyles('signup-tab');
-            });
+        // --- Main execution starts here ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupEventListeners();
             
-            forgotPasswordLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                showForm(forgotPasswordForm);
-            });
-
-            backToLoginBtn.addEventListener('click', () => {
-                showForm(loginForm);
-                updateTabStyles('login-tab');
-            });
-            
-            backToLoginFromConfirmationBtn.addEventListener('click', () => {
-                showForm(loginForm);
-                updateTabStyles('login-tab');
-            });
-
-            loginForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                hideAllMessages();
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'Signing in...';
-                const email = document.getElementById("login-email").value.trim();
-                const password = document.getElementById("login-password").value.trim();
-                
-                auth.signInWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        if (userCredential.user.emailVerified) {
-                            window.location.href = "results.html";
-                        } else {
-                            showMessage(loginErrorMsg, "Please verify your email before logging in.");
-                            auth.signOut();
-                        }
-                    })
-                    .catch((error) => {
-                        showMessage(loginErrorMsg, error.message);
-                    })
-                    .finally(() => {
-                        loginBtn.disabled = false;
-                        loginBtn.textContent = 'Sign in';
-                    });
-            });
-
-            signupNextBtn.addEventListener("click", () => {
-                hideAllMessages();
-                const fullName = document.getElementById("signup-full-name").value.trim();
-                const email = document.getElementById("signup-email").value.trim();
-                const password = signupPasswordInput.value.trim();
-                if (!fullName || !email || !password) {
-                    showMessage(signupErrorMsg, "Please fill in all required fields.");
-                    return;
-                }
-                if (!validatePassword()) {
-                    showMessage(signupErrorMsg, "Password does not meet all requirements.");
-                    return;
-                }
-                showForm(platformForm);
-            });
-
-            backToSignupBtn.addEventListener('click', () => {
-                showForm(signupForm);
-            });
-
-            platformForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                hideAllMessages();
-
-                const leetcode_username = document.getElementById("signup-leetcode").value.trim();
-                const codechef_username = document.getElementById("signup-codechef").value.trim();
-                const hackerrank_username = document.getElementById("signup-hackerrank").value.trim();
-                const gfg_username = document.getElementById("signup-gfg").value.trim();
-
-                if (!leetcode_username && !codechef_username && !hackerrank_username && !gfg_username) {
-                    showMessage(platformErrorMsg, "Please provide at least one coding profile username.");
-                    return;
-                }
-
-                signupSubmitBtn.disabled = true;
-                signupSubmitBtn.textContent = 'Creating Account...';
-                
-                const email = document.getElementById("signup-email").value.trim();
-                const password = signupPasswordInput.value.trim();
-                const fullName = document.getElementById("signup-full-name").value.trim();
-                
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        const user = userCredential.user;
-                        user.updateProfile({
-                            displayName: fullName
-                        }).then(() => {
-                            db.collection("users").doc(user.uid).set({
-                                fullName: fullName,
-                                email: email,
-                                leetcode: leetcode_username || "",
-                                codechef: codechef_username || "",
-                                hackerrank: hackerrank_username || "",
-                                gfg: gfg_username || ""
-                            })
-                            .then(() => {
-                                user.sendEmailVerification()
-                                    .then(() => {
-                                        showForm(confirmationForm);
-                                    })
-                                    .catch((error) => {
-                                        showMessage(platformErrorMsg, `Failed to send verification email: ${error.message}`);
-                                    });
-                            })
-                            .catch((error) => {
-                                showMessage(platformErrorMsg, `Failed to save user data: ${error.message}`);
-                            });
-                        }).catch((error) => {
-                            showMessage(platformErrorMsg, `Failed to update profile: ${error.message}`);
-                        });
-                    })
-                    .catch((error) => {
-                        showMessage(platformErrorMsg, error.message);
-                    })
-                    .finally(() => {
-                        signupSubmitBtn.disabled = false;
-                        signupSubmitBtn.textContent = 'Create Account';
-                    });
-            });
-
-            forgotPasswordForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                hideAllMessages();
-                const email = document.getElementById('forgot-email').value.trim();
-                if (!email) { 
-                    showMessage(forgotPasswordMessage, "Please enter your email address.");
-                    return;
-                }
-                sendResetLinkBtn.disabled = true;
-                sendResetLinkBtn.textContent = 'Sending...';
-                auth.sendPasswordResetEmail(email)
-                    .then(() => {
-                        showMessage(forgotPasswordMessage, "Password reset link sent to your email.", false);
-                    })
-                    .catch((error) => {
-                        showMessage(forgotPasswordMessage, error.message);
-                    })
-                    .finally(() => {
-                        sendResetLinkBtn.disabled = false;
-                        sendResetLinkBtn.textContent = 'Send Reset Link';
-                    });
-            });
-
-            const validatePassword = () => {
-                const password = signupPasswordInput.value;
-                const checks = {
-                    length: password.length >= 8,
-                    case: /[a-z]/.test(password) && /[A-Z]/.test(password),
-                    number: /[0-9]/.test(password),
-                    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password),
-                };
-                reqLength.classList.toggle('met', checks.length);
-                reqLength.classList.toggle('unmet', !checks.length);
-                reqCase.classList.toggle('met', checks.case);
-                reqCase.classList.toggle('unmet', !checks.case);
-                reqNumber.classList.toggle('met', checks.number);
-                reqNumber.classList.toggle('unmet', !checks.number);
-                reqSpecial.classList.toggle('met', checks.special);
-                reqSpecial.classList.toggle('unmet', !checks.special);
-                const allMet = Object.values(checks).every(Boolean);
-                signupNextBtn.disabled = !allMet;
-                return allMet;
-            };
-
-            signupPasswordInput.addEventListener('input', validatePassword);
-            validatePassword(); // Initial check
-        });
-
-        window.togglePassword = (inputId, buttonId) => {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(buttonId).querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.replace('bi-eye', 'bi-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            if (!window.aws_amplify || !window.amplifyConfig) {
+                console.error("Amplify or its configuration is missing.");
+                return;
             }
-        };
+
+            const { Auth } = window.aws_amplify;
+            Auth.configure(window.amplifyConfig);
+
+            try {
+                await Auth.currentSession(); 
+                const user = await Auth.currentAuthenticatedUser();
+                const attributes = await Auth.userAttributes(user);
+                
+                currentUserAttributes = attributes.reduce((acc, attr) => ({ ...acc, [attr.Name]: attr.Value }), {});
+
+                updateUIWithUserInfo(currentUserAttributes); 
+                await fetchScores(currentUserAttributes);
+            } catch (err) {
+                console.error("❌ Authentication error, redirecting...", err);
+                localStorage.clear(); 
+                window.location.href = "https://gowthusaidatta.github.io/CodeSync_test/"; // Also updated here for consistency
+            }
+        });
+
+        function setupEventListeners() {
+            mobileOpenSidebarButton.addEventListener('click', () => { sidebar.classList.add('active'); sidebarBackdrop.classList.add('active'); });
+            sidebarCloseButton.addEventListener('click', () => { sidebar.classList.remove('active'); sidebarBackdrop.classList.remove('active'); });
+            sidebarBackdrop.addEventListener('click', () => { sidebar.classList.remove('active'); sidebarBackdrop.classList.remove('active'); });
+            notificationBtn.addEventListener('click', handleSubscription);
+            instructionModalClose.addEventListener('click', () => instructionModalBackdrop.classList.remove('active'));
+            refreshButton.addEventListener('click', () => fetchScores(currentUserAttributes));
+        }
+        
+        function updateUIWithUserInfo(attributes) {
+            const userName = attributes['name'] || 'Coder';
+            const userEmail = attributes['email'] || 'N/A';
+            document.getElementById('user-name').textContent = userName;
+            document.getElementById('user-email').textContent = userEmail;
+            document.getElementById('user-profile-avatar').src = `https://ui-avatars.com/api/?background=6d28d9&color=fff&name=${encodeURIComponent(userName)}`; 
+            document.getElementById('leetcode-profile').querySelector('span:last-child').textContent = attributes['custom:leetcode_username'] || 'Not linked';
+            document.getElementById('codechef-profile').querySelector('span:last-child').textContent = attributes['custom:codechef_username'] || 'Not linked';
+            document.getElementById('hackerrank-profile').querySelector('span:last-child').textContent = attributes['custom:hackerrank_username'] || 'Not linked';
+            document.getElementById('gfg-profile').querySelector('span:last-child').textContent = attributes['custom:gfg_username'] || 'Not linked';
+            document.getElementById('welcome-header').textContent = `Welcome, ${userName}!`;
+        }
+        
+        function showInstructionModal(email, status) {
+            const modalBackdrop = document.getElementById('instruction-modal-backdrop');
+            const delayNote = document.getElementById('subscription-delay-note');
+            const confirmationEmailSpan = document.getElementById('confirmation-email');
+            
+            confirmationEmailSpan.textContent = email;
+
+            if (status === 'success') {
+                delayNote.style.display = 'none';
+            } else {
+                delayNote.style.display = 'block';
+            }
+            modalBackdrop.classList.add('active');
+        }
+
+        async function handleSubscription() {
+            const email = currentUserAttributes['email'];
+            if (!email) {
+                alert('Could not find a user email to subscribe.');
+                return;
+            }
+            
+            notificationBtn.disabled = true;
+            try {
+                const response = await fetch(API_SUBSCRIBE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API responded with status: ${response.status}`);
+                }
+                
+                showInstructionModal(email, 'success');
+
+            } catch (error) {
+                console.error("Subscription failed:", error);
+                showInstructionModal(email, 'failure');
+
+            } finally {
+                notificationBtn.disabled = false;
+            }
+        }
+
+        async function fetchScores(attributes) {
+            initialLoadingSkeleton.style.display = 'none';
+            outputDiv.innerHTML = ''; 
+            refreshButton.disabled = true;
+            refreshButton.innerHTML = '<div class="spinner"></div> Fetching...'; 
+
+            const platforms = [
+                { name: 'leetcode', username: attributes['custom:leetcode_username'], url: `${API_BASE_URL_GENERAL}?leetcode=${attributes['custom:leetcode_username']}`},
+                { name: 'codechef', username: attributes['custom:codechef_username'], url: `${API_BASE_URL_GENERAL}?codechef=${attributes['custom:codechef_username']}`},
+                { name: 'hackerrank', username: attributes['custom:hackerrank_username'], url: `${API_BASE_URL_GENERAL}?hackerrank=${attributes['custom:hackerrank_username']}`},
+                { name: 'gfg', username: attributes['custom:gfg_username'], url: `${API_BASE_URL_GFG}?username=${attributes['custom:gfg_username']}`}
+            ];
+            const platformsToFetch = platforms.filter(p => p.username);
+
+            if (platformsToFetch.length === 0) {
+                 outputDiv.innerHTML = `<div class="col-span-full text-center bg-gray-800/50 p-8 rounded-xl"><i class="bi bi-exclamation-triangle-fill text-yellow-500 text-4xl mb-3"></i><h3 class="text-xl font-semibold text-gray-50">No usernames found</h3><p class="text-gray-400">Please add your platform usernames to see stats.</p></div>`;
+            } else {
+                const results = await Promise.allSettled(platformsToFetch.map(p => 
+                    fetch(p.url).then(res => {
+                        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+                        return res.json().then(data => ({ ...p, data }));
+                    })
+                ));
+                results.forEach(result => {
+                    if (result.status === 'fulfilled') { renderCard(result.value.name, result.value.username, result.value.data); } 
+                    else { console.error(`Fetch failed:`, result.reason); appendErrorCard('Platform'); }
+                });
+            }
+
+            document.getElementById('last-updated-timestamp').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+            refreshButton.disabled = false;
+            refreshButton.innerHTML = '<i class="bi bi-arrow-clockwise text-lg"></i> Refresh Stats';
+        }
+
+        function renderCard(platformName, username, data) {
+            try {
+                const card = document.getElementById(`${platformName}-template`).content.cloneNode(true);
+                card.getElementById(`${platformName}-username`).textContent = `@${username}`;
+                switch(platformName) {
+                    case 'leetcode':
+                        card.getElementById('leetcode-problems').textContent = data.leetcode.problems_solved || '0';
+                        card.getElementById('leetcode-easy').textContent = data.leetcode.Easy || '0';
+                        card.getElementById('leetcode-medium').textContent = data.leetcode.Medium || '0';
+                        card.getElementById('leetcode-hard').textContent = data.leetcode.Hard || '0';
+                        break;
+                    case 'codechef':
+                        card.getElementById('codechef-problems').textContent = data.codechef.problems_solved || '0';
+                        card.getElementById('codechef-rating').textContent = data.codechef.contest_rating || '0';
+                        card.getElementById('codechef-contests').textContent = data.codechef.contests_participated || '0';
+                        card.getElementById('codechef-stars').textContent = data.codechef.stars || '0 ★';
+                        break;
+                    case 'hackerrank':
+                        card.getElementById('hackerrank-badges').textContent = data.hackerrank.badges || '0';
+                        break;
+                    case 'gfg':
+                        card.getElementById('gfg-username').textContent = `@${data.username}`;
+                        card.getElementById('gfg-problems').textContent = data.totalProblemsSolved || '0';
+                        card.getElementById('gfg-easy').textContent = data.easyProblems || '0';
+                        card.getElementById('gfg-medium').textContent = data.mediumProblems || '0';
+                        card.getElementById('gfg-hard').textContent = data.hardProblems || '0';
+                        break;
+                }
+                outputDiv.appendChild(card);
+            } catch (e) {
+                console.error(`Error rendering card for ${platformName}:`, e, data);
+                appendErrorCard(platformName);
+            }
+        }
+
+        function appendErrorCard(platformName) {
+            const errorCard = document.getElementById('error-card-template').content.cloneNode(true);
+            errorCard.querySelector('.platform-name').textContent = platformName.charAt(0).toUpperCase() + platformName.slice(1);
+            outputDiv.appendChild(errorCard);
+        }
+
+        // --- UPDATED LOGOUT FUNCTION ---
+        async function logout() {
+            try {
+                const { Auth } = window.aws_amplify;
+                await Auth.signOut();
+                localStorage.clear();
+                // This line is changed to the new URL
+                window.location.href = "https://gowthusaidatta.github.io/CodeSync_test/";
+            } catch (err) {
+                console.error("Logout failed:", err);
+            }
+        }
     </script>
 </body>
 </html>
