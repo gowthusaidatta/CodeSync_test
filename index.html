@@ -24,8 +24,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@4.3.27/dist/aws-amplify.min.js"></script>
-    <script src="./js/amplify_config.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
         @keyframes fadeInSlideUp {
@@ -50,10 +52,10 @@
             transition: color 0.3s;
         }
         .password-requirement.met {
-            color: #10B981;
+            color: #10B981; /* green-500 */
         }
         .password-requirement.unmet {
-            color: #6B7280;
+            color: #6B7280; /* gray-500 */
         }
     </style>
 </head>
@@ -70,7 +72,6 @@
                 </div>
                 <nav class="hidden md:flex space-x-6 text-lg">
                     <a href="#home" class="hover:text-blue-400 transition duration-300 font-medium">Home</a>
-                    <!-- UPDATED LINK -->
                     <a href="https://gowthusaidatta.github.io/CodeSync_test/Features.html" class="hover:text-blue-400 transition duration-300 font-medium">Features</a>
                     <a href="leaderboard.html" class="hover:text-blue-400 transition duration-300 font-medium">Leaderboard</a>
                     <a href="https://gowthusaidatta.github.io/CodeSync_test/contact.html" class="hover:text-blue-400 transition duration-300 font-medium">Contact</a>
@@ -85,7 +86,6 @@
             </div>
             <div id="mobile-menu" class="hidden md:hidden bg-gray-800 py-3 mt-2 rounded-b-lg shadow-inner">
                 <a href="#home" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Home</a>
-                <!-- UPDATED LINK -->
                 <a href="https://gowthusaidatta.github.io/CodeSync_test/Features.html" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Features</a>
                 <a href="leaderboard.html" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Leaderboard</a>
                 <a href="https://gowthusaidatta.github.io/CodeSync_test/contact.html" class="block px-6 py-3 text-white hover:bg-gray-700 transition duration-200 text-lg">Contact</a>
@@ -94,22 +94,21 @@
 
         <main class="flex-grow">
             <section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800 overflow-hidden py-16">
-<!--                 <img src="/images/hero-bg.jpg" alt="Abstract coding background" class="absolute inset-0 w-full h-full object-cover opacity-20"> -->
                 <div class="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12">
 
                     <div id="auth-card" class="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-2xl border border-gray-100 animate-fade-in-slide-up">
                         <h2 id="auth-title" class="text-3xl font-bold text-gray-900 mb-6 text-center">Get Started with CodeSync</h2>
                         
                         <div id="auth-tabs" class="flex justify-center mb-6">
-                            <button id="login-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300"></button>
-                            <button id="signup-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300"></button>
+                            <button id="login-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300">Login</button>
+                            <button id="signup-tab" class="px-6 py-2 text-lg font-semibold rounded-t-lg border-b-2 transition-colors duration-300">Sign Up</button>
                         </div>
 
                         <!-- Login Form -->
                         <form id="login-form" class="space-y-6">
                             <div>
-                                <label for="login-username" class="sr-only">Email address or Username</label>
-                                <input id="login-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Email or Username">
+                                <label for="login-email" class="sr-only">Email address</label>
+                                <input id="login-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Email Address">
                             </div>
                             <div class="relative">
                                 <label for="login-password" class="sr-only">Password</label>
@@ -130,16 +129,8 @@
                         <!-- Signup Form Step 1 -->
                         <form id="signup-form" class="space-y-6 hidden">
                             <div>
-                                <label for="signup-username" class="sr-only">Username</label>
-                                <input id="signup-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Username">
-                            </div>
-                            <div>
                                 <label for="signup-full-name" class="sr-only">Full Name</label>
                                 <input id="signup-full-name" name="name" type="text" autocomplete="name" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Your Full Name">
-                            </div>
-                            <div>
-                                <label for="signup-preferred-username" class="sr-only">Preferred Username</label>
-                                <input id="signup-preferred-username" name="preferred_username" type="text" autocomplete="nickname" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg" placeholder="Preferred Display Name">
                             </div>
                             <div>
                                 <label for="signup-email" class="sr-only">Email address</label>
@@ -175,48 +166,27 @@
                             <div class="text-center text-sm"><button type="button" id="back-to-signup-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Back</button></div>
                         </form>
                         
-                        <!-- Confirmation Form -->
+                        <!-- Email Verification Message -->
                         <div id="confirmation-form" class="space-y-6 hidden">
-                            <p class="text-center text-gray-800">We sent a verification code to your email. Please enter it below to confirm your account.</p>
-                            <div><input id="confirmation-code" name="code" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg" placeholder="Verification Code"></div>
+                            <h3 class="text-center text-gray-800 font-semibold text-xl">Verify Your Email</h3>
+                            <p class="text-center text-gray-800">A verification email has been sent to your inbox. Please click the link inside to complete your registration.</p>
+                            <p class="text-center text-gray-500 text-sm">You can close this window.</p>
                             <div id="confirmation-error-message" class="hidden text-red-600 text-sm text-center -mt-2"></div>
-                            <div><button type="button" id="confirm-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Confirm Account</button></div>
-                            <div class="text-center text-sm"><button type="button" id="resend-code-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Resend Code</button></div>
+                            <div class="text-center text-sm"><button type="button" id="back-to-login-from-confirmation-btn" class="text-blue-600 hover:text-blue-500 hover:underline">Back to Login</button></div>
                         </div>
 
                         <!-- Forgot Password Form -->
                         <form id="forgot-password-form" class="space-y-6 hidden">
-                            <!-- Step 1: Send Code -->
-                            <div id="send-code-section">
-                                <p class="text-center text-gray-600">Enter your username and we'll send a reset code to your email.</p>
-                                <div>
-                                    <label for="forgot-username" class="sr-only">Username</label>
-                                    <input id="forgot-username" name="username" type="text" autocomplete="username" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg" placeholder="Username">
-                                </div>
-                                <div>
-                                    <button type="button" id="send-code-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Send Reset Code</button>
-                                </div>
+                             <h3 class="text-center text-gray-800 font-semibold text-xl">Reset Password</h3>
+                            <p class="text-center text-gray-600">Enter your email address and we'll send you a link to reset your password.</p>
+                            <div>
+                                <label for="forgot-email" class="sr-only">Email address</label>
+                                <input id="forgot-email" name="email" type="email" autocomplete="email" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg" placeholder="Email Address">
                             </div>
-
-                            <!-- Step 2: Reset Password -->
-                            <div id="reset-password-section" class="hidden space-y-6">
-                                <p class="text-center text-green-600 font-semibold">A code has been sent to your email.</p>
-                                <div>
-                                    <label for="reset-code" class="sr-only">Verification Code</label>
-                                    <input id="reset-code" name="code" type="text" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg" placeholder="Verification Code">
-                                </div>
-                                <div class="relative">
-                                    <label for="new-password" class="sr-only">New Password</label>
-                                    <input id="new-password" name="password" type="password" autocomplete="new-password" required class="block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg" placeholder="New Password">
-                                    <button type="button" onclick="togglePassword('new-password', 'toggleNewPasswordButton')" class="absolute right-3 top-3 text-gray-600 hover:text-blue-500" aria-label="Toggle password visibility" id="toggleNewPasswordButton"><i class="bi bi-eye"></i></button>
-                                </div>
-                                <div>
-                                    <button type="button" id="reset-password-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700">Submit New Password</button>
-                                </div>
+                            <div id="forgot-password-message" class="text-sm text-center -mt-2 hidden"></div>
+                            <div>
+                                <button type="submit" id="send-reset-link-btn" class="w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700">Send Reset Link</button>
                             </div>
-                            
-                            <div id="forgot-password-message" class="text-sm text-center -mt-2"></div>
-                            
                             <div class="text-center text-sm">
                                 <button type="button" id="back-to-login-btn" class="text-blue-600 hover:text-blue-500 hover:underline">← Back to Login</button>
                             </div>
@@ -226,7 +196,6 @@
                     <div class="w-full lg:w-1/2 text-center lg:text-left text-white p-8 lg:p-0 rounded-xl animate-fade-in-slide-up">
                         <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-5 text-shadow-md">Sync Your Coding <br class="hidden sm:inline"> Journey with Precision</h1>
                         <p class="text-lg md:text-xl text-blue-100 max-w-2xl lg:max-w-none mx-auto mb-8 font-light">CodeSync helps you synchronize your progress, set goals, and collaborate with peers to become a better programmer every day.</p>
-                        <!-- UPDATED LINK -->
                         <a href="https://gowthusaidatta.github.io/CodeSync_test/Features.html" class="inline-block bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300 ease-in-out shadow-lg transform hover:scale-105 text-lg">Explore Features</a>
                     </div>
                 </div>
@@ -235,7 +204,6 @@
     </div>
 
     <script>
-        // --- THIS SCRIPT SECTION REMAINS UNCHANGED ---
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
@@ -247,12 +215,23 @@
             });
         });
 
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyCDGxsS1CNVRF3wpg1eqkHfb6YVMibXOzk",
+            authDomain: "codesync-open.firebaseapp.com",
+            projectId: "codesync-open",
+            storageBucket: "codesync-open.appspot.com",
+            messagingSenderId: "664480055141",
+            appId: "1:664480055141:web:383015f7bf31a43e2d2b8c",
+            measurementId: "G-H7DD5ZK91D"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         window.addEventListener("load", () => {
-            if (!window.aws_amplify) { console.error("AWS Amplify failed to load."); return; }
-
-            const { Auth } = window.aws_amplify;
-            Auth.configure(window.amplifyConfig);
-
             const authCard = document.getElementById('auth-card');
             const authTitle = document.getElementById('auth-title');
             const authTabs = document.getElementById('auth-tabs');
@@ -261,17 +240,13 @@
             const platformForm = document.getElementById('platform-form');
             const confirmationForm = document.getElementById('confirmation-form');
             const forgotPasswordForm = document.getElementById('forgot-password-form');
-            const sendCodeSection = document.getElementById('send-code-section');
-            const resetPasswordSection = document.getElementById('reset-password-section');
             const loginBtn = document.getElementById('login-btn');
             const signupNextBtn = document.getElementById('signup-next-btn');
             const backToSignupBtn = document.getElementById('back-to-signup-btn');
             const signupSubmitBtn = document.getElementById('signup-btn-submit');
-            const confirmBtn = document.getElementById('confirm-btn');
-            const resendCodeBtn = document.getElementById('resend-code-btn');
+            const backToLoginFromConfirmationBtn = document.getElementById('back-to-login-from-confirmation-btn');
             const forgotPasswordLink = document.getElementById('forgot-password-link');
-            const sendCodeBtn = document.getElementById('send-code-btn');
-            const resetPasswordBtn = document.getElementById('reset-password-btn');
+            const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
             const backToLoginBtn = document.getElementById('back-to-login-btn');
             const signupPasswordInput = document.getElementById('signup-password');
             const loginErrorMsg = document.getElementById('login-error-message');
@@ -287,9 +262,13 @@
             const showMessage = (element, message, isError = true) => {
                 element.textContent = message;
                 element.className = `text-sm text-center -mt-2 ${isError ? 'text-red-600' : 'text-green-600'}`;
+                element.classList.remove('hidden');
             };
             const hideAllMessages = () => {
-                [loginErrorMsg, signupErrorMsg, platformErrorMsg, confirmationErrorMsg, forgotPasswordMessage].forEach(el => el.textContent = '');
+                [loginErrorMsg, signupErrorMsg, platformErrorMsg, confirmationErrorMsg, forgotPasswordMessage].forEach(el => {
+                    el.textContent = '';
+                    el.classList.add('hidden');
+                });
             };
 
             const updateTabStyles = (activeTabId) => {
@@ -312,21 +291,32 @@
                 hideAllMessages();
                 [loginForm, signupForm, platformForm, confirmationForm, forgotPasswordForm].forEach(form => form.classList.add('hidden'));
                 formToShow.classList.remove('hidden');
+                
                 const isAuthForm = formToShow === loginForm || formToShow === signupForm;
                 authTabs.style.display = isAuthForm ? 'flex' : 'none';
-                authTitle.textContent = isAuthForm ? 'Get Started with CodeSync' : 'Reset Your Password';
+
+                if (formToShow === loginForm || formToShow === signupForm) {
+                     authTitle.textContent = 'Get Started with CodeSync';
+                } else if (formToShow === platformForm) {
+                    authTitle.textContent = 'Link Coding Profiles';
+                } else if (formToShow === forgotPasswordForm) {
+                    authTitle.textContent = 'Reset Password';
+                } else if (formToShow === confirmationForm) {
+                    authTitle.textContent = 'Verify Your Email';
+                }
                 authCard.scrollTop = 0;
             };
 
             updateTabStyles('login-tab');
-            document.getElementById('login-tab').textContent = 'Login';
-            document.getElementById('signup-tab').textContent = 'Sign Up';
 
-            document.getElementById('login-tab').addEventListener('click', () => {
+            document.getElementById('login-tab').addEventListener('click', (e) => {
+                e.preventDefault();
                 showForm(loginForm);
                 updateTabStyles('login-tab');
             });
-            document.getElementById('signup-tab').addEventListener('click', () => {
+
+            document.getElementById('signup-tab').addEventListener('click', (e) => {
+                e.preventDefault();
                 showForm(signupForm);
                 updateTabStyles('signup-tab');
             });
@@ -334,9 +324,6 @@
             forgotPasswordLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showForm(forgotPasswordForm);
-                authTitle.textContent = 'Reset Your Password';
-                sendCodeSection.classList.remove('hidden');
-                resetPasswordSection.classList.add('hidden');
             });
 
             backToLoginBtn.addEventListener('click', () => {
@@ -344,160 +331,138 @@
                 updateTabStyles('login-tab');
             });
             
-            loginForm.addEventListener("submit", async (e) => {
+            backToLoginFromConfirmationBtn.addEventListener('click', () => {
+                showForm(loginForm);
+                updateTabStyles('login-tab');
+            });
+
+            loginForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 hideAllMessages();
                 loginBtn.disabled = true;
                 loginBtn.textContent = 'Signing in...';
-                try {
-                    const user = await Auth.signIn(document.getElementById("login-username").value.trim(), document.getElementById("login-password").value.trim());
-                    window.location.href = "results.html";
-                } catch (err) {
-                    showMessage(loginErrorMsg, err.message);
-                } finally {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Sign in';
-                }
+                const email = document.getElementById("login-email").value.trim();
+                const password = document.getElementById("login-password").value.trim();
+                
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        if (userCredential.user.emailVerified) {
+                            window.location.href = "results.html";
+                        } else {
+                            showMessage(loginErrorMsg, "Please verify your email before logging in.");
+                            auth.signOut();
+                        }
+                    })
+                    .catch((error) => {
+                        showMessage(loginErrorMsg, error.message);
+                    })
+                    .finally(() => {
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = 'Sign in';
+                    });
             });
 
             signupNextBtn.addEventListener("click", () => {
                 hideAllMessages();
-                const username = document.getElementById("signup-username").value.trim();
                 const fullName = document.getElementById("signup-full-name").value.trim();
-                const preferredUsername = document.getElementById("signup-preferred-username").value.trim();
                 const email = document.getElementById("signup-email").value.trim();
                 const password = signupPasswordInput.value.trim();
-                if (!username || !fullName || !preferredUsername || !email || !password) {
+                if (!fullName || !email || !password) {
                     showMessage(signupErrorMsg, "Please fill in all required fields.");
                     return;
                 }
-                const isPasswordValid = reqLength.classList.contains('met') && reqCase.classList.contains('met') && reqNumber.classList.contains('met') && reqSpecial.classList.contains('met');
-                if (!isPasswordValid) {
+                if (!validatePassword()) {
                     showMessage(signupErrorMsg, "Password does not meet all requirements.");
                     return;
                 }
                 showForm(platformForm);
-                authTitle.textContent = 'Link Coding Profiles';
             });
 
             backToSignupBtn.addEventListener('click', () => {
                 showForm(signupForm);
-                authTitle.textContent = 'Get Started with CodeSync';
             });
 
-            platformForm.addEventListener("submit", async (e) => {
+            platformForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 hideAllMessages();
+
+                const leetcode_username = document.getElementById("signup-leetcode").value.trim();
+                const codechef_username = document.getElementById("signup-codechef").value.trim();
+                const hackerrank_username = document.getElementById("signup-hackerrank").value.trim();
+                const gfg_username = document.getElementById("signup-gfg").value.trim();
+
+                if (!leetcode_username && !codechef_username && !hackerrank_username && !gfg_username) {
+                    showMessage(platformErrorMsg, "Please provide at least one coding profile username.");
+                    return;
+                }
+
                 signupSubmitBtn.disabled = true;
                 signupSubmitBtn.textContent = 'Creating Account...';
-                try {
-                    const username = document.getElementById("signup-username").value.trim();
-                    const password = signupPasswordInput.value.trim();
-                    const userAttributes = {
-                        email: document.getElementById("signup-email").value.trim(),
-                        name: document.getElementById("signup-full-name").value.trim(),
-                        preferred_username: document.getElementById("signup-preferred-username").value.trim(),
-                        'custom:leetcode_username': document.getElementById("signup-leetcode").value.trim(),
-                        'custom:codechef_username': document.getElementById("signup-codechef").value.trim(),
-                        'custom:hackerrank_username': document.getElementById("signup-hackerrank").value.trim(),
-                        'custom:gfg_username': document.getElementById("signup-gfg").value.trim(),
-                    };
-                    for (const key in userAttributes) {
-                        if (key.startsWith('custom:') && userAttributes[key] === '') {
-                            delete userAttributes[key];
-                        }
-                    }
-                    await Auth.signUp({ username, password, attributes: userAttributes });
-                    showForm(confirmationForm);
-                    authTitle.textContent = 'Confirm Your Account';
-                } catch (err) {
-                    showMessage(platformErrorMsg, err.message);
-                } finally {
-                    signupSubmitBtn.disabled = false;
-                    signupSubmitBtn.textContent = 'Create Account';
-                }
+                
+                const email = document.getElementById("signup-email").value.trim();
+                const password = signupPasswordInput.value.trim();
+                const fullName = document.getElementById("signup-full-name").value.trim();
+                
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        user.updateProfile({
+                            displayName: fullName
+                        }).then(() => {
+                            db.collection("users").doc(user.uid).set({
+                                fullName: fullName,
+                                email: email,
+                                leetcode: leetcode_username || "",
+                                codechef: codechef_username || "",
+                                hackerrank: hackerrank_username || "",
+                                gfg: gfg_username || ""
+                            })
+                            .then(() => {
+                                user.sendEmailVerification()
+                                    .then(() => {
+                                        showForm(confirmationForm);
+                                    })
+                                    .catch((error) => {
+                                        showMessage(platformErrorMsg, `Failed to send verification email: ${error.message}`);
+                                    });
+                            })
+                            .catch((error) => {
+                                showMessage(platformErrorMsg, `Failed to save user data: ${error.message}`);
+                            });
+                        }).catch((error) => {
+                            showMessage(platformErrorMsg, `Failed to update profile: ${error.message}`);
+                        });
+                    })
+                    .catch((error) => {
+                        showMessage(platformErrorMsg, error.message);
+                    })
+                    .finally(() => {
+                        signupSubmitBtn.disabled = false;
+                        signupSubmitBtn.textContent = 'Create Account';
+                    });
             });
 
-            confirmBtn.addEventListener("click", async (e) => {
+            forgotPasswordForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 hideAllMessages();
-                confirmBtn.disabled = true;
-                confirmBtn.textContent = 'Confirming...';
-                try {
-                    const username = document.getElementById("signup-username").value.trim();
-                    const code = document.getElementById("confirmation-code").value.trim();
-                    await Auth.confirmSignUp(username, code);
-                    showMessage(confirmationErrorMsg, "Account confirmed successfully! Redirecting to login...", false);
-                    setTimeout(() => {
-                        showForm(loginForm);
-                        updateTabStyles('login-tab');
-                        document.getElementById('login-username').value = username;
-                    }, 2000);
-                } catch (err) {
-                    showMessage(confirmationErrorMsg, err.message);
-                } finally {
-                    confirmBtn.disabled = false;
-                    confirmBtn.textContent = 'Confirm Account';
+                const email = document.getElementById('forgot-email').value.trim();
+                if (!email) { 
+                    showMessage(forgotPasswordMessage, "Please enter your email address.");
+                    return;
                 }
-            });
-
-            resendCodeBtn.addEventListener("click", async () => {
-                hideAllMessages();
-                resendCodeBtn.disabled = true;
-                resendCodeBtn.textContent = 'Resending...';
-                try {
-                    const username = document.getElementById("signup-username").value.trim();
-                    await Auth.resendSignUpCode(username);
-                    showMessage(confirmationErrorMsg, "Verification code resent successfully!", false);
-                } catch (err) {
-                    showMessage(confirmationErrorMsg, err.message);
-                } finally {
-                    resendCodeBtn.disabled = false;
-                    resendCodeBtn.textContent = 'Resend Code';
-                }
-            });
-
-            sendCodeBtn.addEventListener('click', async () => {
-                hideAllMessages();
-                const username = document.getElementById('forgot-username').value.trim();
-                if (!username) { return showMessage(forgotPasswordMessage, "Please enter your username."); }
-                sendCodeBtn.disabled = true;
-                sendCodeBtn.textContent = 'Sending...';
-                try {
-                    await Auth.forgotPassword(username);
-                    sendCodeSection.classList.add('hidden');
-                    resetPasswordSection.classList.remove('hidden');
-                    showMessage(forgotPasswordMessage, "Reset code sent to your email.", false);
-                } catch (err) {
-                    showMessage(forgotPasswordMessage, err.message);
-                } finally {
-                    sendCodeBtn.disabled = false;
-                    sendCodeBtn.textContent = 'Send Reset Code';
-                }
-            });
-
-            resetPasswordBtn.addEventListener('click', async () => {
-                hideAllMessages();
-                const username = document.getElementById('forgot-username').value.trim();
-                const code = document.getElementById('reset-code').value.trim();
-                const newPassword = document.getElementById('new-password').value.trim();
-                if (!code || !newPassword) { return showMessage(forgotPasswordMessage, "Please enter both the code and a new password."); }
-                resetPasswordBtn.disabled = true;
-                resetPasswordBtn.textContent = 'Submitting...';
-                try {
-                    await Auth.forgotPasswordSubmit(username, code, newPassword);
-                    showMessage(forgotPasswordMessage, "Password reset successfully! Redirecting to login...", false);
-                    setTimeout(() => {
-                        showForm(loginForm);
-                        updateTabStyles('login-tab');
-                        document.getElementById('login-username').value = username;
-                    }, 2000);
-                } catch (err) {
-                    showMessage(forgotPasswordMessage, err.message);
-                } finally {
-                    resetPasswordBtn.disabled = false;
-                    resetPasswordBtn.textContent = 'Submit New Password';
-                }
+                sendResetLinkBtn.disabled = true;
+                sendResetLinkBtn.textContent = 'Sending...';
+                auth.sendPasswordResetEmail(email)
+                    .then(() => {
+                        showMessage(forgotPasswordMessage, "Password reset link sent to your email.", false);
+                    })
+                    .catch((error) => {
+                        showMessage(forgotPasswordMessage, error.message);
+                    })
+                    .finally(() => {
+                        sendResetLinkBtn.disabled = false;
+                        sendResetLinkBtn.textContent = 'Send Reset Link';
+                    });
             });
 
             const validatePassword = () => {
@@ -521,8 +486,8 @@
                 return allMet;
             };
 
-            signupPasswordInput.addEventListener('keyup', validatePassword);
-            validatePassword();
+            signupPasswordInput.addEventListener('input', validatePassword);
+            validatePassword(); // Initial check
         });
 
         window.togglePassword = (inputId, buttonId) => {
