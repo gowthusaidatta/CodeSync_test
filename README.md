@@ -45,7 +45,7 @@ This project leverages a **serverless AWS architecture** for scalability, securi
 
 The project follows a decoupled client-server design:
 
-* **`CodeSync-Frontend` (Public Repository):** Contains static files (HTML, CSS, JS). Safe for public exposure since no sensitive logic or credentials are included.
+* **`CodeSync_test` (Public Repository):** Contains static files (HTML, CSS, JS). Safe for public exposure since no sensitive logic or credentials are included.
 * **`CodeSync-Backend` (Private Repository):** Contains all server-side logic, including authentication, scraping, and scheduled tasks. Deployed securely to AWS Lambda and API Gateway.
 
 This separation ensures security, scalability, and independent deployment.
@@ -75,18 +75,18 @@ This separation ensures security, scalability, and independent deployment.
 
 ```bash
 # Clone the public frontend repository
-git clone https://github.com/YourUsername/CodeSync-Frontend.git
+git clone https://github.com/YourUsername/CodeSync_test.git
 
 # Clone the private backend repository
-git clone https://github.com/YourUsername/CodeSync-Backend.git
+git clone https://github.com/YourUsername/CodeSync_Backend.git
 ```
 
 ### 2. Backend Setup
 
-1. Navigate to `CodeSync-Backend`:
+1. Navigate to `CodeSync`:
 
    ```bash
-   cd CodeSync-Backend
+   cd CodeSync_Backend
    ```
 2. Install dependencies:
 
@@ -107,10 +107,10 @@ git clone https://github.com/YourUsername/CodeSync-Backend.git
 
 ### 3. Frontend Setup
 
-1. Navigate to `CodeSync-Frontend`:
+1. Navigate to `CodeSync_test`:
 
    ```bash
-   cd CodeSync-Frontend
+   cd CodeSync_test
    ```
 2. Create `js/cognito_config.js` with your Cognito app settings:
 
