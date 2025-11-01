@@ -1,4 +1,4 @@
-1# CodeSync - The Competitive Programmer's Dashboard
+# CodeSync - The Competitive Programmer's Dashboard
 
 CodeSync is a modern web application designed for competitive programmers to consolidate, track, and visualize their progress across multiple coding platforms. It securely aggregates user statistics from LeetCode, CodeChef, GeeksforGeeks, and HackerRank into a single, personalized dashboard.
 
